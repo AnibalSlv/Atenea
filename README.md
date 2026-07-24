@@ -1,19 +1,34 @@
-# README
+# Atenea
 
-## About
+Aplicación de escritorio desarrollada con **Wails** (Backend en Go y Frontend en React con Vite).
 
-This is the official Wails React template.
+# Requisitos Previos
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+Antes de clonar y ejecutar el proyecto, asegúrate de tener instalado en tu sistema operativo:
+- **Go** (Versión `1.25.0` o superior)
+- **Node.js** (Gestionado mediante **NVM** para asegurar la misma versión)
+- **Wails CLI** (Instalado globalmente en tu máquina)
 
-## Live Development
+---
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+# Guía de Inicio Rápido
 
-## Building
+Sigue estos pasos para levantar el entorno de desarrollo localmente:
 
-To build a redistributable, production mode package, use `wails build`.
+1. Clonar el repositorio
+git clone https://github.com/AnibalSlv/Atenea.git
+cd atenea
+
+
+2. Sincronizar la version de Node.js
+```
+cd frontend
+nvm use
+```
+
+4. Instalar las dependencias del Frontend
+npm install
+
+5. Volver a la raíz y levantar el entorno de desarrollo
+cd ..
+wails dev
