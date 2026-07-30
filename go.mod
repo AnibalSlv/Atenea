@@ -1,6 +1,6 @@
 module atenea
 
-go 1.25.0
+go 1.26.2
 
 require github.com/wailsapp/wails/v2 v2.13.0
 
