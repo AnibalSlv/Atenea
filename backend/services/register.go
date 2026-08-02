@@ -2,6 +2,8 @@ package services
 
 import (
 	"atenea/backend/database"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterService struct {
@@ -18,11 +20,19 @@ func NewRegisterService(db *database.MemoryDB) *RegisterService {
 	}
 }
 
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
 func (s *RegisterService) Register(name_input string, password_input string) bool {
 	name := name_input
-	password := password_input
+	password, err := HashPassword(password_input)
+	if err != nil {
+		return false
+	}
 
 	s.db.AddUser(name, password)
 
-	return false
+	return true
 }
