@@ -1,9 +1,15 @@
 package database
 
+type Stat struct {
+	Level int
+	Money int
+}
+
 // Struct para el Mok
 type User struct {
-	User     string
+	Name     string
 	Password string
+	Stats    []Stat
 }
 
 type MemoryDB struct {
@@ -16,15 +22,33 @@ func NewMemoryDB() *MemoryDB {
 	}
 }
 
-func (db *MemoryDB) AddUser(name_input string, password_input string) {
-	var new_user User
+func (db *MemoryDB) AddUser(nameInput string, passwordInput string) {
 
-	new_user.User = name_input
-	new_user.Password = password_input
+	statsDefault := Stat{
+		Level: 0,
+		Money: 0,
+	}
 
-	db.users = append(db.users, new_user)
+	newUser := User{
+		Name:     nameInput,
+		Password: passwordInput,
+		Stats:    []Stat{statsDefault},
+	}
+
+	db.users = append(db.users, newUser)
 }
 
-func (db *MemoryDB) GetUser() []User {
+func (db *MemoryDB) GetAllUser() []User {
 	return db.users
+}
+
+func (db *MemoryDB) GetUserName(nameInput string) (*User, bool) {
+
+	for i := 0; i < len(db.users); i++ {
+		if db.users[i].Name == nameInput {
+			return &db.users[i], true
+		}
+	}
+
+	return nil, false
 }

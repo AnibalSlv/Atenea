@@ -21,19 +21,19 @@ func NewLoginService(db *database.MemoryDB) *LoginService {
 }
 
 // Verifica si la contraseña coincide con el hash
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-func (s *LoginService) Login(name_input string, password_input string) bool {
-	listUser := s.db.GetUser()
+func (l *LoginService) Login(name_input string, password_input string) bool {
+	listUser := l.db.GetAllUser()
 
 	for _, u := range listUser {
-		if u.User == name_input {
+		if u.Name == name_input {
 
 			// Compara la contrasena ingresada por el Hash guardado (la contrasena encriptada)
-			match := CheckPasswordHash(password_input, u.Password)
+			match := checkPasswordHash(password_input, u.Password)
 
 			return match
 		}

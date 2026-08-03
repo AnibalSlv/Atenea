@@ -20,19 +20,19 @@ func NewRegisterService(db *database.MemoryDB) *RegisterService {
 	}
 }
 
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
 
-func (s *RegisterService) Register(name_input string, password_input string) bool {
+func (r *RegisterService) Register(name_input string, password_input string) bool {
 	name := name_input
-	password, err := HashPassword(password_input)
+	password, err := hashPassword(password_input)
 	if err != nil {
 		return false
 	}
 
-	s.db.AddUser(name, password)
+	r.db.AddUser(name, password)
 
 	return true
 }
