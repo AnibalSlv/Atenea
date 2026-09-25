@@ -1,28 +1,48 @@
-import {useState} from 'react';
-import logo from './assets/images/logo-universal.png';
+import { useState } from 'react';
 import './App.css';
-import {Greet} from "../wailsjs/go/main/App";
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Perfil from './pages/Perfil';
 
 function App() {
-    const [resultText, setResultText] = useState("Please enter your name below 👇");
-    const [name, setName] = useState('');
-    const updateName = (e) => setName(e.target.value);
-    const updateResultText = (result) => setResultText(result);
+    const [vista, setVista] = useState('login');
+    const [usuario, setUsuario] = useState('');
 
-    function greet() {
-        Greet(name).then(updateResultText);
+    const manejarLoginExitoso = (nombreUsuario) => {
+        setUsuario(nombreUsuario);
+        setVista('home');
+    };
+
+    const cerrarSesion = () => {
+        setUsuario('');
+        setVista('login');
+    };
+
+    if (vista === 'register') {
+        return <Register onIrALogin={() => setVista('login')} />;
+    }
+
+    if (vista === 'home') {
+        return (
+            <Home
+                usuario={usuario}
+                onIrAPerfil={() => setVista('perfil')}
+                onCerrarSesion={cerrarSesion}
+            />
+        );
+    }
+
+    if (vista === 'perfil') {
+        return <Perfil usuario={usuario} onVolver={() => setVista('home')} />;
     }
 
     return (
-        <div id="App">
-            <img src={logo} id="logo" alt="logo"/>
-            <div id="result" className="result">{resultText}</div>
-            <div id="input" className="input-box">
-                <input id="name" className="input" onChange={updateName} autoComplete="off" name="input" type="text"/>
-                <button className="btn" onClick={greet}>Greet</button>
-            </div>
-        </div>
-    )
+        <Login
+            onIrARegistro={() => setVista('register')}
+            onLoginExitoso={manejarLoginExitoso}
+        />
+    );
 }
 
-export default App
+export default App;

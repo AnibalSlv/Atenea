@@ -1,59 +1,294 @@
-#app {
+/* Paleta institucional oficial (ver CLAUDE.md) */
+:root {
+    --color-primario: #3b2a69;      /* Morado institucional: encabezados, botones principales, iconografía */
+    --color-verde: #548d36;         /* Verde naturaleza: progreso y ambientación */
+    --color-amarillo: #ffbc00;      /* Acento de gamificación: medallas y recompensas */
+    --color-naranja: #f0b83e;       /* Acento de gamificación: medallas y recompensas */
+    --color-azul-oscuro: #123463;   /* Fondos secundarios y nubes de diálogo */
+    --color-azul-claro: #3269bc;    /* Fondos secundarios y nubes de diálogo */
+    --color-fondo: #eef2f8;         /* Tinte muy claro del azul institucional */
+    --color-texto: #241a3d;         /* Derivado del morado, para buena legibilidad */
+    --color-blanco: #ffffff;
+    --sombra-suave: 0 8px 24px rgba(59, 42, 105, 0.15);
+}
+
+/* Reseteo básico y tipografía */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+/* Contenedor principal con animación de entrada */
+.login-pantalla {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
+    width: 100vw;
+    animation: aparecerSuave 0.6s ease-out;
+}
+
+/* Diseño minimalista de la tarjeta */
+.login-tarjeta {
+    background-color: var(--color-blanco);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--sombra-suave);
+    width: 100%;
+    max-width: 350px;
     text-align: center;
 }
 
-#logo {
-    display: block;
-    width: 50%;
-    height: 50%;
-    margin: auto;
-    padding: 10% 0 0;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    background-origin: content-box;
+.login-tarjeta h2 {
+    margin-top: 0;
+    color: var(--color-primario);
+    font-weight: 600;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
 }
 
-.result {
-    height: 20px;
-    line-height: 20px;
-    margin: 1.5rem auto;
+/* Estilos de los inputs con transiciones interactivas */
+.input-grupo {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1.5rem;
 }
 
-.input-box .btn {
-    width: 60px;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 3px;
+.input-grupo label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-primario);
+    font-weight: 600;
+}
+
+.input-grupo input {
+    padding: 0.8rem 1rem;
+    border: 2px solid #d7ddea;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    background-color: #faf9fc;
+    transition: all 0.3s ease;
+}
+
+/* Efecto al hacer clic en el input */
+.input-grupo input:focus {
+    border-color: var(--color-amarillo);
+    background-color: var(--color-blanco);
+    box-shadow: 0 0 0 4px rgba(255, 188, 0, 0.2);
+}
+
+/* Botón principal */
+.btn-entrar {
+    width: 100%;
+    padding: 0.9rem;
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
     border: none;
-    margin: 0 0 0 20px;
-    padding: 0 8px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Animación al pasar el mouse */
+.btn-entrar:hover {
+    background-color: #2c1f4e; /* Morado institucional más oscuro */
+    transform: translateY(-3px);
+}
+
+.btn-entrar:active {
+    transform: translateY(0);
+}
+
+.btn-entrar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Mensaje de error del formulario */
+.auth-error {
+    color: #b3261e;
+    font-size: 0.9rem;
+    margin: -0.5rem 0 1rem;
+    text-align: left;
+}
+
+/* Enlace para alternar entre Login y Registro */
+.auth-enlace {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+}
+
+.auth-enlace button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-azul-claro);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Keyframes para que la tarjeta flote hacia arriba suavemente al iniciar */
+@keyframes aparecerSuave {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- Pantalla Home ---------- */
+.home-pantalla {
+    min-height: 100vh;
+    width: 100vw;
+    background-color: var(--color-fondo);
+    animation: aparecerSuave 0.6s ease-out;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    padding: 1.5rem 2rem;
+}
+
+.home-header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.btn-salir {
+    background-color: transparent;
+    border: 2px solid var(--color-blanco);
+    color: var(--color-blanco);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-salir:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.home-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 2.5rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.home-tarjeta-menu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    background-color: var(--color-blanco);
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--sombra-suave);
+    padding: 2rem 1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-primario);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.home-tarjeta-menu:not(:disabled):hover {
+    transform: translateY(-4px);
+}
+
+.home-tarjeta-menu:disabled {
+    color: #9a94a8;
+    cursor: not-allowed;
+}
+
+.home-tarjeta-icono {
+    font-size: 2.2rem;
+}
+
+.home-tarjeta-badge {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    background-color: var(--color-amarillo);
+    color: var(--color-texto);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+}
+
+/* ---------- Pantalla Perfil ---------- */
+.perfil-tarjeta {
+    max-width: 320px;
+    position: relative;
+}
+
+.perfil-volver {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    background: none;
+    border: none;
+    color: var(--color-azul-claro);
+    font-weight: 600;
     cursor: pointer;
 }
 
-.input-box .btn:hover {
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-    color: #333333;
+.perfil-avatar {
+    width: 90px;
+    height: 90px;
+    margin: 0.5rem auto 1rem;
+    border-radius: 50%;
+    background-color: var(--color-azul-claro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
 }
 
-.input-box .input {
-    border: none;
-    border-radius: 3px;
-    outline: none;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-    background-color: rgba(240, 240, 240, 1);
-    -webkit-font-smoothing: antialiased;
+.perfil-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
 }
 
-.input-box .input:hover {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
+.perfil-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.input-box .input:focus {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
+.perfil-stat-valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-naranja);
+}
+
+.perfil-stat-label {
+    font-size: 0.85rem;
+    color: var(--color-verde);
+    font-weight: 600;
+    text-transform: uppercase;
 }

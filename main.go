@@ -32,9 +32,13 @@ func main() {
 		OnStartup:        app.startup,
 
 		// Le indica a Wails que Struct deben de quedar expuestos para utilizar en el front
+		// Se exponen los servicios directamente porque Wails no expone
+		// los métodos de structs anidados dentro de BackendManager.
 		Bind: []interface{}{
 			app,
-			BackendManager,
+			BackendManager.Login,
+			BackendManager.Register,
+			BackendManager.DataUser,
 		},
 	})
 
