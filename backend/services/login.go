@@ -2,6 +2,7 @@ package services
 
 import (
 	"atenea/backend/database"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -28,14 +29,18 @@ func checkPasswordHash(password, hash string) bool {
 
 // -------- Funcion Principal --------
 
-func (l *LoginService) Login(name_input string, password_input string) bool {
+func (l *LoginService) Login(nameInput string, passwordInput string) bool {
 	listUser := l.db.GetAllUser()
 
+	for i := range listUser {
+		fmt.Printf("Usuario [%d]: %+v\n", i, listUser[i])
+	}
+
 	for _, u := range listUser {
-		if u.Name == name_input {
+		if u.Name == nameInput {
 
 			// Compara la contrasena ingresada por el Hash guardado (la contrasena encriptada)
-			match := checkPasswordHash(password_input, u.Password)
+			match := checkPasswordHash(passwordInput, u.Password)
 
 			return match
 		}
