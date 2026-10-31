@@ -26,6 +26,8 @@ func checkPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
+// -------- Funcion Principal --------
+
 func (l *LoginService) Login(name_input string, password_input string) bool {
 	listUser := l.db.GetAllUser()
 
