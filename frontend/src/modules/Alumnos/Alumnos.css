@@ -1,0 +1,376 @@
+.alumnos-modulo {
+    padding: 0 2rem 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: aparecerSuave 0.35s ease-out;
+}
+
+/* ─── Encabezado del Módulo ─── */
+.alumnos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.alumnos-header__titulo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0 0 0.25rem;
+}
+
+.alumnos-header__sub {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    margin: 0;
+}
+
+.alumnos-header__badge {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    padding: 0.45rem 1rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-sidebar);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* ─── Navegación por Secciones / Pestañas ─── */
+.alumnos-tabs {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alumnos-tab-btn {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    padding: 0.65rem 1.1rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alumnos-tab-btn:hover {
+    color: var(--color-sidebar);
+    border-color: var(--color-sidebar);
+}
+
+.alumnos-tab-btn--activo {
+    background-color: var(--color-sidebar);
+    color: var(--color-blanco) !important;
+    border-color: var(--color-sidebar);
+    box-shadow: 0 4px 12px rgba(65, 84, 179, 0.25);
+}
+
+/* ─── Contenedor de la Ficha / Formulario ─── */
+.alumnos-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 2rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--color-borde);
+}
+
+.seccion-bloque {
+    margin-bottom: 2rem;
+}
+
+.seccion-bloque:last-child {
+    margin-bottom: 0;
+}
+
+.seccion-titulo-barra {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-fondo);
+    margin-bottom: 1.4rem;
+}
+
+.seccion-numero-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background-color: var(--color-sidebar);
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seccion-titulo-texto {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0;
+}
+
+/* ─── Grids de Formularios ─── */
+.form-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.2rem;
+}
+
+/* ─── Campos Individuales ─── */
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.campo-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.campo-input,
+.campo-select,
+.campo-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-superficie);
+    font-size: 0.9rem;
+    color: var(--color-texto-principal);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.campo-input:focus,
+.campo-select:focus,
+.campo-textarea:focus {
+    border-color: var(--color-sidebar);
+    background-color: var(--color-blanco);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.12);
+}
+
+.campo-input::placeholder {
+    color: var(--color-texto-mutado);
+    font-size: 0.85rem;
+}
+
+.campo-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ─── Botones Selector SI / NO (Pills) ─── */
+.pills-sino-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pill-sino-btn {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-pequeno);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.pill-sino-btn:hover {
+    border-color: #cbd5e1;
+}
+
+.pill-sino-btn--si-activo {
+    background-color: rgba(84, 141, 54, 0.15);
+    border-color: var(--color-verde);
+    color: var(--color-verde);
+}
+
+.pill-sino-btn--no-activo {
+    background-color: rgba(230, 57, 70, 0.12);
+    border-color: var(--color-rojo);
+    color: var(--color-rojo);
+}
+
+.pill-sino-btn--activo {
+    background-color: var(--color-sidebar);
+    border-color: var(--color-sidebar);
+    color: white;
+}
+
+/* ─── Grid de Checkboxes / Condiciones Sanitarias ─── */
+.grid-condiciones-sanitarias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    background-color: var(--color-superficie);
+    padding: 1.4rem;
+    border-radius: var(--radio-pequeno);
+    border: 1px solid var(--color-borde);
+}
+
+.condicion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-blanco);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-borde);
+}
+
+.condicion-texto {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+}
+
+/* ─── Barra de Filtros de Selección ─── */
+.alumnos-filtros-bar {
+    display: grid;
+    grid-template-columns: 200px 220px 180px 1fr;
+    gap: 16px;
+    background-color: var(--color-blanco);
+    padding: 18px 24px;
+    border-radius: var(--radio-tarjeta);
+    border: 1px solid var(--color-borde);
+    box-shadow: var(--sombra-card);
+    margin-bottom: 24px;
+    align-items: end;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ─── Grilla de Tarjetas de Alumnos ─── */
+.alumnos-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.alumno-card-item {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--sombra-card);
+}
+
+.alumno-card-item:hover {
+    border-color: var(--color-sidebar);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-flotante);
+}
+
+.alumno-card-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: var(--color-fondo);
+    color: var(--color-sidebar);
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-borde);
+    flex-shrink: 0;
+}
+
+.alumno-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.alumno-card-nombre {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.alumno-card-cedula {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+}
+
+.alumno-card-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.tag-grado {
+    background-color: #e0e7ff;
+    color: var(--color-sidebar);
+    padding: 3px 8px;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.tag-turno {
+    background-color: var(--color-superficie);
+    color: var(--color-texto-secundario);
+    border: 1px solid var(--color-borde);
+    padding: 3px 8px;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.alumnos-vacio {
+    background-color: var(--color-blanco);
+    border: 1px dashed var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 40px;
+    text-align: center;
+    color: var(--color-texto-secundario);
+    font-size: 0.9rem;
+}

@@ -1,0 +1,278 @@
+.notificaciones-wrapper {
+    position: relative;
+}
+
+/* ─── Botón de Campana ────────────────────────── */
+.notificaciones-btn {
+    position: relative;
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.15rem;
+    color: var(--color-primario);
+    transition: all 0.2s ease;
+}
+
+.notificaciones-btn:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.notificaciones-btn--abierto {
+    background-color: #f1f5f9;
+    border-color: var(--color-primario);
+}
+
+.notificaciones-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: #b3261e;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid var(--color-blanco);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Panel Desplegable (Dropdown) ────────────── */
+.notificaciones-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 380px;
+    max-width: 90vw;
+    background-color: var(--color-blanco);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(59, 42, 105, 0.18);
+    border: 1px solid #e2e8f0;
+    z-index: 150;
+    overflow: hidden;
+    animation: aparecerSuave 0.2s ease-out;
+}
+
+/* ─── Cabecera del Panel ──────────────────────── */
+.notificaciones-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #edf0f7;
+    background-color: #fafbfc;
+}
+
+.notificaciones-panel__titulo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primario);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.notificaciones-panel__btn-leidas {
+    background: none;
+    border: none;
+    color: var(--color-azul-claro);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.notificaciones-panel__btn-leidas:hover {
+    text-decoration: underline;
+}
+
+/* ─── Pestañas de Filtro ──────────────────────── */
+.notificaciones-panel__tabs {
+    display: flex;
+    padding: 0.4rem 0.8rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #edf0f7;
+    gap: 0.3rem;
+    overflow-x: auto;
+}
+
+.notificaciones-panel__tab {
+    background: none;
+    border: none;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.notificaciones-panel__tab:hover {
+    background-color: #f1f5f9;
+    color: var(--color-primario);
+}
+
+.notificaciones-panel__tab--activo {
+    background-color: rgba(59, 42, 105, 0.1);
+    color: var(--color-primario);
+    font-weight: 700;
+}
+
+/* ─── Lista de Notificaciones ─────────────────── */
+.notificaciones-panel__lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.notificacion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid #edf0f7;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    position: relative;
+}
+
+.notificacion-item:hover {
+    background-color: #f8fafc;
+}
+
+.notificacion-item--no-leida {
+    background-color: #fcfaff;
+}
+
+.notificacion-item--no-leida::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3.5px;
+    background-color: var(--color-amarillo);
+}
+
+.notificacion-item__icono {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.notificacion-item__icono--urgente {
+    background-color: rgba(179, 38, 30, 0.12);
+}
+
+.notificacion-item__icono--alerta {
+    background-color: rgba(255, 188, 0, 0.16);
+}
+
+.notificacion-item__icono--info {
+    background-color: rgba(50, 105, 188, 0.12);
+}
+
+.notificacion-item__contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+.notificacion-item__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.2rem;
+}
+
+.notificacion-item__titulo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primario);
+    margin: 0;
+}
+
+.notificacion-item__hora {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.notificacion-item__mensaje {
+    font-size: 0.78rem;
+    color: #475569;
+    margin: 0 0 0.35rem;
+    line-height: 1.35;
+}
+
+.notificacion-item__tags {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.notificacion-item__categoria {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background-color: #eef2f8;
+    color: var(--color-azul-oscuro);
+}
+
+.notificacion-item__descartar {
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.2rem;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    align-self: flex-start;
+}
+
+.notificacion-item__descartar:hover {
+    color: #ef4444;
+    background-color: #fee2e2;
+}
+
+/* ─── Estado Vacío ────────────────────────────── */
+.notificaciones-panel__vacio {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.notificaciones-panel__vacio-icono {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.notificaciones-panel__vacio-texto {
+    font-size: 0.85rem;
+    margin: 0;
+}
+

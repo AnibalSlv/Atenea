@@ -1,0 +1,151 @@
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--color-sidebar) 0%, var(--color-sidebar-dark) 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 1.8rem 0 1.6rem 1.4rem;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(50, 66, 148, 0.12);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ─── Encabezado Institucional ─── */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 2.2rem;
+    padding-left: 0.4rem;
+}
+
+.sidebar-brand__logo-box {
+    width: 38px;
+    height: 38px;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-blanco);
+    flex-shrink: 0;
+}
+
+.sidebar-brand__nombre {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-blanco);
+    letter-spacing: 0.5px;
+}
+
+/* ─── Lista de Navegación ─── */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    flex: 1;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1.2rem;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    position: relative;
+    transition: all 0.2s ease;
+    border-top-left-radius: 26px;
+    border-bottom-left-radius: 26px;
+}
+
+.sidebar-link:hover {
+    color: var(--color-blanco);
+}
+
+.sidebar-link__icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.85rem;
+    color: inherit;
+    flex-shrink: 0;
+}
+
+/* ─── PESTAÑA ACTIVA CON CORTE CÓNCAVO ─── */
+.sidebar-link--activo {
+    background-color: var(--color-fondo);
+    color: var(--color-sidebar-dark) !important;
+    font-weight: 800;
+}
+
+/* Curvatura cóncava superior */
+.sidebar-link--activo::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-bottom-right-radius: 20px;
+    box-shadow: 6px 6px 0 6px var(--color-fondo);
+    pointer-events: none;
+}
+
+/* Curvatura cóncava inferior */
+.sidebar-link--activo::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-top-right-radius: 20px;
+    box-shadow: 6px -6px 0 6px var(--color-fondo);
+    pointer-events: none;
+}
+
+.sidebar-link__badge {
+    margin-left: auto;
+    background-color: var(--color-amarillo);
+    color: var(--color-sidebar-dark);
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    margin-right: 0.5rem;
+}
+
+/* ─── Botón Salir en el Pie ─── */
+.sidebar-logout {
+    margin-top: auto;
+    padding-right: 1.4rem;
+}
+
+.sidebar-logout__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.sidebar-logout__btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--color-blanco);
+}

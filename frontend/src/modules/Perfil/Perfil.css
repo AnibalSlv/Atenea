@@ -1,0 +1,103 @@
+.perfil-modulo {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    animation: aparecerSuave 0.4s ease-out;
+}
+
+.perfil-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    box-shadow: var(--sombra-card);
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    border: 1px solid var(--color-borde);
+}
+
+.perfil-volver-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: none;
+    border: 1px solid var(--color-borde);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radio-pequeno);
+    color: var(--color-sidebar);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.perfil-volver-btn:hover {
+    background-color: var(--color-superficie);
+}
+
+.perfil-avatar-wrapper {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-sidebar) 0%, var(--color-sidebar-dark) 100%);
+    color: var(--color-blanco);
+    font-size: 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 24px rgba(65, 84, 179, 0.25);
+}
+
+.perfil-nombre {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0 0 0.4rem;
+}
+
+.perfil-rol-badge {
+    background-color: var(--color-fondo);
+    color: var(--color-sidebar-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    margin-bottom: 1.5rem;
+}
+
+.perfil-info-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.perfil-info-item {
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-pequeno);
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--color-borde);
+}
+
+.perfil-info-lbl {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.perfil-info-val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    margin: 0;
+}
+
