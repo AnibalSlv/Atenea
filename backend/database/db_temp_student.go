@@ -1,6 +1,8 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ParentData struct {
 	Name             string `json:"name"`
@@ -41,6 +43,7 @@ type ServicesData struct {
 }
 
 type Student struct {
+	Id             int    `json:"id"`
 	Date           string `json:"date"`
 	IdSchool       int    `json:"idSchool"`
 	Name           string `json:"name"`
@@ -86,6 +89,7 @@ type Student struct {
 var listStudent []Student
 
 func (db *MemoryDB) AddStudent(student Student) {
+	student.Id = len(listStudent)
 	listStudent = append(listStudent, student)
 
 	for i := range len(listStudent) {
@@ -93,4 +97,61 @@ func (db *MemoryDB) AddStudent(student Student) {
 	}
 
 	fmt.Println("---- Estudiante Guardado ---")
+}
+
+func (db *MemoryDB) GetStudentName(name string) (bool, Student) {
+	var student Student
+
+	for i := range len(listStudent) {
+		if name == listStudent[i].Name {
+			fmt.Printf("%v", listStudent[i])
+			student = listStudent[i]
+			return true, student
+		}
+	}
+
+	fmt.Println("---- Estudiante No Encontrado ---")
+	return false, student
+}
+
+func (db *MemoryDB) GetStudentId(id int) (bool, Student) {
+	var student Student
+
+	for i := range len(listStudent) {
+		if id == listStudent[i].Id {
+			fmt.Printf("%v", listStudent[i])
+			student = listStudent[i]
+			fmt.Println("---- Estudiante Encontrado ----")
+			return true, student
+		}
+	}
+
+	fmt.Println("---- Estudiante No Encontrado ---")
+	return false, student
+}
+
+func (db *MemoryDB) UpdateStudent(student Student, id int) bool {
+	for i := range len(listStudent) {
+		if id == listStudent[i].Id {
+			fmt.Printf("%v", listStudent[i])
+			listStudent[i] = student
+			fmt.Println("---- Estudiante Actualizado ----")
+			return true
+		}
+	}
+
+	fmt.Println("---- Estudiante No Encontrado ---")
+	return false
+}
+
+func (db *MemoryDB) DeleteStudent(student Student) bool {
+	for i := range len(listStudent) {
+		if student.Id == listStudent[i].Id {
+			listStudent = append(listStudent[:i], listStudent...)
+			fmt.Println("---- Estudiante eliminado ----")
+			return true
+		}
+	}
+
+	return false
 }

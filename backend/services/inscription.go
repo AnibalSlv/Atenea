@@ -46,3 +46,8 @@ func (u *UserService) AddStudent(student database.Student) (bool, error) {
 	u.db.AddStudent(student)
 	return true, nil
 }
+
+func (u *UserService) UpdateStudent(student database.Student) (bool, error) {
+
+	return true, nil
+}
