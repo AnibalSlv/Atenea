@@ -1,0 +1,1187 @@
+/**
+ * ====================================================================
+ * SISTEMA ADMINISTRATIVO ATENEA — MÓDULO DE RETIROS (DISEÑO PULIDO Y RESPONSIVO)
+ * U.E.M. Gregorio Romero
+ * ====================================================================
+ */
+
+.retiros-modulo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 0 1.5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: aparecerSuave 0.25s ease-out;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ─── Encabezado Principal y Píldoras de Navegación ─── */
+.retiros-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.retiros-header__info h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0 0 0.2rem 0;
+    letter-spacing: -0.02em;
+}
+
+.retiros-header__info p {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    margin: 0;
+}
+
+/* Switcher de Pestañas Estilo Píldora */
+.retiros-nav-pills {
+    display: flex;
+    background-color: var(--color-blanco);
+    padding: 4px;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    box-shadow: 0 2px 8px rgba(50, 66, 148, 0.04);
+}
+
+.retiros-pill-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radio-pildora);
+    border: none;
+    background: transparent;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.retiros-pill-btn:hover {
+    color: var(--color-sidebar);
+}
+
+.retiros-pill-btn--activo {
+    background-color: var(--color-sidebar);
+    color: var(--color-blanco) !important;
+    box-shadow: 0 2px 10px rgba(65, 84, 179, 0.25);
+}
+
+.retiros-pill-count {
+    background-color: rgba(255, 255, 255, 0.25);
+    padding: 2px 7px;
+    border-radius: var(--radio-pildora);
+    font-size: 0.72rem;
+}
+
+.retiros-pill-btn:not(.retiros-pill-btn--activo) .retiros-pill-count {
+    background-color: var(--color-fondo);
+    color: var(--color-texto-secundario);
+}
+
+/* ─── Alertas / Toasts Limpios ─── */
+.alerta-notif {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: aparecerSuave 0.2s ease;
+}
+
+.alerta-notif--exito {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.alerta-notif--aviso {
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+}
+
+.alerta-notif--error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.alerta-notif__btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0 4px;
+}
+
+.alerta-notif__btn:hover {
+    opacity: 1;
+}
+
+/* ─── Tarjeta Principal Limpia ─── */
+.card-limpia {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.5rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid #eef2f6;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* ─── Barra de Búsqueda y Filtros por Categorías (Ultra Responsiva) ─── */
+.filtros-categoria-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.buscador-pill-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.buscador-pill-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-texto-secundario);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+
+.buscador-pill-input {
+    width: 100%;
+    padding: 0.72rem 1.1rem 0.72rem 2.8rem;
+    border-radius: var(--radio-pildora);
+    border: 1.5px solid #e2e8f0;
+    background-color: var(--color-blanco);
+    font-size: 0.88rem;
+    color: var(--color-texto-principal);
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.buscador-pill-input:focus {
+    border-color: var(--color-sidebar);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.12);
+}
+
+/* Fila de Controles de Categoría (Grado, Género y Conteo) */
+.filtros-controles-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.filtros-grupos-left {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.filtro-item-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.filtro-label-inline {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    white-space: nowrap;
+}
+
+.filtro-select-limpio {
+    padding: 0.42rem 0.9rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radio-pildora);
+    background-color: var(--color-blanco);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 180px;
+}
+
+.filtro-select-limpio:focus {
+    border-color: var(--color-sidebar);
+}
+
+/* Switcher Píldoras de Género (Niñas / Varones) */
+.genero-pills-container {
+    display: inline-flex;
+    background-color: var(--color-blanco);
+    padding: 3px;
+    border-radius: var(--radio-pildora);
+    border: 1.5px solid #e2e8f0;
+}
+
+.genero-pill-btn {
+    border: none;
+    background: transparent;
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+.genero-pill-btn:hover {
+    color: var(--color-texto-principal);
+}
+
+.genero-pill-btn--todos-activo {
+    background-color: #334155;
+    color: white !important;
+}
+
+.genero-pill-btn--varon-activo {
+    background-color: var(--color-varon);
+    color: white !important;
+    box-shadow: 0 2px 6px rgba(30, 64, 175, 0.25);
+}
+
+.genero-pill-btn--hembra-activo {
+    background-color: var(--color-hembra);
+    color: white !important;
+    box-shadow: 0 2px 6px rgba(157, 23, 77, 0.25);
+}
+
+/* Píldoras de Turno Activas (Mismo color institucional tanto para Mañana como para Tarde) */
+.turno-pill-btn--activo,
+.turno-pill-btn--manana-activo,
+.turno-pill-btn--tarde-activo {
+    background-color: var(--color-sidebar);
+    color: white !important;
+    box-shadow: 0 2px 6px rgba(65, 84, 179, 0.25);
+}
+
+/* Barra inferior del filtro: Contador y Botón Limpiar */
+.filtros-estado-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 0.4rem;
+    border-top: 1px dashed #e2e8f0;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.conteo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    background-color: var(--color-blanco);
+    border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.8rem;
+    border-radius: var(--radio-pildora);
+}
+
+.conteo-badge strong {
+    color: var(--color-sidebar);
+}
+
+/* Botón de Restablecer Filtros Rediseñado (Píldora Elegante) */
+.btn-restablecer-filtros {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--color-blanco);
+    border: 1px solid #e2e8f0;
+    color: var(--color-texto-secundario);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radio-pildora);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-restablecer-filtros:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: var(--color-rojo);
+}
+
+/* ─── Cuadrícula de Estudiantes Inscritos (Ultra Adaptable) ─── */
+.estudiantes-grid-filtrados {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.9rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.estudiante-card-item {
+    background-color: var(--color-blanco);
+    border: 1.5px solid #eef2f6;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(50, 66, 148, 0.03);
+    box-sizing: border-box;
+}
+
+.estudiante-card-item:hover {
+    border-color: var(--color-sidebar);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(65, 84, 179, 0.1);
+}
+
+.estudiante-card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.avatar-genero {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar-genero--varon {
+    background-color: #dbeafe;
+    color: var(--color-varon);
+    border: 1.5px solid #bfdbfe;
+}
+
+.avatar-genero--hembra {
+    background-color: #fce7f3;
+    color: var(--color-hembra);
+    border: 1.5px solid #fbcfe8;
+}
+
+.estudiante-card-nombres {
+    overflow: hidden;
+}
+
+.estudiante-card-nombres h4 {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.estudiante-card-nombres p {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: var(--color-texto-secundario);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.estudiante-card-pills {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.badge-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radio-pildora);
+    background-color: #f1f5f9;
+    color: var(--color-texto-secundario);
+    white-space: nowrap;
+}
+
+.badge-tag--grado {
+    background-color: #e0e7ff;
+    color: var(--color-sidebar);
+}
+
+.badge-tag--expediente {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-tag--varon {
+    background-color: #eff6ff;
+    color: var(--color-varon);
+    border: 1px solid #bfdbfe;
+}
+
+.badge-tag--hembra {
+    background-color: #fff1f2;
+    color: var(--color-hembra);
+    border: 1px solid #fbcfe8;
+}
+
+/* Botón ancho completo que NUNCA se corta */
+.btn-seleccionar-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    color: var(--color-sidebar);
+    padding: 0.55rem 0.8rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.estudiante-card-item:hover .btn-seleccionar-card {
+    background-color: var(--color-sidebar);
+    color: white;
+    border-color: var(--color-sidebar);
+}
+
+/* ─── Tarjeta del Estudiante Seleccionado ─── */
+.estudiante-seleccionado-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0.9rem 1.2rem;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.estudiante-seleccionado-info {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.estudiante-seleccionado-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(65, 84, 179, 0.25);
+    flex-shrink: 0;
+}
+
+.estudiante-seleccionado-avatar--varon {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+}
+
+.estudiante-seleccionado-avatar--hembra {
+    background: linear-gradient(135deg, #db2777 0%, #9d174d 100%);
+}
+
+.estudiante-seleccionado-textos h3 {
+    margin: 0 0 3px 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+}
+
+.estudiante-meta-tags {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.btn-cambiar-estudiante {
+    background: none;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-cambiar-estudiante:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: var(--color-rojo);
+}
+
+/* ─── Hero Card: La Carta de Aceptación (El Protagonista) ─── */
+.hero-carta-aceptacion {
+    background: linear-gradient(135deg, #f0f4ff 0%, #f8fafc 100%);
+    border: 1.5px solid #dbeafe;
+    border-radius: var(--radio-tarjeta);
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-sizing: border-box;
+}
+
+.hero-carta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.hero-carta-header__titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    margin: 0;
+}
+
+.badge-obligatorio {
+    background-color: #e0e7ff;
+    color: var(--color-sidebar);
+    border: 1px solid #c7d2fe;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--radio-pildora);
+    text-transform: uppercase;
+}
+
+.hero-carta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .hero-carta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dropzone Minimalista */
+.carta-dropzone-minimal {
+    border: 2px dashed #cbd5e1;
+    background-color: var(--color-blanco);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.carta-dropzone-minimal:hover {
+    border-color: var(--color-sidebar);
+    box-shadow: 0 4px 12px rgba(65, 84, 179, 0.08);
+}
+
+.carta-dropzone-minimal span {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.carta-dropzone-minimal small {
+    font-size: 0.72rem;
+    color: var(--color-texto-secundario);
+    display: block;
+    margin-top: 2px;
+}
+
+/* Archivo Adjunto Elegante (Verde Suave) */
+.archivo-adjunto-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-blanco);
+    border: 1.5px solid #86efac;
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 2px 8px rgba(84, 141, 54, 0.08);
+}
+
+.archivo-adjunto-info {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.archivo-adjunto-nombre {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    margin: 0;
+}
+
+.archivo-adjunto-sub {
+    font-size: 0.72rem;
+    color: var(--color-verde);
+    margin: 2px 0 0 0;
+    font-weight: 600;
+}
+
+.btn-quitar-adjunto {
+    background: none;
+    border: none;
+    color: var(--color-rojo);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 3px;
+}
+
+.btn-quitar-adjunto:hover {
+    text-decoration: underline;
+}
+
+.check-fisico-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    margin-top: 0.4rem;
+}
+
+.check-fisico-box input {
+    cursor: pointer;
+    accent-color: var(--color-sidebar);
+}
+
+/* ─── Campos Secundarios (Form Grid Limpio) ─── */
+.form-secundario-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-secundario-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.campo-grupo-limpio {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.campo-label-limpio {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.campo-input-limpio,
+.campo-select-limpio {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radio-pequeno);
+    background-color: #f8fafc;
+    font-size: 0.85rem;
+    color: var(--color-texto-principal);
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.campo-input-limpio:focus,
+.campo-select-limpio:focus {
+    background-color: var(--color-blanco);
+    border-color: var(--color-sidebar);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.1);
+}
+
+.nota-sutil {
+    font-size: 0.74rem;
+    color: var(--color-texto-secundario);
+    margin: 2px 0 0 0;
+}
+
+/* ─── Sección de Días de Retención Personalizable ─── */
+.retencion-opciones-box {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.retencion-pills-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.retencion-pill-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radio-pildora);
+    border: 1.5px solid #e2e8f0;
+    background-color: var(--color-blanco);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.retencion-pill-btn:hover {
+    border-color: var(--color-sidebar);
+    color: var(--color-sidebar);
+}
+
+.retencion-pill-btn--activo {
+    background-color: var(--color-sidebar-dark);
+    border-color: var(--color-sidebar-dark);
+    color: white !important;
+}
+
+.input-dias-personalizado-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 220px;
+}
+
+.input-dias-personalizado {
+    width: 80px;
+    padding: 0.4rem 0.6rem;
+    border: 1.5px solid var(--color-sidebar);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    text-align: center;
+    outline: none;
+}
+
+/* ─── Barra de Acción Final ─── */
+.form-footer-accion {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.btn-secundario-limpio {
+    background: none;
+    border: 1px solid #e2e8f0;
+    color: var(--color-texto-secundario);
+    padding: 0.65rem 1.2rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secundario-limpio:hover {
+    background-color: #f8fafc;
+    color: var(--color-texto-principal);
+}
+
+.btn-primario-retiro {
+    background-color: var(--color-sidebar);
+    color: white;
+    border: none;
+    padding: 0.72rem 1.6rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(65, 84, 179, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-primario-retiro:hover:not(:disabled) {
+    background-color: var(--color-sidebar-dark);
+    transform: translateY(-1px);
+}
+
+.btn-primario-retiro:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ─── Pestaña de Retirados (Tarjetas Dashboard) ─── */
+.retirados-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.btn-purga-rapida {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: var(--color-texto-secundario);
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+}
+
+.btn-purga-rapida:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: var(--color-rojo);
+}
+
+.retirados-grid-responsiva {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.card-retirado-item {
+    background-color: var(--color-blanco);
+    border: 1px solid #eef2f6;
+    border-radius: var(--radio-tarjeta);
+    padding: 1.2rem;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.card-retirado-item:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.card-retirado-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.card-retirado-head h3 {
+    margin: 0;
+    font-size: 0.94rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+}
+
+.card-retirado-head p {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: var(--color-texto-secundario);
+}
+
+.badge-carta-destino {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    color: #166534;
+}
+
+.retencion-mini-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.retencion-mini-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.retencion-progress-track {
+    width: 100%;
+    height: 5px;
+    background-color: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.retencion-progress-fill {
+    height: 100%;
+    background-color: var(--color-sidebar);
+    border-radius: 999px;
+}
+
+.retencion-progress-fill--vencido {
+    background-color: var(--color-rojo);
+}
+
+.card-retirado-acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.7rem;
+    margin-top: auto;
+}
+
+.btn-card-accion {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: all 0.15s ease;
+}
+
+.btn-card-accion:hover {
+    background-color: #ffffff;
+    color: var(--color-sidebar);
+    border-color: var(--color-sidebar);
+}
+
+.btn-card-accion--peligro:hover {
+    background-color: #fee2e2;
+    color: var(--color-rojo);
+    border-color: #fca5a5;
+}
+
+/* ─── Modal Minimalista ─── */
+.modal-backdrop-blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: aparecerSuave 0.2s ease-out;
+}
+
+.modal-card-limpio {
+    background-color: var(--color-blanco);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    padding: 1.6rem;
+    box-shadow: 0 20px 40px rgba(50, 66, 148, 0.14);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-sizing: border-box;
+}
+
+.modal-resumen-filas {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+}
+
+.modal-resumen-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.modal-resumen-item span {
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+}
+
+.modal-resumen-item strong {
+    color: var(--color-texto-principal);
+    text-align: right;
+}
+
+/* ─── Responsividad Extrema para Ventanas Estrechas / Reducidas a la Mitad ─── */
+@media (max-width: 1100px) {
+    .retiros-modulo {
+        padding: 0 0.8rem 1.5rem;
+    }
+
+    .card-limpia {
+        padding: 1.1rem;
+    }
+
+    .filtro-select-limpio {
+        max-width: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .retiros-modulo {
+        padding: 0 0.4rem 1.2rem;
+        gap: 0.9rem;
+    }
+
+    .retiros-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .retiros-nav-pills {
+        width: 100%;
+    }
+
+    .retiros-pill-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .filtros-categoria-wrapper {
+        padding: 0.8rem;
+    }
+
+    .filtros-controles-fila {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtros-grupos-left {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtro-item-inline {
+        justify-content: space-between;
+    }
+
+    .filtro-select-limpio {
+        max-width: 100%;
+        flex: 1;
+    }
+
+    .genero-pills-container {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .genero-pill-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .filtros-estado-barra {
+        justify-content: space-between;
+    }
+
+    .estudiantes-grid-filtrados {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-carta-aceptacion {
+        padding: 1rem;
+    }
+
+    .hero-carta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-secundario-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-card-limpio {
+        padding: 1.2rem;
+    }
+}
