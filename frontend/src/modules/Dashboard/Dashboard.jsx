@@ -29,13 +29,14 @@ function Dashboard() {
     const avisosTareas = [];
 
     // Cálculo dinámico de métricas de matrícula
-    const totalAlumnos = alumnos.length;
+    const alumnosActivos = alumnos.filter((a) => !a.estado || a.estado === 'Activo');
+    const totalAlumnos = alumnosActivos.length;
     const capacidadTotalPlantel = 540; // Capacidad estimada (9 grados x 60 alumnos)
     const ocupacionPorcentaje = totalAlumnos > 0 ? Math.round((totalAlumnos / capacidadTotalPlantel) * 100) : 0;
 
     // Métricas por turno
-    const alumnosManana = alumnos.filter((a) => a.turno === TURNOS.MANANA);
-    const alumnosTarde = alumnos.filter((a) => a.turno === TURNOS.TARDE);
+    const alumnosManana = alumnosActivos.filter((a) => a.turno === TURNOS.MANANA);
+    const alumnosTarde = alumnosActivos.filter((a) => a.turno === TURNOS.TARDE);
 
     return (
         <div className="dashboard-layout">

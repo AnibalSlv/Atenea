@@ -2,6 +2,7 @@ export const ALUMNOS_INICIALES = [
     {
         id: 1,
         numeroCorrelativo: '#001',
+        genero: 'Varón',
         cedulaEscolar: 'V-13100111',
         nombres: 'Carlos Luis',
         apellidos: 'Pérez Gómez',
@@ -64,6 +65,7 @@ export const ALUMNOS_INICIALES = [
     {
         id: 2,
         numeroCorrelativo: '#002',
+        genero: 'Hembra',
         cedulaEscolar: 'V-13100222',
         nombres: 'Mariana Isabel',
         apellidos: 'Rojas Silva',
@@ -126,6 +128,7 @@ export const ALUMNOS_INICIALES = [
     {
         id: 3,
         numeroCorrelativo: '#003',
+        genero: 'Varón',
         cedulaEscolar: 'V-13100333',
         nombres: 'José Alejandro',
         apellidos: 'Torres Hernández',

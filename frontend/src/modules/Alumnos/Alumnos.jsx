@@ -171,6 +171,11 @@ function Alumnos() {
                                         <div className="alumno-card-tags">
                                             <span className="tag-grado">{alumno.gradoNivel} "{alumno.seccionLiteral}"</span>
                                             <span className="tag-turno">{alumno.turno}</span>
+                                            {alumno.estado === 'Retirado' && (
+                                                <span style={{ backgroundColor: 'var(--color-rojo-fondo)', color: 'var(--color-rojo)', border: '1px solid rgba(230, 57, 70, 0.3)', padding: '3px 8px', borderRadius: 'var(--radio-pequeno)', fontSize: '0.75rem', fontWeight: 800 }}>
+                                                    Retirado
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
