@@ -231,7 +231,7 @@
 /* ─── Grid de Checkboxes / Condiciones Sanitarias ─── */
 .grid-condiciones-sanitarias {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     gap: 1rem;
     background-color: var(--color-superficie);
     padding: 1.4rem;
@@ -243,6 +243,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     background-color: var(--color-blanco);
     padding: 0.75rem 1rem;
     border-radius: 10px;
@@ -258,7 +259,7 @@
 /* ─── Barra de Filtros de Selección ─── */
 .alumnos-filtros-bar {
     display: grid;
-    grid-template-columns: 200px 220px 180px 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     background-color: var(--color-blanco);
     padding: 18px 24px;

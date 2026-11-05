@@ -27,8 +27,8 @@ function Inscribir() {
         lugarNacimiento: '',
         fechaNacimiento: '',
         edad: '',
-        nacionalidad: 'Venezolana',
-        lateralidad: 'Derecho',
+        nacionalidad: '',
+        lateralidad: '',
         institucionOrigen: '',
         medicamentoFiebre: '',
         alergias: '',
@@ -62,20 +62,20 @@ function Inscribir() {
         cantidadPersonasVivienda: '',
         familiasEnVivienda: '',
         numeroHermanos: '',
-        servicioAgua: true,
-        servicioDesague: true,
-        servicioElectricidad: true,
-        servicioTelefonia: true,
-        servicioInternet: false,
-        banosBuenEstado: true,
-        tienePoceta: true,
-        tieneDucha: true,
-        tieneLavamanos: true,
-        servicioAseoFrecuente: true,
-        aguaPotableContinua: 'A veces',
-        participaComunidad: true,
-        recibeGasFrecuente: true,
-        colaboraEscuela: true,
+        servicioAgua: null,
+        servicioDesague: null,
+        servicioElectricidad: null,
+        servicioTelefonia: null,
+        servicioInternet: null,
+        banosBuenEstado: null,
+        tienePoceta: null,
+        tieneDucha: null,
+        tieneLavamanos: null,
+        servicioAseoFrecuente: null,
+        aguaPotableContinua: '',
+        participaComunidad: null,
+        recibeGasFrecuente: null,
+        colaboraEscuela: null,
     });
 
     const [mensajeExito, setMensajeExito] = useState('');
@@ -449,6 +449,7 @@ function Inscribir() {
                                         <input
                                             type="text"
                                             className="campo-input"
+                                            placeholder="Venezolana"
                                             value={datosForm.nacionalidad}
                                             onChange={(e) => manejarCambio('nacionalidad', e.target.value)}
                                         />
@@ -474,7 +475,7 @@ function Inscribir() {
                                         </div>
                                     </div>
 
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 2' }}>
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Institución de donde Proviene</label>
                                         <input
                                             type="text"
@@ -517,7 +518,7 @@ function Inscribir() {
                                     <h2 className="seccion-titulo-texto">Diagnóstico o Necesidades Especiales</h2>
                                 </div>
                                 <div className="form-grid-4">
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 2' }}>
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Diagnóstico Médico (si aplica)</label>
                                         <input
                                             type="text"
@@ -550,7 +551,7 @@ function Inscribir() {
                                         />
                                     </div>
 
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 4' }}>
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Equipo de Apoyo al que Asiste</label>
                                         <input
                                             type="text"
@@ -637,7 +638,7 @@ function Inscribir() {
                                         />
                                     </div>
 
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 2' }}>
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Dirección de Residencia (Habitación)</label>
                                         <input
                                             type="text"
@@ -691,7 +692,7 @@ function Inscribir() {
                                         />
                                     </div>
 
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 3' }}>
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Dirección del Representante</label>
                                         <input
                                             type="text"
@@ -716,9 +717,10 @@ function Inscribir() {
                                         <label className="campo-label">Condición de la Casa</label>
                                         <select
                                             className="campo-select"
-                                            value={datosForm.tipoVivienda}
+                                            value={datosForm.tipoVivienda || ''}
                                             onChange={(e) => manejarCambio('tipoVivienda', e.target.value)}
                                         >
+                                            <option value="" disabled>Seleccione una opción...</option>
                                             <option value="Propia">Propia</option>
                                             <option value="Alquilada">Alquilada</option>
                                             <option value="Otros">Otros</option>
@@ -777,16 +779,17 @@ function Inscribir() {
                                         <div key={s.id} className="condicion-item">
                                             <span className="condicion-texto">{s.label}</span>
                                             <div className="pills-sino-container" style={{ width: '130px' }}>
+                                                {/* CORRECCIÓN: Ahora es estrictamente === true o === false */}
                                                 <button
                                                     type="button"
-                                                    className={`pill-sino-btn ${datosForm[s.id] ? 'pill-sino-btn--si-activo' : ''}`}
+                                                    className={`pill-sino-btn ${datosForm[s.id] === true ? 'pill-sino-btn--si-activo' : ''}`}
                                                     onClick={() => manejarCambio(s.id, true)}
                                                 >
                                                     SÍ
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={`pill-sino-btn ${!datosForm[s.id] ? 'pill-sino-btn--no-activo' : ''}`}
+                                                    className={`pill-sino-btn ${datosForm[s.id] === false ? 'pill-sino-btn--no-activo' : ''}`}
                                                     onClick={() => manejarCambio(s.id, false)}
                                                 >
                                                     NO

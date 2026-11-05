@@ -498,7 +498,8 @@ function Alumnos() {
                                 </div>
 
                                 <div className="form-grid-4">
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 2' }}>
+                                    {/* CORRECCIÓN AQUÍ: 1 / -1 hace que tome el ancho completo de forma segura */}
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Diagnóstico Médico (si aplica)</label>
                                         <input
                                             type="text"
@@ -531,7 +532,8 @@ function Alumnos() {
                                         />
                                     </div>
 
-                                    <div className="campo-grupo" style={{ gridColumn: 'span 4' }}>
+                                    {/* CORRECCIÓN AQUÍ: 1 / -1 hace que tome el ancho completo de forma segura */}
+                                    <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                         <label className="campo-label">Equipo de Apoyo al que Asiste</label>
                                         <input
                                             type="text"
@@ -777,7 +779,8 @@ function Alumnos() {
                                     </div>
 
                                     <div className="form-grid-4">
-                                        <div className="campo-grupo" style={{ gridColumn: 'span 2' }}>
+                                        {/* CORRECCIÓN AQUÍ: 1 / -1 para ancho completo seguro */}
+                                        <div className="campo-grupo" style={{ gridColumn: '1 / -1' }}>
                                             <label className="campo-label">Estado Conyugal</label>
                                             <div className="pills-sino-container">
                                                 {['Soltero', 'Casado', 'Concubino', 'Divorciados'].map((opc) => (
@@ -976,7 +979,8 @@ function Alumnos() {
                                         </div>
                                     ))}
 
-                                    <div className="condicion-item" style={{ gridColumn: 'span 2' }}>
+                                    {/* CORRECCIÓN AQUÍ TAMBIÉN: 1 / -1 */}
+                                    <div className="condicion-item" style={{ gridColumn: '1 / -1' }}>
                                         <span className="condicion-texto">Tiene servicio continuo de agua potable</span>
                                         <div className="pills-sino-container" style={{ width: '220px' }}>
                                             {['SI', 'NO', 'A veces'].map((opc) => (

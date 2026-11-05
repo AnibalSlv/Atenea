@@ -2,6 +2,11 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 2rem 2.5rem;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .inscribir-header {
@@ -42,7 +47,7 @@
 
 .inscribir-paso1-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
     align-items: center;
 }
@@ -149,23 +154,6 @@
     box-shadow: var(--sombra-card);
     display: flex;
     gap: 24px;
-}
-
-.foto-placeholder-box {
-    width: 130px;
-    height: 140px;
-    border: 2px dashed var(--color-borde);
-    border-radius: var(--radio-pequeno);
-    background-color: var(--color-superficie);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: var(--color-texto-mutado);
-    font-size: 0.85rem;
-    font-weight: 700;
-    flex-shrink: 0;
 }
 
 .datos-clave-header {
