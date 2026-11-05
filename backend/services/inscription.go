@@ -48,6 +48,9 @@ func (u *UserService) AddStudent(student database.Student) (bool, error) {
 }
 
 func (u *UserService) UpdateStudent(student database.Student) (bool, error) {
-
+	result := u.db.UpdateStudent(student, student.Id)
+	if !result {
+		return false, fmt.Errorf("Estudiante no encontrado")
+	}
 	return true, nil
 }

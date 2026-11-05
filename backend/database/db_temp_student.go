@@ -133,7 +133,6 @@ func (db *MemoryDB) GetStudentId(id int) (bool, Student) {
 func (db *MemoryDB) UpdateStudent(student Student, id int) bool {
 	for i := range len(listStudent) {
 		if id == listStudent[i].Id {
-			fmt.Printf("%v", listStudent[i])
 			listStudent[i] = student
 			fmt.Println("---- Estudiante Actualizado ----")
 			return true
