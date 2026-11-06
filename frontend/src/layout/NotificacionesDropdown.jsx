@@ -9,7 +9,7 @@ import {
 } from '../components/Iconos';
 import './NotificacionesDropdown.css';
 
-function NotificacionesDropdown() {
+function NotificacionesDropdown({ translucido = false }) {
     const {
         notificaciones,
         noLeidasCount,
@@ -67,7 +67,7 @@ function NotificacionesDropdown() {
     };
 
     return (
-        <div className="notificaciones-wrapper" ref={wrapperRef}>
+        <div className={`notificaciones-wrapper ${translucido ? 'notificaciones-wrapper--translucido' : ''}`} ref={wrapperRef}>
             <button
                 className={`notificaciones-btn ${abierto ? 'notificaciones-btn--abierto' : ''}`}
                 onClick={() => setAbierto((prev) => !prev)}

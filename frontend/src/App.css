@@ -22,12 +22,17 @@
     box-sizing: border-box;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     background-color: var(--color-fondo);
     color: var(--color-texto-principal);
     overflow-x: hidden;
+    scrollbar-gutter: stable;
 }
 
 /* Animación de entrada suave */

@@ -1,15 +1,35 @@
 import { ALUMNOS_INICIALES } from './alumnosIniciales';
 
-const CLAVE_STORAGE = 'atenea_alumnos_db';
+const CLAVE_STORAGE = 'atenea_alumnos_db_v2';
 
 // Obtener todos los alumnos desde localStorage o inicializar con los de prueba
 export const getAlumnos = () => {
     const datosGuardados = localStorage.getItem(CLAVE_STORAGE);
-    if (!datosGuardados) {
-        localStorage.setItem(CLAVE_STORAGE, JSON.stringify(ALUMNOS_INICIALES));
-        return ALUMNOS_INICIALES;
+    let lista = datosGuardados ? JSON.parse(datosGuardados) : ALUMNOS_INICIALES;
+
+    // Garantizar que todos los alumnos tengan el campo genero para estadísticas V/H/T
+    let actualizado = false;
+    lista = lista.map((alumno) => {
+        if (!alumno.genero) {
+            actualizado = true;
+            const nombre = (alumno.nombres || '').toLowerCase();
+            const esHembra =
+                nombre.includes('mariana') ||
+                nombre.includes('maria') ||
+                nombre.includes('carmen') ||
+                nombre.includes('sofía') ||
+                nombre.includes('camila') ||
+                nombre.includes('valeria');
+            return { ...alumno, genero: esHembra ? 'Hembra' : 'Varón' };
+        }
+        return alumno;
+    });
+
+    if (!datosGuardados || actualizado) {
+        localStorage.setItem(CLAVE_STORAGE, JSON.stringify(lista));
     }
-    return JSON.parse(datosGuardados);
+
+    return lista;
 };
 
 // Guardar un nuevo alumno (Nuevo Ingreso)
