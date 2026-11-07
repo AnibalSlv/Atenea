@@ -69,7 +69,9 @@ function Retirar() {
 
     // Campos secundarios
     const [motivo, setMotivo] = useState('Traslado a otra Institución');
+    const [otroMotivoTexto, setOtroMotivoTexto] = useState('');
     const [fechaEfectiva, setFechaEfectiva] = useState(hoyStr);
+    const [errores, setErrores] = useState({});
 
     // Retención y Purga de Datos (Con opción de días personalizados)
     const [diasSeleccionados, setDiasSeleccionados] = useState(configRetiro.diasRetencionDefault || 30);
@@ -99,7 +101,7 @@ function Retirar() {
         if (resPurga.totalPurgados > 0) {
             setAlerta({
                 tipo: 'aviso',
-                mensaje: `Se depuraron automáticamente ${resPurga.totalPurgados} expediente(s) con período de retención vencido.`,
+                mensaje: `Se eliminaron automáticamente ${resPurga.totalPurgados} expediente(s) con período de retención vencido.`,
             });
         }
         refrescar();
@@ -128,7 +130,6 @@ function Retirar() {
             !q ||
             (alumno.nombres && alumno.nombres.toLowerCase().includes(q)) ||
             (alumno.apellidos && alumno.apellidos.toLowerCase().includes(q)) ||
-            (alumno.numeroCorrelativo && alumno.numeroCorrelativo.toLowerCase().includes(q)) ||
             (alumno.nombreRepresentante && alumno.nombreRepresentante.toLowerCase().includes(q));
 
         return cumpleGrado && cumpleGenero && cumpleTurno && cumpleTexto;
@@ -144,8 +145,8 @@ function Retirar() {
         setFiltroTurno('TODOS');
     };
 
-    // Calcular fecha exacta de depuración
-    const calcularFechaDepuracion = (dias) => {
+    // Calcular fecha exacta de eliminación
+    const calcularFechaEliminacion = (dias) => {
         const fecha = new Date();
         fecha.setDate(fecha.getDate() + (Number(dias) || 30));
         return fecha.toLocaleDateString('es-VE', {
@@ -155,6 +156,52 @@ function Retirar() {
         });
     };
 
+    // Manejar cambio en Escuela Receptora con validación reactiva
+    const handleCambioInstitucion = (val) => {
+        setInstitucionDestino(val);
+        if (!val.trim()) {
+            setErrores((prev) => ({ ...prev, institucionDestino: 'Este campo es obligatorio. Ingrese el plantel receptor.' }));
+        } else {
+            setErrores((prev) => {
+                const copia = { ...prev };
+                delete copia.institucionDestino;
+                return copia;
+            });
+        }
+    };
+
+    // Manejar cambio de Motivo
+    const handleCambioMotivo = (nuevoMotivo) => {
+        setMotivo(nuevoMotivo);
+        if (nuevoMotivo !== 'Otro Motivo Particular') {
+            setOtroMotivoTexto('');
+            setErrores((prev) => {
+                const copia = { ...prev };
+                delete copia.otroMotivoTexto;
+                return copia;
+            });
+        }
+    };
+
+    // Manejar cambio en Otro Motivo Particular (sin números ni caracteres extraños)
+    const handleCambioOtroMotivo = (val) => {
+        // Bloquear dígitos de manera inmediata
+        const sinNumeros = val.replace(/[0-9]/g, '');
+        setOtroMotivoTexto(sinNumeros);
+
+        if (!sinNumeros.trim()) {
+            setErrores((prev) => ({ ...prev, otroMotivoTexto: 'Este campo es obligatorio al seleccionar otro motivo.' }));
+        } else if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,.-]/.test(sinNumeros)) {
+            setErrores((prev) => ({ ...prev, otroMotivoTexto: 'Solo letras, sin números ni símbolos.' }));
+        } else {
+            setErrores((prev) => {
+                const copia = { ...prev };
+                delete copia.otroMotivoTexto;
+                return copia;
+            });
+        }
+    };
+
     // Manejar adjunto de archivo de la carta
     const handleArchivo = (e) => {
         const file = e.target.files?.[0];
@@ -162,6 +209,23 @@ function Retirar() {
             setArchivoCarta({
                 nombre: file.name,
                 tamano: `${(file.size / 1024).toFixed(1)} KB`,
+            });
+            setErrores((prev) => {
+                const copia = { ...prev };
+                delete copia.carta;
+                return copia;
+            });
+        }
+    };
+
+    // Manejar verificación física
+    const handleCheckFisico = (checked) => {
+        setCartaFisicaVerificada(checked);
+        if (checked || archivoCarta) {
+            setErrores((prev) => {
+                const copia = { ...prev };
+                delete copia.carta;
+                return copia;
             });
         }
     };
@@ -174,22 +238,38 @@ function Retirar() {
             return;
         }
 
+        const nuevosErrores = {};
+
         if (!institucionDestino.trim()) {
+            nuevosErrores.institucionDestino = 'Este campo es obligatorio. Ingrese el plantel receptor.';
+        }
+
+        if (!archivoCarta && !cartaFisicaVerificada) {
+            nuevosErrores.carta = 'Requisito obligatorio: Adjunte la Carta de Aceptación o certifique su verificación física.';
+        }
+
+        if (motivo === 'Otro Motivo Particular') {
+            if (!otroMotivoTexto.trim()) {
+                nuevosErrores.otroMotivoTexto = 'Este campo es obligatorio al seleccionar otro motivo.';
+            } else if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,.-]/.test(otroMotivoTexto)) {
+                nuevosErrores.otroMotivoTexto = 'Solo letras, sin números ni símbolos.';
+            }
+        }
+
+        if (esPersonalizado && (!diasCustomInput || Number(diasCustomInput) < 1 || Number(diasCustomInput) > 365)) {
+            nuevosErrores.dias = 'Ingrese una cantidad válida de días (entre 1 y 365).';
+        }
+
+        if (Object.keys(nuevosErrores).length > 0) {
+            setErrores(nuevosErrores);
             setAlerta({
                 tipo: 'error',
-                mensaje: 'La institución educativa de destino es obligatoria.',
+                mensaje: 'Por favor complete correctamente los campos obligatorios para continuar.',
             });
             return;
         }
 
-        if (!archivoCarta && !numeroOficioCarta.trim() && !cartaFisicaVerificada) {
-            setAlerta({
-                tipo: 'error',
-                mensaje: 'Requisito Indispensable: Debes adjuntar la Carta de Aceptación o certificar su verificación física.',
-            });
-            return;
-        }
-
+        setErrores({});
         setModalConfirmacion(true);
     };
 
@@ -201,8 +281,9 @@ function Retirar() {
 
         try {
             const diasFinales = diasRetencionEfectivos;
+            const motivoFinal = motivo === 'Otro Motivo Particular' ? otroMotivoTexto.trim() : motivo;
             const datosRetiro = {
-                motivo,
+                motivo: motivoFinal,
                 fechaEfectiva,
                 institucionDestino: institucionDestino.trim(),
                 numeroOficioCarta: numeroOficioCarta.trim(),
@@ -219,7 +300,7 @@ function Retirar() {
 
             setAlerta({
                 tipo: 'exito',
-                mensaje: `Retiro procesado para ${alumnoRetirado.nombres} ${alumnoRetirado.apellidos}. Depuración programada en ${diasFinales} días.`,
+                mensaje: `Retiro procesado para ${alumnoRetirado.nombres} ${alumnoRetirado.apellidos}. Eliminación programada en ${diasFinales} días.`,
             });
 
             if (agregarNotificacion) {
@@ -238,6 +319,9 @@ function Retirar() {
             setNumeroOficioCarta('');
             setArchivoCarta(null);
             setCartaFisicaVerificada(false);
+            setMotivo('Traslado a otra Institución');
+            setOtroMotivoTexto('');
+            setErrores({});
             setObservaciones('');
             setVistaActiva('retirados');
         } catch (err) {
@@ -273,17 +357,17 @@ function Retirar() {
         setModalPurga(null);
     };
 
-    // Purga de vencidos
+    // Eliminación de vencidos
     const handlePurgaVencidos = () => {
         const res = purgarAlumnosVencidos();
         refrescar();
         if (res.totalPurgados > 0) {
             setAlerta({
                 tipo: 'exito',
-                mensaje: `Depuración completada: ${res.totalPurgados} expediente(s) vencidos eliminados.`,
+                mensaje: `Eliminación completada: ${res.totalPurgados} expediente(s) vencidos eliminados.`,
             });
         } else {
-            setAlerta({ tipo: 'aviso', mensaje: 'No hay expedientes vencidos pendientes de depurar.' });
+            setAlerta({ tipo: 'aviso', mensaje: 'No hay expedientes vencidos pendientes por eliminar.' });
         }
     };
 
@@ -355,7 +439,7 @@ function Retirar() {
                                     <input
                                         type="text"
                                         className="buscador-pill-input"
-                                        placeholder="Buscar por nombre, apellido, expediente (#001)..."
+                                        placeholder="Buscar por nombre o apellido del estudiante..."
                                         value={busquedaTexto}
                                         onChange={(e) => setBusquedaTexto(e.target.value)}
                                     />
@@ -491,9 +575,6 @@ function Retirar() {
                                                 </div>
 
                                                 <div className="estudiante-card-pills">
-                                                    <span className="badge-tag badge-tag--expediente">
-                                                        Exp: {al.numeroCorrelativo || 'S/N'}
-                                                    </span>
                                                     <span className="badge-tag badge-tag--grado">
                                                         {al.gradoNivel} "{al.seccionLiteral}"
                                                     </span>
@@ -526,15 +607,6 @@ function Retirar() {
                                     <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-texto-secundario)', fontWeight: 600 }}>
                                         No hay estudiantes inscritos que coincidan con los filtros seleccionados.
                                     </p>
-                                    <button
-                                        type="button"
-                                        className="btn-restablecer-filtros"
-                                        style={{ marginTop: '0.6rem' }}
-                                        onClick={limpiarFiltros}
-                                    >
-                                        <IconoRestaurar size={13} />
-                                        <span>Restablecer Filtros</span>
-                                    </button>
                                 </div>
                             )}
                         </div>
@@ -557,9 +629,6 @@ function Retirar() {
                                         {alumnoSeleccionado.nombres} {alumnoSeleccionado.apellidos}
                                     </h3>
                                     <div className="estudiante-meta-tags">
-                                        <span className="badge-tag badge-tag--expediente">
-                                            Exp: {alumnoSeleccionado.numeroCorrelativo || '#S/C'}
-                                        </span>
                                         <span className="badge-tag badge-tag--grado">
                                             {alumnoSeleccionado.gradoNivel} "{alumnoSeleccionado.seccionLiteral}"
                                         </span>
@@ -606,30 +675,35 @@ function Retirar() {
                                     {/* Campo: Colegio Destino */}
                                     <div className="campo-grupo-limpio">
                                         <label className="campo-label-limpio">
-                                            Institución o Escuela Receptora *
+                                            Institución o Escuela Receptora <span className="asterisco-rojo">*</span>
                                         </label>
                                         <input
                                             type="text"
-                                            className="campo-input-limpio"
+                                            className={`campo-input-limpio ${errores.institucionDestino ? 'campo-input-limpio--error' : ''}`}
                                             placeholder="Ej: U.E.B. Nueva Esparta / Colegio San Martín"
                                             value={institucionDestino}
-                                            onChange={(e) => setInstitucionDestino(e.target.value)}
-                                            required
+                                            onChange={(e) => handleCambioInstitucion(e.target.value)}
                                             autoFocus
                                         />
-                                        <span className="nota-sutil">Indica el plantel que recibe al estudiante</span>
+                                        {errores.institucionDestino ? (
+                                            <span className="campo-mensaje-error">
+                                                ⚠ {errores.institucionDestino}
+                                            </span>
+                                        ) : (
+                                            <span className="nota-sutil">Indica el plantel que recibe al estudiante</span>
+                                        )}
                                     </div>
 
                                     {/* Campo: Subida de Archivo o Verificación */}
                                     <div className="campo-grupo-limpio">
                                         <label className="campo-label-limpio">
-                                            Documento de la Carta (PDF o Imagen) *
+                                            Documento de la Carta (PDF o Imagen) <span className="asterisco-rojo">*</span>
                                         </label>
 
                                         {!archivoCarta ? (
                                             <div>
-                                                <label className="carta-dropzone-minimal">
-                                                    <IconoArchivo size={22} style={{ color: 'var(--color-sidebar)' }} />
+                                                <label className={`carta-dropzone-minimal ${errores.carta ? 'carta-dropzone-minimal--error' : ''}`}>
+                                                    <IconoArchivo size={22} style={{ color: errores.carta ? '#ef4444' : 'var(--color-sidebar)' }} />
                                                     <div>
                                                         <span>Adjuntar Carta de Aceptación</span>
                                                         <small>Formatos: PDF, JPG, PNG (Hasta 5MB)</small>
@@ -641,12 +715,17 @@ function Retirar() {
                                                         onChange={handleArchivo}
                                                     />
                                                 </label>
+                                                {errores.carta && (
+                                                    <span className="campo-mensaje-error">
+                                                        ⚠ {errores.carta}
+                                                    </span>
+                                                )}
 
                                                 <label className="check-fisico-box">
                                                     <input
                                                         type="checkbox"
                                                         checked={cartaFisicaVerificada}
-                                                        onChange={(e) => setCartaFisicaVerificada(e.target.checked)}
+                                                        onChange={(e) => handleCheckFisico(e.target.checked)}
                                                     />
                                                     <span>Original verificado y archivado físicamente en Dirección</span>
                                                 </label>
@@ -665,7 +744,12 @@ function Retirar() {
                                                 <button
                                                     type="button"
                                                     className="btn-quitar-adjunto"
-                                                    onClick={() => setArchivoCarta(null)}
+                                                    onClick={() => {
+                                                        setArchivoCarta(null);
+                                                        if (!cartaFisicaVerificada) {
+                                                            setErrores((prev) => ({ ...prev, carta: 'Requisito obligatorio: Adjunte la Carta o certifique su archivo físico.' }));
+                                                        }
+                                                    }}
                                                 >
                                                     Quitar
                                                 </button>
@@ -682,7 +766,7 @@ function Retirar() {
                                     <select
                                         className="campo-select-limpio"
                                         value={motivo}
-                                        onChange={(e) => setMotivo(e.target.value)}
+                                        onChange={(e) => handleCambioMotivo(e.target.value)}
                                     >
                                         {MOTIVOS_RETIRO.map((m) => (
                                             <option key={m} value={m}>
@@ -702,12 +786,36 @@ function Retirar() {
                                         required
                                     />
                                 </div>
+
+                                {/* Campo condicional para especificar otro motivo (solo si se selecciona 'Otro Motivo Particular') */}
+                                {motivo === 'Otro Motivo Particular' && (
+                                    <div className="campo-grupo-limpio" style={{ gridColumn: '1 / -1' }}>
+                                        <label className="campo-label-limpio">
+                                            Especifique el Motivo del Retiro <span className="asterisco-rojo">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className={`campo-input-limpio ${errores.otroMotivoTexto ? 'campo-input-limpio--error' : ''}`}
+                                            placeholder="Escriba el motivo particular (solo letras y signos de puntuación)..."
+                                            value={otroMotivoTexto}
+                                            onChange={(e) => handleCambioOtroMotivo(e.target.value)}
+                                            autoFocus
+                                        />
+                                        {errores.otroMotivoTexto ? (
+                                            <span className="campo-mensaje-error">
+                                                ⚠ {errores.otroMotivoTexto}
+                                            </span>
+                                        ) : (
+                                            <span className="nota-sutil">Solo letras, sin números ni caracteres especiales</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
-                            {/* DEPURACIÓN DE DATOS (CON OPCIÓN PERSONALIZABLE DE DÍAS) */}
+                            {/* ELIMINACIÓN DE DATOS (CON OPCIÓN PERSONALIZABLE DE DÍAS) */}
                             <div className="retencion-opciones-box">
                                 <label className="campo-label-limpio">
-                                    Plazo para Depuración Definitiva de Datos
+                                    Plazo para Eliminación Definitiva de Datos
                                 </label>
 
                                 <div className="retencion-pills-row">
@@ -754,7 +862,7 @@ function Retirar() {
 
                                 <span className="nota-sutil">
                                     📅 Los datos se eliminarán automáticamente el{' '}
-                                    <strong>{calcularFechaDepuracion(diasRetencionEfectivos)}</strong> (en{' '}
+                                    <strong>{calcularFechaEliminacion(diasRetencionEfectivos)}</strong> (en{' '}
                                     <strong>{diasRetencionEfectivos} días</strong>).
                                 </span>
                             </div>
@@ -790,18 +898,20 @@ function Retirar() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div className="retirados-topbar">
                         <span style={{ fontSize: '0.88rem', color: 'var(--color-texto-secundario)', fontWeight: 600 }}>
-                            Total de expedientes retirados: <strong>{retirados.length}</strong>
+                            Total de estudiantes retirados: <strong>{retirados.length}</strong>
                         </span>
 
-                        <button
-                            type="button"
-                            className="btn-purga-rapida"
-                            onClick={handlePurgaVencidos}
-                            title="Eliminar automáticamente registros cuyo plazo de días ya expiró"
-                        >
-                            <IconoPapelera size={15} />
-                            <span>Depurar Vencidos</span>
-                        </button>
+                        {retirados.length > 0 && (
+                            <button
+                                type="button"
+                                className="btn-purga-rapida"
+                                onClick={handlePurgaVencidos}
+                                title="Eliminar automáticamente registros cuyo plazo de días ya expiró"
+                            >
+                                <IconoPapelera size={15} />
+                                <span>Eliminar expedientes</span>
+                            </button>
+                        )}
                     </div>
 
                     {retirados.length === 0 ? (
@@ -832,7 +942,7 @@ function Retirar() {
                                                     {al.nombres} {al.apellidos}
                                                 </h3>
                                                 <p>
-                                                    Exp: {al.numeroCorrelativo || 'S/N'} • {ret.gradoAlRetirarse || al.gradoNivel} "{ret.seccionAlRetirarse || al.seccionLiteral}" • {esVaron ? 'Varón' : 'Niña'}
+                                                    {ret.gradoAlRetirarse || al.gradoNivel} "{ret.seccionAlRetirarse || al.seccionLiteral}" • {esVaron ? 'Varón' : 'Niña'}
                                                 </p>
                                             </div>
                                             <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-rojo)', backgroundColor: 'var(--color-rojo-fondo)', padding: '2px 8px', borderRadius: '999px' }}>
@@ -851,11 +961,11 @@ function Retirar() {
                                             </div>
                                         </div>
 
-                                        {/* Barra de progreso de depuración */}
+                                        {/* Barra de progreso de eliminación */}
                                         <div className="retencion-mini-bar">
                                             <div className="retencion-mini-labels">
                                                 <span style={{ color: 'var(--color-texto-secundario)' }}>
-                                                    Depuración:
+                                                    Eliminación:
                                                 </span>
                                                 <span style={{ color: diasInfo.vencido ? 'var(--color-rojo)' : '#92400e' }}>
                                                     ⏳ {diasInfo.texto}
@@ -930,8 +1040,8 @@ function Retirar() {
                                 <strong>{alumnoSeleccionado.nombres} {alumnoSeleccionado.apellidos}</strong>
                             </div>
                             <div className="modal-resumen-item">
-                                <span>Expediente:</span>
-                                <strong>{alumnoSeleccionado.numeroCorrelativo || 'S/N'}</strong>
+                                <span>Grado / Sección:</span>
+                                <strong>{alumnoSeleccionado.gradoNivel} "{alumnoSeleccionado.seccionLiteral}"</strong>
                             </div>
                             <div className="modal-resumen-item">
                                 <span>Escuela Receptora:</span>
@@ -944,7 +1054,7 @@ function Retirar() {
                                 </strong>
                             </div>
                             <div className="modal-resumen-item">
-                                <span>Depuración de datos:</span>
+                                <span>Eliminación de datos:</span>
                                 <strong style={{ color: 'var(--color-rojo)' }}>En {diasRetencionEfectivos} días</strong>
                             </div>
                         </div>
@@ -987,13 +1097,13 @@ function Retirar() {
                                 <IconoPapelera size={18} />
                             </div>
                             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>
-                                ¿Depurar Datos Ahora?
+                                ¿Eliminar Datos Ahora?
                             </h3>
                         </div>
 
                         <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--color-texto-secundario)', lineHeight: 1.5 }}>
                             Se eliminarán definitivamente los registros de{' '}
-                            <strong>{modalPurga.nombres} {modalPurga.apellidos}</strong> (Expediente: {modalPurga.numeroCorrelativo || 'S/N'}). Esta acción no se puede deshacer.
+                            <strong>{modalPurga.nombres} {modalPurga.apellidos}</strong>. Esta acción no se puede deshacer.
                         </p>
 
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.7rem', marginTop: '0.4rem' }}>
@@ -1035,8 +1145,7 @@ function Retirar() {
 
                             <div style={{ fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'justify' }}>
                                 Por medio de la presente se hace constar que el (la) estudiante{' '}
-                                <strong>{actaEstudiante.nombres} {actaEstudiante.apellidos}</strong>, titular del expediente escolar Nº{' '}
-                                <strong>{actaEstudiante.numeroCorrelativo || '#S/C'}</strong>, cursante de{' '}
+                                <strong>{actaEstudiante.nombres} {actaEstudiante.apellidos}</strong>, cursante de{' '}
                                 <strong>{actaEstudiante.retiro?.gradoAlRetirarse || actaEstudiante.gradoNivel} "{actaEstudiante.retiro?.seccionAlRetirarse || actaEstudiante.seccionLiteral}"</strong> (Turno {actaEstudiante.retiro?.turnoAlRetirarse || actaEstudiante.turno}), ha sido formalmente desincorporado(a) de esta institución en fecha{' '}
                                 <strong>{actaEstudiante.retiro?.fechaEfectiva}</strong>, habiendo consignado la debida Carta de Aceptación del plantel receptor:{' '}
                                 <strong>{actaEstudiante.retiro?.institucionDestino}</strong>.

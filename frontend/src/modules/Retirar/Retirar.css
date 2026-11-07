@@ -600,14 +600,21 @@
 }
 
 .badge-obligatorio {
-    background-color: #e0e7ff;
-    color: var(--color-sidebar);
-    border: 1px solid #c7d2fe;
-    font-size: 0.7rem;
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    font-size: 0.72rem;
     font-weight: 800;
     padding: 3px 9px;
     border-radius: var(--radio-pildora);
     text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.asterisco-rojo {
+    color: #ef4444;
+    font-weight: 800;
+    margin-left: 3px;
 }
 
 .hero-carta-grid {
@@ -762,6 +769,34 @@
     background-color: var(--color-blanco);
     border-color: var(--color-sidebar);
     box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.1);
+}
+
+/* Estados de Error y Validación de Campos (Estilo Atenea) */
+.campo-input-limpio--error,
+.campo-select-limpio--error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.campo-input-limpio--error:focus,
+.campo-select-limpio--error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.carta-dropzone-minimal--error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.campo-mensaje-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #ef4444;
+    margin-top: 3px;
+    animation: aparecerSuave 0.2s ease;
 }
 
 .nota-sutil {
