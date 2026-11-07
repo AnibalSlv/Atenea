@@ -1,548 +1,690 @@
-.dashboard-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 1.6rem;
-    padding: 0 2rem 2rem;
-    max-width: 1600px;
+/* ====================================================================
+   MÓDULO DASHBOARD (INICIO) — SISTEMA ADMINISTRATIVO ATENEA
+   Diseño de Alta Fidelidad basado en el mockup oficial
+   ==================================================================== */
+
+.dashboard-contenedor {
+    max-width: 1540px;
     margin: 0 auto;
-}
-
-@media (max-width: 1200px) {
-    .dashboard-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ─── Columna Principal (Izquierda) ─── */
-.dashboard-main {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* ─── Banner de Bienvenida ─── */
-.banner-bienvenida {
-    background-color: var(--color-blanco);
-    border-radius: var(--radio-tarjeta);
-    padding: 2rem 2.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: var(--sombra-card);
-    position: relative;
-    overflow: hidden;
-}
-
-.banner-bienvenida__info {
-    max-width: 65%;
-}
-
-.banner-bienvenida__saludo {
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: var(--color-texto-principal);
-    margin: 0 0 0.5rem;
-}
-
-.banner-bienvenida__desc {
-    font-size: 0.95rem;
-    color: var(--color-texto-secundario);
-    line-height: 1.5;
-    margin: 0 0 1.2rem;
-}
-
-.banner-bienvenida__btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-sidebar);
-    font-size: 0.92rem;
-    font-weight: 700;
-    text-decoration: underline;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-.banner-bienvenida__btn:hover {
-    color: var(--color-sidebar-dark);
-}
-
-.banner-bienvenida__ilustracion {
-    color: var(--color-sidebar);
-    background: linear-gradient(135deg, rgba(65, 84, 179, 0.1) 0%, rgba(84, 141, 54, 0.1) 100%);
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-/* ─── Fila Media: Rendimiento (Barras) y Asistencia (Donuts) ─── */
-.metricas-fila {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 1.5rem;
-}
-
-@media (max-width: 992px) {
-    .metricas-fila {
-        grid-template-columns: 1fr;
-    }
-}
-
-.card-blanca {
-    background-color: var(--color-blanco);
-    border-radius: var(--radio-tarjeta);
-    padding: 1.5rem;
-    box-shadow: var(--sombra-card);
-    display: flex;
-    flex-direction: column;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.2rem;
-}
-
-.card-titulo {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--color-texto-principal);
-    margin: 0;
-}
-
-.card-pill-btn {
-    background-color: #f1f4f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 999px;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--color-texto-secundario);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-/* ─── Gráfico de Barras ("Performance") ─── */
-.barras-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.barras-meta {
-    margin-bottom: 1.2rem;
-}
-
-.barras-score {
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--color-texto-principal);
-    margin: 0;
-    line-height: 1;
-}
-
-.barras-subscore {
-    font-size: 0.82rem;
-    color: var(--color-texto-secundario);
-    margin-top: 0.2rem;
-}
-
-.barras-grafico {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    height: 140px;
-    padding-top: 1rem;
-    gap: 0.6rem;
-}
-
-.barra-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    height: 100%;
-}
-
-.barra-val {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--color-texto-secundario);
-}
-
-.barra-track {
-    width: 22px;
-    height: 90px;
-    background-color: #e2e8f0;
-    border-radius: 12px;
-    display: flex;
-    align-items: flex-end;
-    overflow: hidden;
-}
-
-.barra-fill {
+    padding: 0 1.8rem 2.5rem 1.8rem;
+    box-sizing: border-box;
     width: 100%;
-    background: linear-gradient(180deg, #5b73e8 0%, #4154b3 100%);
-    border-radius: 12px;
-    transition: height 0.6s ease;
 }
 
-.barra-lbl {
-    font-size: 0.7rem;
-    color: var(--color-texto-secundario);
-    font-weight: 600;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 45px;
-}
-
-/* ─── Gráficos Radiales / Circulares ("Donuts") ─── */
-.donuts-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.2rem 0.8rem;
-    align-items: center;
-    margin-top: 0.5rem;
-}
-
-.donut-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.donut-svg-wrapper {
-    position: relative;
-    width: 76px;
-    height: 76px;
+/* ═════════════════════════════════════════════════════════════════════
+   TOP BANNER / HEADER AZUL
+   ══════════════════════════════════════════════════════════════════════ */
+.dashboard-top-banner {
+    background: linear-gradient(135deg, #2a3b8f 0%, #3e52b8 100%);
+    border-radius: 18px;
+    padding: 1.15rem 1.8rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-
-.donut-svg {
-    transform: rotate(-90deg);
-}
-
-.donut-pct-text {
-    position: absolute;
-    font-size: 0.92rem;
-    font-weight: 800;
-    color: var(--color-sidebar-dark);
-}
-
-.donut-lbl {
-    font-size: 0.76rem;
-    font-weight: 600;
-    color: var(--color-texto-secundario);
-    margin-top: 0.4rem;
-    line-height: 1.2;
-}
-
-/* ─── Docentes de Guardia ─── */
-.seccion-docentes {
-    background-color: var(--color-blanco);
-    border-radius: var(--radio-tarjeta);
-    padding: 1.5rem;
-    box-shadow: var(--sombra-card);
-}
-
-.docentes-lista {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-@media (max-width: 768px) {
-    .docentes-lista {
-        grid-template-columns: 1fr;
-    }
-}
-
-.docente-tarjeta {
-    background-color: #f8fafc;
-    border: 1px solid #edf2f7;
-    border-radius: var(--radio-pequeno);
-    padding: 0.9rem 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-}
-
-.docente-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e2e8f0;
-    color: var(--color-sidebar);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.docente-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.docente-nombre {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--color-texto-principal);
-    margin: 0;
-}
-
-.docente-cargo {
-    font-size: 0.75rem;
-    color: var(--color-texto-secundario);
-    margin: 0.15rem 0 0;
-}
-
-.docente-acciones {
-    display: flex;
-    gap: 0.4rem;
-}
-
-.docente-btn-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background-color: var(--color-blanco);
-    border: 1px solid #e2e8f0;
-    color: var(--color-texto-secundario);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.docente-btn-icon:hover {
-    border-color: var(--color-sidebar);
-    color: var(--color-sidebar);
-}
-
-/* ─── Columna Lateral Derecha ─── */
-.dashboard-sidebar-derecho {
-    display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 8px 24px rgba(42, 59, 143, 0.18);
+    margin-bottom: 1.6rem;
+    color: #ffffff;
     gap: 1.5rem;
 }
 
-/* ─── Control de Turnos (Derecha) ─── */
-.calendar-panel {
-    background-color: var(--color-blanco);
-    border-radius: var(--radio-tarjeta);
-    padding: 1.5rem;
-    box-shadow: var(--sombra-card);
+.dashboard-banner-izq {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
 }
 
-.turnos-lista-derecha {
+.dashboard-banner-escudo {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.dashboard-banner-titulos {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: 0.15rem;
 }
 
-.turno-card-box {
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 1rem 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    transition: all 0.2s ease;
-}
-
-.turno-card-box:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.turno-card-box__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.turno-card-box__titulo {
-    font-size: 0.95rem;
+.dashboard-banner-institucion {
+    font-size: 0.72rem;
     font-weight: 800;
-    color: var(--color-texto-principal);
-    margin: 0;
-}
-
-.turno-card-box__sub {
-    font-size: 0.7rem;
-    color: var(--color-texto-secundario);
-    margin: 0.2rem 0 0;
-}
-
-.turno-badge-estado {
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
+    letter-spacing: 0.8px;
+    color: #93c5fd;
     text-transform: uppercase;
 }
 
-.badge-estado--exito {
-    background-color: rgba(84, 141, 54, 0.15);
-    color: var(--color-verde);
+.dashboard-banner-saludo {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.4px;
+    line-height: 1.2;
 }
 
-.badge-estado--pendiente {
-    background-color: rgba(255, 188, 0, 0.2);
-    color: #8f6400;
+.dashboard-banner-der {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
 }
 
-.turno-card-box__barra {
+.dashboard-banner-fecha-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    letter-spacing: 0.1px;
+}
+
+.dashboard-banner-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 0.28rem 0.95rem 0.28rem 0.35rem;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 0.86rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.dashboard-banner-user-pill:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.dashboard-banner-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: var(--color-sidebar-dark);
+    font-weight: 800;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-banner-user-nombre {
+    line-height: 1;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   GRID PRINCIPAL (2 COLUMNAS)
+   ══════════════════════════════════════════════════════════════════════ */
+.dashboard-grid-2col {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+@media (max-width: 1240px) {
+    .dashboard-grid-2col {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+}
+
+.dashboard-col-izq,
+.dashboard-col-der {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+    height: 100%;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA BASE (DASHBOARD-CARD)
+   ══════════════════════════════════════════════════════════════════════ */
+.dashboard-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.6rem 1.7rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.dashboard-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
     width: 100%;
-    height: 7px;
-    background-color: #e2e8f0;
+}
+
+.dashboard-card-header-titulos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+.dashboard-card-titulo {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    letter-spacing: -0.2px;
+    line-height: 1.25;
+}
+
+.dashboard-card-subtitulo {
+    font-size: 0.78rem;
+    color: var(--color-texto-secundario);
+    margin: 0.2rem 0 0 0;
+    padding: 0;
+    text-align: left;
+    line-height: 1.2;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA 1: MATRÍCULA ESTUDIANTIL
+   ══════════════════════════════════════════════════════════════════════ */
+.card-matricula .dashboard-card-header {
+    justify-content: flex-start;
+}
+
+.matricula-icono-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #eff6ff;
+    color: var(--color-sidebar);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.matricula-barra-segmentada {
+    height: 10px;
+    background-color: #f1f5f9;
+    border-radius: 999px;
+    display: flex;
+    overflow: hidden;
+    margin: 1.4rem 0 1.15rem;
+}
+
+.matricula-segmento-varones {
+    background-color: #2b3b8f;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.matricula-segmento-hembras {
+    background-color: #d81b60;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.matricula-items-lista {
+    display: flex;
+    flex-direction: column;
+}
+
+.matricula-item-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.42rem 0;
+}
+
+.matricula-item-label-grp {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.matricula-punto {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.punto-varon {
+    color: #2b3b8f;
+}
+
+.punto-hembra {
+    color: #d81b60;
+}
+
+.matricula-item-nombre {
+    font-size: 0.88rem;
+    color: var(--color-texto-secundario);
+    font-weight: 500;
+}
+
+.matricula-item-num {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.matricula-divisor {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+    margin: 0.65rem 0;
+}
+
+.matricula-item-fila--total {
+    padding-top: 0.2rem;
+}
+
+.matricula-total-label {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+}
+
+.matricula-total-num {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #2b3b8f;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA 2: CONTROL DE TURNOS
+   ══════════════════════════════════════════════════════════════════════ */
+.card-control-turnos {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-control-turnos .dashboard-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.card-control-turnos .control-turnos-cuerpo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-top: 1.15rem;
+}
+
+.control-turno-subencabezado {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.icono-sol-header,
+.icono-luna-header {
+    color: #3b82f6;
+}
+
+.control-turno-nombre {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    margin: 0;
+}
+
+.control-nivel-bloque {
+    margin-bottom: 0.75rem;
+}
+
+.control-nivel-bloque:last-child {
+    margin-bottom: 0;
+}
+
+.control-nivel-tag {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.control-vht-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 10px;
+    padding: 0.6rem 0.25rem;
+    text-align: center;
+}
+
+.control-vht-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.control-vht-lbl {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.4px;
+}
+
+.control-vht-val {
+    font-size: 0.98rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.control-vht-val--varon {
+    color: var(--color-varon);
+}
+
+.control-vht-val--hembra {
+    color: var(--color-hembra);
+}
+
+.control-vht-val--total {
+    color: var(--color-texto-principal);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA 3: ASISTENCIA DEL DÍA (RESPONSIVE)
+   ══════════════════════════════════════════════════════════════════════ */
+.dashboard-btn-filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.4rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dashboard-btn-filtro:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.asistencia-turnos-h-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 1.15rem;
+    margin-top: 1.25rem;
+    width: 100%;
+}
+
+.asistencia-turno-card-h {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    min-width: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.asistencia-turno-card-h:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.asistencia-donut-h {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.asistencia-donut-h svg {
+    width: 60px;
+    height: 60px;
+    display: block;
+}
+
+.asistencia-donut-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+}
+
+.asistencia-turno-detalles {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.asistencia-turno-fila-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.3rem;
+}
+
+.asistencia-nombre-turno {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+    margin: 0;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.asistencia-badge-pendiente {
+    background-color: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #b45309;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 0.18rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.asistencia-matriculados-txt {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+    margin: 0 0 0.2rem;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.asistencia-niveles-txt {
+    font-size: 0.72rem;
+    color: var(--color-texto-mutado);
+    display: block;
+    line-height: 1.2;
+}
+
+@media (max-width: 580px) {
+    .asistencia-turno-card-h {
+        padding: 0.85rem 0.95rem;
+        gap: 0.85rem;
+    }
+
+    .asistencia-donut-h,
+    .asistencia-donut-h svg {
+        width: 52px;
+        height: 52px;
+    }
+
+    .asistencia-donut-pct {
+        font-size: 0.82rem;
+    }
+
+    .asistencia-matriculados-txt {
+        font-size: 0.8rem;
+    }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA 4: OCUPACIÓN DE CUPOS
+   ══════════════════════════════════════════════════════════════════════ */
+.card-cupos-modulo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-cupos-modulo .cupos-dos-columnas {
+    flex: 1;
+}
+
+.dashboard-selector-pills {
+    display: flex;
+    background-color: #f1f5f9;
+    padding: 3px;
+    border-radius: var(--radio-pildora);
+    border: 1px solid #e2e8f0;
+}
+
+.dashboard-pill {
+    padding: 0.32rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    border-radius: var(--radio-pildora);
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboard-pill--activo {
+    background-color: var(--color-sidebar);
+    color: var(--color-blanco);
+    box-shadow: 0 2px 6px rgba(65, 84, 179, 0.25);
+}
+
+.cupos-dos-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.2rem;
+    margin-top: 1.35rem;
+}
+
+@media (max-width: 768px) {
+    .cupos-dos-columnas {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.cupos-columna-nivel {
+    display: flex;
+    flex-direction: column;
+}
+
+.cupos-badge-nivel {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+    background-color: rgba(65, 84, 179, 0.1);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radio-pildora);
+    margin-bottom: 0.95rem;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.cupos-lista-barras {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.cupos-item-barra {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.cupos-item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.82rem;
+}
+
+.cupos-item-nombre {
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.cupos-item-valor {
+    color: var(--color-texto-secundario);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.cupos-track-barra {
+    height: 6px;
+    background-color: #edf2f7;
     border-radius: 999px;
     overflow: hidden;
 }
 
-.turno-card-box__relleno {
+.cupos-fill-barra {
     height: 100%;
-    background-color: var(--color-sidebar);
+    background: linear-gradient(90deg, #4154b3 0%, #4361ee 100%);
     border-radius: 999px;
     transition: width 0.4s ease;
 }
 
-.turno-card-box__metricas {
-    display: flex;
-    justify-content: space-between;
-    background-color: var(--color-blanco);
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #edf2f7;
+.cupos-fill-barra--alerta {
+    background: linear-gradient(90deg, #ffbc00 0%, #f59e0b 100%);
 }
 
-.turno-card-box__col {
-    display: flex;
-    flex-direction: column;
-}
-
-.turno-lbl {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-}
-
-.turno-val {
-    font-size: 0.92rem;
-    font-weight: 800;
-}
-
-.turno-val--varon {
-    color: #1e40af;
-}
-
-.turno-val--hembra {
-    color: #9d174d;
-}
-
-.turno-val--total {
-    color: var(--color-texto-principal);
-}
-
-/* ─── Avisos y Tareas ─── */
-.upcoming-panel {
-    background-color: var(--color-blanco);
-    border-radius: var(--radio-tarjeta);
-    padding: 1.5rem;
-    box-shadow: var(--sombra-card);
-}
-
-.upcoming-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    margin-top: 0.8rem;
-}
-
-.upcoming-item {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    background-color: #f8fafc;
-    border-radius: 12px;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid #edf2f7;
-}
-
-.upcoming-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background-color: #e2e8f0;
-    color: var(--color-sidebar);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.upcoming-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.upcoming-titulo {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--color-texto-principal);
-    margin: 0 0 0.2rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.upcoming-fecha {
-    font-size: 0.7rem;
-    color: var(--color-texto-secundario);
-    margin: 0;
-}
-
-.text-mutado {
-    color: var(--color-texto-mutado);
-}
-
-.text-verde {
-    color: var(--color-verde);
-}
-
-.panel-vacio {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 140px;
-    border: 1px dashed var(--color-borde);
-    border-radius: var(--radio-pequeno);
-    color: var(--color-texto-secundario);
-    font-size: 0.85rem;
-    background-color: var(--color-superficie);
-    text-align: center;
-    padding: 1rem;
+.cupos-fill-barra--lleno {
+    background: linear-gradient(90deg, #e63946 0%, #ef4444 100%);
 }

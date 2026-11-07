@@ -1,7 +1,13 @@
+/* ─── Módulo principal ──────────────────────────────────────────────── */
 .inscribir-modulo {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    max-width: 1400px;
+    padding: 0 2rem 2.5rem;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .inscribir-header {
@@ -31,7 +37,7 @@
     font-size: 0.9rem;
 }
 
-/* Paso 1: Selección inicial */
+/* ─── Paso 1: Selección inicial ─────────────────────────────────────── */
 .inscribir-card-paso1 {
     background-color: var(--color-blanco);
     border: 1px solid var(--color-borde);
@@ -42,12 +48,12 @@
 
 .inscribir-paso1-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
     align-items: center;
 }
 
-/* Camino A: Alumno Regular */
+/* ─── Camino A: Alumno Regular ──────────────────────────────────────── */
 .inscribir-card-regular {
     background-color: var(--color-blanco);
     border: 1px solid var(--color-borde);
@@ -115,6 +121,11 @@
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.btn-seleccionar-regular:hover {
+    opacity: 0.85;
 }
 
 .resumen-alumno-regular {
@@ -135,10 +146,11 @@
     font-size: 0.85rem;
 }
 
-/* Camino B: Nuevo Ingreso */
+/* ─── Camino B: Nuevo Ingreso ───────────────────────────────────────── */
 .inscribir-card-nuevo {
     display: flex;
     flex-direction: column;
+    gap: 16px;
 }
 
 .encabezado-nuevo-ingreso {
@@ -149,23 +161,6 @@
     box-shadow: var(--sombra-card);
     display: flex;
     gap: 24px;
-}
-
-.foto-placeholder-box {
-    width: 130px;
-    height: 140px;
-    border: 2px dashed var(--color-borde);
-    border-radius: var(--radio-pequeno);
-    background-color: var(--color-superficie);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: var(--color-texto-mutado);
-    font-size: 0.85rem;
-    font-weight: 700;
-    flex-shrink: 0;
 }
 
 .datos-clave-header {
@@ -182,11 +177,378 @@
     font-weight: 800;
 }
 
+/* ─── Barra de progreso wizard ──────────────────────────────────────── */
+.inscribir-wizard-barra {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 4px;
+}
+
+.inscribir-wizard-paso {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    white-space: nowrap;
+}
+
+.inscribir-wizard-track {
+    display: flex;
+    flex: 1;
+    gap: 4px;
+}
+
+.inscribir-wizard-seg {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background-color: var(--color-borde);
+    transition: background-color 0.25s ease;
+}
+
+.inscribir-wizard-seg.completado {
+    background-color: var(--color-verde);
+}
+
+.inscribir-wizard-seg.activo {
+    background-color: var(--color-sidebar);
+}
+
+/* ─── Pestañas ──────────────────────────────────────────────────────── */
+.alumnos-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 12px;
+    box-shadow: var(--sombra-card);
+}
+
+.alumnos-tab-btn {
+    background-color: transparent;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.alumnos-tab-btn:hover {
+    background-color: var(--color-superficie);
+    color: var(--color-texto-principal);
+    border-color: var(--color-sidebar);
+}
+
+.alumnos-tab-btn--activo {
+    background-color: var(--color-sidebar);
+    color: white;
+    border-color: var(--color-sidebar);
+}
+
+/* ─── Tarjeta de contenido ──────────────────────────────────────────── */
+.alumnos-card {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 24px;
+    box-shadow: var(--sombra-card);
+}
+
+/* ─── Sección bloque ────────────────────────────────────────────────── */
+.seccion-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.seccion-titulo-barra {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.seccion-numero-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--color-sidebar);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.seccion-titulo-texto {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0;
+}
+
+.subseccion-titulo {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-sidebar);
+    margin: 0 0 4px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+/* ─── Grids de formulario ───────────────────────────────────────────── */
+.form-grid-1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.form-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* ─── Campos ────────────────────────────────────────────────────────── */
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.campo-input,
+.campo-select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    font-size: 0.88rem;
+    color: var(--color-texto-principal);
+    background-color: var(--color-blanco);
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.campo-input:hover,
+.campo-select:hover {
+    border-color: var(--color-sidebar);
+}
+
+.campo-input:focus,
+.campo-select:focus {
+    outline: none;
+    border-color: var(--color-sidebar);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.15);
+}
+
+.campo-input--error {
+    border-color: var(--color-rojo, #e53e3e) !important;
+}
+
+.campo-error-msg {
+    font-size: 0.75rem;
+    color: var(--color-rojo, #e53e3e);
+    margin-top: 2px;
+}
+
+/* ─── Pills Sí/No ───────────────────────────────────────────────────── */
+.pills-sino-container {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pill-sino-btn {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    background-color: var(--color-blanco);
+    color: var(--color-texto-secundario);
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.pill-sino-btn:hover:not(.pill-sino-btn--si-activo):not(.pill-sino-btn--no-activo):not(.pill-sino-btn--activo) {
+    background-color: var(--color-superficie);
+    border-color: var(--color-sidebar);
+    color: var(--color-texto-principal);
+}
+
+.pill-sino-btn--si-activo,
+.pill-sino-btn--activo,
+.pill-sino-btn--si-activo:hover,
+.pill-sino-btn--activo:hover {
+    background-color: var(--color-sidebar) !important;
+    color: #ffffff !important;
+    border-color: var(--color-sidebar) !important;
+}
+
+.pill-sino-btn--no-activo,
+.pill-sino-btn--no-activo:hover {
+    background-color: var(--color-rojo, #e53e3e) !important;
+    color: #ffffff !important;
+    border-color: var(--color-rojo, #e53e3e) !important;
+}
+
+/* ─── Pills opciones múltiples (Situación pareja) ───────────────────── */
+.pills-grupo-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.pill-opcion-btn {
+    padding: 10px 22px;
+    border: 1.5px solid var(--color-borde);
+    border-radius: var(--radio-pildora);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--color-blanco);
+    color: var(--color-texto-secundario);
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill-opcion-btn:hover:not(.pill-opcion-btn--activo) {
+    border-color: var(--color-sidebar);
+    color: var(--color-sidebar);
+}
+
+.pill-opcion-btn--activo,
+.pill-opcion-btn--activo:hover {
+    background-color: var(--color-sidebar) !important;
+    color: #ffffff !important;
+    border-color: var(--color-sidebar) !important;
+}
+
+/* ─── Grid condiciones sanitarias ───────────────────────────────────── */
+.grid-condiciones-sanitarias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.condicion-card-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.condicion-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    padding: 10px 14px;
+}
+
+.condicion-item--error {
+    border-color: var(--color-rojo, #e53e3e) !important;
+    background-color: rgba(230, 57, 70, 0.04);
+}
+
+.condicion-texto {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+    flex: 1;
+}
+
+/* ─── Navegación wizard (Siguiente / Atrás) ─────────────────────────── */
+.inscribir-wizard-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 4px 4px;
+    flex-wrap: wrap;
+}
+
+.wizard-paso-texto {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+}
+
+.wizard-btn {
+    padding: 9px 20px;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid var(--color-borde);
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.wizard-btn--atras {
+    background-color: var(--color-blanco);
+    color: var(--color-texto-principal);
+}
+
+.wizard-btn--atras:hover:not(:disabled) {
+    background-color: var(--color-superficie);
+    border-color: var(--color-sidebar);
+}
+
+.wizard-btn--atras:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.wizard-btn--siguiente {
+    background-color: var(--color-sidebar);
+    color: white;
+    border-color: var(--color-sidebar);
+}
+
+.wizard-btn--siguiente:hover {
+    opacity: 0.88;
+}
+
+/* ─── Botón guardar inscripción ─────────────────────────────────────── */
 .btn-guardar-inscripcion {
     background-color: var(--color-verde);
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 11px 24px;
     border-radius: var(--radio-pequeno);
     font-size: 0.95rem;
     font-weight: 700;
@@ -195,8 +557,25 @@
     align-items: center;
     gap: 8px;
     transition: opacity 0.2s ease;
+    white-space: nowrap;
 }
 
 .btn-guardar-inscripcion:hover {
     opacity: 0.9;
+}
+
+/* ─── Búsqueda vacía ────────────────────────────────────────────────── */
+.busqueda-vacia {
+    padding: 16px;
+    text-align: center;
+    color: var(--color-texto-secundario);
+    font-size: 0.85rem;
+}
+
+/* ─── Resumen alumno (re-inscripción) ───────────────────────────────── */
+.form-confirmar-regular {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
 }

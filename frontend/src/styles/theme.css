@@ -1,36 +1,43 @@
-/**
- * ====================================================================
- * SISTEMA ADMINISTRATIVO ATENEA — SISTEMA DE DISEÑO BASE (TOKENS)
- * Capa 1: Fundacional (Accesible para todos los módulos)
- * ====================================================================
- */
-
 :root {
     /* ─── Paleta de Colores Institucional ─── */
-    --color-sidebar: #4154b3;             /* Azul/Morado primario para menús y botones principales */
-    --color-sidebar-dark: #324294;        /* Azul oscuro para degradados, acentos y textos de títulos */
-    --color-primario: #3b2a69;            /* Morado institucional */
-    --color-acento-azul: #4361ee;         /* Acento interactivo y enlaces */
-    
+    --color-sidebar: #4154b3;
+    /* Azul/Morado primario para menús y botones principales */
+    --color-sidebar-dark: #324294;
+    /* Azul oscuro para degradados, acentos y textos de títulos */
+    --color-primario: #3b2a69;
+    /* Morado institucional */
+    --color-acento-azul: #4361ee;
+    /* Acento interactivo y enlaces */
+
     /* Estados y Semántica */
-    --color-verde: #548d36;               /* Éxito, asistencia presente, guardado exitoso */
+    --color-verde: #548d36;
+    /* Éxito, asistencia presente, guardado exitoso */
     --color-verde-fondo: rgba(84, 141, 54, 0.12);
-    --color-amarillo: #ffbc00;            /* Alertas, cupos por agotarse, pendientes */
+    --color-amarillo: #ffbc00;
+    /* Alertas, cupos por agotarse, pendientes */
     --color-amarillo-fondo: rgba(255, 188, 0, 0.16);
-    --color-rojo: #e63946;                /* Errores, inasistencias, cupo agotado */
+    --color-rojo: #e63946;
+    /* Errores, inasistencias, cupo agotado */
     --color-rojo-fondo: #fef2f2;
-    
+
     /* Fondos y Superficies */
-    --color-fondo: #f1f4f9;               /* Fondo gris azulado ultra limpio de la app */
-    --color-superficie: #f8fafc;          /* Fondo de subpaneles y tablas */
-    --color-blanco: #ffffff;              /* Fondo de tarjetas principales */
-    
+    --color-fondo: #f1f4f9;
+    /* Fondo gris azulado ultra limpio de la app */
+    --color-superficie: #f8fafc;
+    /* Fondo de subpaneles y tablas */
+    --color-blanco: #ffffff;
+    /* Fondo de tarjetas principales */
+
     /* Tipografía y Textos */
-    --color-texto-principal: #1e293b;     /* Texto para encabezados y números destacados */
-    --color-texto-secundario: #64748b;    /* Subtítulos, descripciones y etiquetas */
-    --color-texto-mutado: #94a3b8;        /* Placeholders y textos de apoyo */
-    --color-borde: #e2e8f0;               /* Bordes suaves de inputs y tarjetas */
-    
+    --color-texto-principal: #1e293b;
+    /* Texto para encabezados y números destacados */
+    --color-texto-secundario: #64748b;
+    /* Subtítulos, descripciones y etiquetas */
+    --color-texto-mutado: #94a3b8;
+    /* Placeholders y textos de apoyo */
+    --color-borde: #e2e8f0;
+    /* Bordes suaves de inputs y tarjetas */
+
     /* Géneros (Estadísticas Escolares) */
     --color-varon: #1e40af;
     --color-varon-fondo: #dbeafe;
@@ -38,12 +45,15 @@
     --color-hembra-fondo: #fce7f3;
 
     /* ─── Dimensiones, Radios y Sombras ─── */
-    --radio-tarjeta: 20px;                /* Esquinas de tarjetas y paneles */
-    --radio-modal: 24px;                  /* Esquinas de modales y tarjetas de auth */
-    --radio-pequeno: 12px;                /* Esquinas de inputs, botones y badges */
-    --radio-pildora: 999px;               /* Buscador, badges de estado y avatares */
-    
+    --radio-tarjeta: 20px;
+    /* Esquinas de tarjetas y paneles */
+    --radio-modal: 24px;
+    /* Esquinas de modales y tarjetas de auth */
+    --radio-pequeno: 12px;
+    /* Esquinas de inputs, botones y badges */
+    --radio-pildora: 999px;
+    /* Buscador, badges de estado y avatares */
+
     --sombra-card: 0 4px 20px rgba(50, 66, 148, 0.06);
     --sombra-flotante: 0 10px 30px rgba(50, 66, 148, 0.12);
 }
-

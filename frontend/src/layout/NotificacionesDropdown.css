@@ -29,6 +29,24 @@
     border-color: var(--color-primario);
 }
 
+/* Variante Translúcida (Banner Azul Header) */
+.notificaciones-wrapper--translucido .notificaciones-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-radius: 50%;
+}
+
+.notificaciones-wrapper--translucido .notificaciones-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.notificaciones-wrapper--translucido .notificaciones-btn--abierto {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #ffffff;
+}
+
 .notificaciones-badge {
     position: absolute;
     top: -4px;

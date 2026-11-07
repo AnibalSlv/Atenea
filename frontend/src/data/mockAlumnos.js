@@ -1,35 +1,41 @@
 import { ALUMNOS_INICIALES } from './alumnosIniciales';
 
-const CLAVE_STORAGE = 'atenea_alumnos_db';
+const CLAVE_STORAGE = 'atenea_alumnos_db_v2';
 const CLAVE_CONFIG_RETIRO = 'atenea_config_retiro';
 const CLAVE_HISTORIAL_PURGA = 'atenea_historial_purga';
 
 // Obtener todos los alumnos desde localStorage o inicializar con los de prueba
 export const getAlumnos = () => {
     const datosGuardados = localStorage.getItem(CLAVE_STORAGE);
-    let lista = ALUMNOS_INICIALES;
-    if (datosGuardados) {
-        lista = JSON.parse(datosGuardados);
-    } else {
-        localStorage.setItem(CLAVE_STORAGE, JSON.stringify(ALUMNOS_INICIALES));
-    }
-    // Asegurar que cada alumno tenga el atributo genero ('Varón' o 'Hembra')
-    return lista.map((a) => {
-        if (!a.genero) {
-            const nom = (a.nombres || '').toLowerCase();
+    let lista = datosGuardados ? JSON.parse(datosGuardados) : ALUMNOS_INICIALES;
+
+    // Garantizar que todos los alumnos tengan el campo genero para estadísticas V/H/T
+    let actualizado = false;
+    lista = lista.map((alumno) => {
+        if (!alumno.genero) {
+            actualizado = true;
+            const nombre = (alumno.nombres || '').toLowerCase();
             const esHembra =
-                nom.includes('mariana') ||
-                nom.includes('maría') ||
-                nom.includes('maria') ||
-                nom.includes('carmen') ||
-                nom.includes('isabel') ||
-                nom.includes('ana') ||
-                nom.includes('sofía') ||
-                nom.includes('valentina');
-            return { ...a, genero: esHembra ? 'Hembra' : 'Varón' };
+                nombre.includes('mariana') ||
+                nombre.includes('maria') ||
+                nombre.includes('maría') ||
+                nombre.includes('carmen') ||
+                nombre.includes('isabel') ||
+                nombre.includes('ana') ||
+                nombre.includes('sofía') ||
+                nombre.includes('camila') ||
+                nombre.includes('valentina') ||
+                nombre.includes('valeria');
+            return { ...alumno, genero: esHembra ? 'Hembra' : 'Varón' };
         }
-        return a;
+        return alumno;
     });
+
+    if (!datosGuardados || actualizado) {
+        localStorage.setItem(CLAVE_STORAGE, JSON.stringify(lista));
+    }
+
+    return lista;
 };
 
 // Guardar un nuevo alumno (Nuevo Ingreso)
