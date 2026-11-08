@@ -6,6 +6,7 @@ import './Alumnos.css';
 
 // ─── Constantes y Reglas de Validación ───────────────────────────────────────
 const REG_SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+const REG_LUGAR       = /^[a-zA-Z\u00C0-\u024FáéíóúÁÉÍÓÚüÜñÑ0-9\s\/\-\.,#]+$/;
 const REG_TELEFONO    = /^[0-9\-\+\s]{7,15}$/;
 const REG_EMAIL       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REG_CEDULA      = /^([VEve]-?)?\d{5,12}$/;
@@ -44,6 +45,16 @@ const CAMPO_A_TAB = {
 };
 
 // ─── Funciones Auxiliares Fuera del Componente (evitan pérdida de foco) ───────
+
+// Normaliza texto eliminando acentos y pasando a minúsculas para búsquedas sin tilde
+function sinAcentos(str) {
+    if (!str) return '';
+    return String(str)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
 function calcularEdad(fechaStr) {
     if (!fechaStr) return '';
     const nac = new Date(fechaStr + 'T00:00:00');
@@ -110,8 +121,8 @@ function validarTab(tabId, form) {
         if (form.nacionalidad && !REG_SOLO_LETRAS.test(form.nacionalidad.trim()))
             e.nacionalidad = 'Solo letras (ej: Venezolana).';
 
-        if (form.lugarNacimiento && !REG_SOLO_LETRAS.test(form.lugarNacimiento.trim()))
-            e.lugarNacimiento = 'Solo se permiten letras.';
+        if (form.lugarNacimiento && !REG_LUGAR.test(form.lugarNacimiento.trim()))
+            e.lugarNacimiento = 'Solo letras, números y /  -  ,  .';
     }
 
     if (tabId === 'especiales') {
@@ -322,11 +333,11 @@ function Alumnos() {
         const cumpleGrado = filtroGrado === 'TODOS' || alumno.gradoNivel === filtroGrado;
         const cumpleSeccion = filtroSeccion === 'TODOS' || alumno.seccionLiteral === filtroSeccion;
 
-        const texto = busquedaTexto.toLowerCase();
+        const texto = sinAcentos(busquedaTexto);
         const cumpleTexto =
             busquedaTexto === '' ||
-            (alumno.nombres && alumno.nombres.toLowerCase().includes(texto)) ||
-            (alumno.apellidos && alumno.apellidos.toLowerCase().includes(texto)) ||
+            (alumno.nombres && sinAcentos(alumno.nombres).includes(texto)) ||
+            (alumno.apellidos && sinAcentos(alumno.apellidos).includes(texto)) ||
             (alumno.cedulaEscolar && alumno.cedulaEscolar.toLowerCase().includes(texto));
 
         return cumpleTurno && cumpleGrado && cumpleSeccion && cumpleTexto;

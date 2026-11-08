@@ -18,6 +18,7 @@ const TABS = [
 ];
 
 const REG_SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+const REG_LUGAR       = /^[a-zA-Z\u00C0-\u024FáéíóúÁÉÍÓÚüÜñÑ0-9\s\/\-\.,#]+$/;
 const REG_TELEFONO    = /^[0-9\-\+\s]{7,15}$/;
 const REG_EMAIL       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REG_CEDULA      = /^([VEve]-?)?\d{5,12}$/;
@@ -78,6 +79,15 @@ function BotonesSiNo({ value, onChange }) {
                 onClick={() => onChange(false)}>NO</button>
         </div>
     );
+}
+
+// Elimina acentos y pasa a minúsculas para búsquedas sin tilde
+function sinAcentos(str) {
+    if (!str) return '';
+    return String(str)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
 }
 
 // Normaliza opciones de pareja para tolerar variaciones como Casado vs Casado/a
@@ -158,8 +168,8 @@ function validarTab(tabId, form) {
         if (form.nacionalidad && !REG_SOLO_LETRAS.test(form.nacionalidad.trim()))
             e.nacionalidad = 'Solo letras (ej: Venezolana).';
 
-        if (form.lugarNacimiento && !REG_SOLO_LETRAS.test(form.lugarNacimiento.trim()))
-            e.lugarNacimiento = 'Solo se permiten letras.';
+        if (form.lugarNacimiento && !REG_LUGAR.test(form.lugarNacimiento.trim()))
+            e.lugarNacimiento = 'Solo letras, números y /  -  ,  .';
     }
 
     if (tabId === 'especiales') {
@@ -350,8 +360,8 @@ function Inscribir() {
     const listaExistente   = getAlumnos();
     const resultadosBusqueda = busquedaRegular
         ? listaExistente.filter((a) =>
-            a.nombres.toLowerCase().includes(busquedaRegular.toLowerCase()) ||
-            a.apellidos.toLowerCase().includes(busquedaRegular.toLowerCase()) ||
+            sinAcentos(a.nombres).includes(sinAcentos(busquedaRegular)) ||
+            sinAcentos(a.apellidos).includes(sinAcentos(busquedaRegular)) ||
             a.cedulaEscolar.toLowerCase().includes(busquedaRegular.toLowerCase())
           )
         : [];
