@@ -493,7 +493,7 @@ function Alumnos() {
             {vistaActual === 'lista' && (
                 <>
                     <header className="alumnos-header">
-                        <div>
+                        <div className="alumnos-header__textos">
                             <h1 className="alumnos-header__titulo">Consulta de Alumnos</h1>
                             <p className="alumnos-header__sub">
                                 Seleccione turno, grado o sección para filtrar el expediente escolar

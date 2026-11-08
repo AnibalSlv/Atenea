@@ -1,9 +1,10 @@
 import { ALUMNOS_INICIALES } from './alumnosIniciales';
 
-const CLAVE_STORAGE = 'atenea_alumnos_db_v3';
+const CLAVE_STORAGE = 'atenea_alumnos_db_v4';
 
 // Limpiar versiones anteriores para eliminar registros residuales
 try {
+    localStorage.removeItem('atenea_alumnos_db_v3');
     localStorage.removeItem('atenea_alumnos_db_v2');
     localStorage.removeItem('atenea_alumnos_db_v1');
     localStorage.removeItem('atenea_alumnos_db');
@@ -14,6 +15,7 @@ try {
 // Obtener todos los alumnos desde localStorage o inicializar con los de prueba
 export const getAlumnos = () => {
     try {
+        localStorage.removeItem('atenea_alumnos_db_v3');
         localStorage.removeItem('atenea_alumnos_db_v2');
         localStorage.removeItem('atenea_alumnos_db_v1');
         localStorage.removeItem('atenea_alumnos_db');
@@ -51,6 +53,7 @@ export const getAlumnos = () => {
 export const restablecerAlumnos = () => {
     try {
         localStorage.removeItem(CLAVE_STORAGE);
+        localStorage.removeItem('atenea_alumnos_db_v3');
         localStorage.removeItem('atenea_alumnos_db_v2');
         localStorage.removeItem('atenea_alumnos_db_v1');
         localStorage.removeItem('atenea_alumnos_db');
