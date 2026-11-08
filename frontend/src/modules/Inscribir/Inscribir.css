@@ -369,6 +369,15 @@
     box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.15);
 }
 
+.campo-input--readonly,
+.campo-input:read-only {
+    background-color: #f1f5f9 !important;
+    cursor: not-allowed !important;
+    color: var(--color-texto-secundario) !important;
+    border-color: var(--color-borde) !important;
+    user-select: none;
+}
+
 .campo-input--error {
     border-color: var(--color-rojo, #e53e3e) !important;
 }

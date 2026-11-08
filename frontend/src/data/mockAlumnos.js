@@ -1,9 +1,24 @@
 import { ALUMNOS_INICIALES } from './alumnosIniciales';
 
-const CLAVE_STORAGE = 'atenea_alumnos_db_v2';
+const CLAVE_STORAGE = 'atenea_alumnos_db_v3';
+
+// Limpiar versiones anteriores para eliminar registros residuales
+try {
+    localStorage.removeItem('atenea_alumnos_db_v2');
+    localStorage.removeItem('atenea_alumnos_db_v1');
+    localStorage.removeItem('atenea_alumnos_db');
+} catch (e) {
+    // Ignorar si localStorage no está disponible
+}
 
 // Obtener todos los alumnos desde localStorage o inicializar con los de prueba
 export const getAlumnos = () => {
+    try {
+        localStorage.removeItem('atenea_alumnos_db_v2');
+        localStorage.removeItem('atenea_alumnos_db_v1');
+        localStorage.removeItem('atenea_alumnos_db');
+    } catch (e) {}
+
     const datosGuardados = localStorage.getItem(CLAVE_STORAGE);
     let lista = datosGuardados ? JSON.parse(datosGuardados) : ALUMNOS_INICIALES;
 
@@ -30,6 +45,18 @@ export const getAlumnos = () => {
     }
 
     return lista;
+};
+
+// Restablecer la lista a los alumnos iniciales de prueba (limpia registros creados)
+export const restablecerAlumnos = () => {
+    try {
+        localStorage.removeItem(CLAVE_STORAGE);
+        localStorage.removeItem('atenea_alumnos_db_v2');
+        localStorage.removeItem('atenea_alumnos_db_v1');
+        localStorage.removeItem('atenea_alumnos_db');
+    } catch (e) {}
+    localStorage.setItem(CLAVE_STORAGE, JSON.stringify(ALUMNOS_INICIALES));
+    return [...ALUMNOS_INICIALES];
 };
 
 // Guardar un nuevo alumno (Nuevo Ingreso)

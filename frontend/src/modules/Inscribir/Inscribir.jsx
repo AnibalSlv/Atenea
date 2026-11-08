@@ -20,7 +20,7 @@ const TABS = [
 const REG_SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
 const REG_TELEFONO    = /^[0-9\-\+\s]{7,15}$/;
 const REG_EMAIL       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const REG_CEDULA      = /^[VEve]-?\d{5,10}$/;
+const REG_CEDULA      = /^([VEve]-?)?\d{5,12}$/;
 
 const CAMPO_A_TAB = {
     fechaIngreso: 'estudiante', cedulaEscolar: 'estudiante',
@@ -46,16 +46,19 @@ const CAMPO_A_TAB = {
 // ─── Componentes auxiliares FUERA del componente principal ────────────────────
 // (definirlos dentro causaría re-montaje en cada render y pérdida de foco)
 
-function CampoTexto({ label, value, onChange, error, placeholder, tipo = 'text', span, requerido, min, max }) {
+function CampoTexto({ label, value, onChange, error, placeholder, tipo = 'text', span, requerido, disabled, readOnly, min, max }) {
     return (
         <div className="campo-grupo" style={span ? { gridColumn: '1 / -1' } : {}}>
             <label className="campo-label">{label}{requerido ? ' *' : ''}</label>
             <input
                 type={tipo}
-                className={`campo-input${error ? ' campo-input--error' : ''}`}
+                className={`campo-input${error ? ' campo-input--error' : ''}${readOnly ? ' campo-input--readonly' : ''}`}
                 placeholder={placeholder}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
+                value={value ?? ''}
+                onChange={(e) => !readOnly && onChange(e.target.value)}
+                disabled={disabled}
+                readOnly={readOnly}
+                tabIndex={readOnly ? -1 : undefined}
                 min={min}
                 max={max}
             />
@@ -77,11 +80,42 @@ function BotonesSiNo({ value, onChange }) {
     );
 }
 
+// Normaliza opciones de pareja para tolerar variaciones como Casado vs Casado/a
+function normalizarPareja(str) {
+    if (!str) return '';
+    return String(str)
+        .toLowerCase()
+        .replace(/\/a$/i, '')
+        .replace(/[oa]$/i, '')
+        .trim();
+}
+
+// Calcula la edad en años cumplidos en base a la fecha de nacimiento (YYYY-MM-DD)
+function calcularEdad(fechaStr) {
+    if (!fechaStr) return '';
+    const nac = new Date(fechaStr + 'T00:00:00');
+    if (isNaN(nac.getTime())) return '';
+    const hoy = new Date();
+    if (nac > hoy) return '';
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const mesDif = hoy.getMonth() - nac.getMonth();
+    if (mesDif < 0 || (mesDif === 0 && hoy.getDate() < nac.getDate())) {
+        edad--;
+    }
+    return edad >= 0 ? String(edad) : '';
+}
+
 // ─── Lógica de validación por pestaña ────────────────────────────────────────
 function validarTab(tabId, form) {
     const e = {};
+    if (!form) return e;
 
     if (tabId === 'estudiante') {
+        if (!form.cedulaEscolar?.trim())
+            e.cedulaEscolar = 'La cédula escolar es obligatoria.';
+        else if (!REG_CEDULA.test(form.cedulaEscolar.trim()))
+            e.cedulaEscolar = 'Solo números (ej: 13100111 o V-13100111). Sin letras.';
+
         if (!form.nombres?.trim())
             e.nombres = 'El nombre es obligatorio.';
         else if (!REG_SOLO_LETRAS.test(form.nombres.trim()))
@@ -99,11 +133,27 @@ function validarTab(tabId, form) {
         if (!form.genero)
             e.genero = 'Seleccione el género del alumno.';
 
-        const edadNum = parseInt(form.edad, 10);
-        if (!form.edad)
-            e.edad = 'La edad es obligatoria.';
-        else if (isNaN(edadNum) || edadNum < 3 || edadNum > 18)
-            e.edad = 'La edad debe estar entre 3 y 18 años.';
+        if (!form.fechaNacimiento) {
+            e.fechaNacimiento = 'La fecha de nacimiento es obligatoria.';
+        } else {
+            const nac = new Date(form.fechaNacimiento + 'T00:00:00');
+            const hoy = new Date();
+            if (isNaN(nac.getTime())) {
+                e.fechaNacimiento = 'Fecha de nacimiento inválida.';
+            } else if (nac > hoy) {
+                e.fechaNacimiento = 'La fecha de nacimiento no puede ser una fecha futura.';
+            }
+        }
+
+        const edadCalculada = calcularEdad(form.fechaNacimiento);
+        const edadNum = parseInt(edadCalculada, 10);
+        if (!form.fechaNacimiento || edadCalculada === '') {
+            e.edad = 'Ingrese una fecha de nacimiento válida para calcular la edad.';
+        } else if (isNaN(edadNum) || edadNum < 3 || edadNum > 18) {
+            e.edad = `La edad calculada (${edadNum} años) no es válida para la institución (debe tener entre 3 y 18 años).`;
+        } else if (form.edad !== undefined && form.edad !== '' && String(form.edad) !== String(edadCalculada)) {
+            e.edad = `La edad (${form.edad}) no coincide con la fecha de nacimiento (debe ser ${edadCalculada} años).`;
+        }
 
         if (form.nacionalidad && !REG_SOLO_LETRAS.test(form.nacionalidad.trim()))
             e.nacionalidad = 'Solo letras (ej: Venezolana).';
@@ -131,7 +181,7 @@ function validarTab(tabId, form) {
             e.telefonoMadre = 'Formato inválido. Ej: 0414-0000000.';
 
         if (form.ciMadre && !REG_CEDULA.test(form.ciMadre.trim()))
-            e.ciMadre = 'Formato: V-12345678.';
+            e.ciMadre = 'Solo números (ej: 15123456 o V-15123456). Sin letras.';
         if (form.correoMadre && !REG_EMAIL.test(form.correoMadre.trim()))
             e.correoMadre = 'Correo inválido.';
 
@@ -146,7 +196,7 @@ function validarTab(tabId, form) {
             e.telefonoPadre = 'Formato inválido. Ej: 0414-0000000.';
 
         if (form.ciPadre && !REG_CEDULA.test(form.ciPadre.trim()))
-            e.ciPadre = 'Formato: V-12345678.';
+            e.ciPadre = 'Solo números (ej: 12345678 o V-12345678). Sin letras.';
         if (form.correoPadre && !REG_EMAIL.test(form.correoPadre.trim()))
             e.correoPadre = 'Correo inválido.';
     }
@@ -163,7 +213,7 @@ function validarTab(tabId, form) {
             e.telefonoRepresentante = 'Formato inválido.';
 
         if (form.ciRepresentante && !REG_CEDULA.test(form.ciRepresentante.trim()))
-            e.ciRepresentante = 'Formato: V-12345678.';
+            e.ciRepresentante = 'Solo números (ej: 12345678 o V-12345678). Sin letras.';
         if (form.correoRepresentante && !REG_EMAIL.test(form.correoRepresentante.trim()))
             e.correoRepresentante = 'Correo inválido.';
     }
@@ -232,20 +282,6 @@ function validarTodo(form) {
     return TABS.reduce((acc, t) => ({ ...acc, ...validarTab(t.id, form) }), {});
 }
 
-// Calcula la edad en años cumplidos en base a la fecha de nacimiento (YYYY-MM-DD)
-function calcularEdad(fechaStr) {
-    if (!fechaStr) return '';
-    const nac = new Date(fechaStr + 'T00:00:00');
-    if (isNaN(nac.getTime())) return '';
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - nac.getFullYear();
-    const mesDif = hoy.getMonth() - nac.getMonth();
-    if (mesDif < 0 || (mesDif === 0 && hoy.getDate() < nac.getDate())) {
-        edad--;
-    }
-    return edad >= 0 ? String(edad) : '0';
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 function Inscribir() {
     const [gradoSeleccionado, setGradoSeleccionado] = useState('1er Grado');
@@ -297,6 +333,7 @@ function Inscribir() {
     });
 
     const cambiar = (campo, valor) => {
+        if (campo === 'edad') return; // La edad no es modificable manualmente
         setDatosForm((prev) => {
             const nuevo = { ...prev, [campo]: valor };
             if (campo === 'fechaNacimiento') {
@@ -326,7 +363,13 @@ function Inscribir() {
             e.preventDefault();
             e.stopPropagation();
         }
-        const errTab = validarTab(tabActiva, datosForm);
+        const edadExacta = calcularEdad(datosForm.fechaNacimiento);
+        const formActual = tabActiva === 'estudiante' ? { ...datosForm, edad: edadExacta } : datosForm;
+        if (tabActiva === 'estudiante' && datosForm.edad !== edadExacta) {
+            setDatosForm((prev) => ({ ...prev, edad: edadExacta }));
+        }
+
+        const errTab = validarTab(tabActiva, formActual);
         if (Object.keys(errTab).length > 0) {
             setErrores((prev) => ({ ...prev, ...errTab }));
             return;
@@ -357,7 +400,10 @@ function Inscribir() {
             e.preventDefault();
             e.stopPropagation();
         }
-        const errTotal = validarTodo(datosForm);
+        const edadExacta = calcularEdad(datosForm.fechaNacimiento);
+        const formActualizado = { ...datosForm, edad: edadExacta };
+
+        const errTotal = validarTodo(formActualizado);
         if (Object.keys(errTotal).length > 0) {
             setErrores(errTotal);
             const primerCampo = Object.keys(errTotal)[0];
@@ -365,7 +411,7 @@ function Inscribir() {
             return;
         }
         const creado = agregarAlumno({
-            ...datosForm,
+            ...formActualizado,
             gradoNivel: gradoSeleccionado,
             turno: turnoNuevo,
             seccionLiteral: seccionNueva || datosForm.literal || 'A',
@@ -396,10 +442,17 @@ function Inscribir() {
             tipo={opts.tipo}
             span={opts.span}
             requerido={opts.req}
+            disabled={opts.disabled}
+            readOnly={opts.readOnly}
             min={opts.min}
             max={opts.max}
         />
     );
+
+    const esParejaActiva = (opc) => {
+        if (!datosForm?.situacionPareja) return false;
+        return normalizarPareja(datosForm.situacionPareja) === normalizarPareja(opc);
+    };
 
     const condItems8 = [
         { id: 'servicioAgua',         label: 'Red de Agua Potable' },
@@ -562,7 +615,7 @@ function Inscribir() {
                                 {/* Fila 1: Fecha inscripción + Cédula Escolar */}
                                 <div className="form-grid-2">
                                     {F('fechaIngreso', 'Fecha de Inscripción', '', { tipo: 'date' })}
-                                    {F('cedulaEscolar', 'Cédula Escolar', 'V-1234567890', { req: true })}
+                                    {F('cedulaEscolar', 'Cédula Escolar', 'Ej: 13100111 o V-13100111', { req: true })}
                                 </div>
 
                                 {/* Fila 2: Apellidos + Nombres */}
@@ -574,8 +627,8 @@ function Inscribir() {
                                 {/* Fila 3: Lugar Nacimiento + Fecha Nacimiento + Edad */}
                                 <div className="form-grid-3">
                                     {F('lugarNacimiento', 'Lugar de Nacimiento', 'Ciudad / Estado')}
-                                    {F('fechaNacimiento', 'Fecha de Nacimiento', '', { tipo: 'date' })}
-                                    {F('edad', 'Edad (Años)', 'Ej: 6', { tipo: 'number', req: true, min: 3, max: 18 })}
+                                    {F('fechaNacimiento', 'Fecha de Nacimiento', '', { tipo: 'date', req: true })}
+                                    {F('edad', 'Edad (Años - calculada automáticamente)', 'Auto', { tipo: 'number', req: true, readOnly: true })}
                                 </div>
 
                                 {/* Fila 4: Nacionalidad + Dirección */}
@@ -697,7 +750,7 @@ function Inscribir() {
                                 <div className="form-grid-4">
                                     <CampoTexto label="Nombre de la Madre" placeholder="Nombres y apellidos"
                                         value={datosForm.nombreMadre} onChange={(v) => cambiar('nombreMadre', v)} error={errores.nombreMadre} requerido />
-                                    <CampoTexto label="C.I. de la Madre" placeholder="V-00000000"
+                                    <CampoTexto label="C.I. de la Madre" placeholder="Ej: 15123456 o V-15123456"
                                         value={datosForm.ciMadre} onChange={(v) => cambiar('ciMadre', v)} error={errores.ciMadre} />
                                     {F('instruccionMadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
                                     {F('ocupacionMadre', 'Ocupación', 'Oficio o profesión')}
@@ -713,7 +766,7 @@ function Inscribir() {
                                 <div className="form-grid-4">
                                     <CampoTexto label="Nombre del Padre" placeholder="Nombres y apellidos"
                                         value={datosForm.nombrePadre} onChange={(v) => cambiar('nombrePadre', v)} error={errores.nombrePadre} requerido />
-                                    <CampoTexto label="C.I. del Padre" placeholder="V-00000000"
+                                    <CampoTexto label="C.I. del Padre" placeholder="Ej: 12345678 o V-12345678"
                                         value={datosForm.ciPadre} onChange={(v) => cambiar('ciPadre', v)} error={errores.ciPadre} />
                                     {F('instruccionPadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
                                     {F('ocupacionPadre', 'Ocupación', 'Oficio o profesión')}
@@ -745,7 +798,7 @@ function Inscribir() {
                                 <div className="form-grid-3">
                                     <CampoTexto label="Nombre y Apellido" placeholder="Nombre completo"
                                         value={datosForm.nombreRepresentante} onChange={(v) => cambiar('nombreRepresentante', v)} error={errores.nombreRepresentante} requerido />
-                                    <CampoTexto label="Cédula de Identidad" placeholder="V-00000000"
+                                    <CampoTexto label="Cédula de Identidad" placeholder="Ej: 12345678 o V-12345678"
                                         value={datosForm.ciRepresentante} onChange={(v) => cambiar('ciRepresentante', v)} error={errores.ciRepresentante} />
                                     {F('ocupacionRepresentante', 'Ocupación', 'Oficio o profesión')}
                                     <CampoTexto label="Teléfono de Contacto" placeholder="0416-0000000"
@@ -767,7 +820,7 @@ function Inscribir() {
                                 <div className="pills-grupo-opciones">
                                     {['Soltero/a', 'Casado/a', 'Concubino/a', 'Divorciado/a', 'Viudo/a'].map((op) => (
                                         <button key={op} type="button"
-                                            className={`pill-opcion-btn ${datosForm.situacionPareja === op ? 'pill-opcion-btn--activo' : ''}`}
+                                            className={`pill-opcion-btn ${esParejaActiva(op) ? 'pill-opcion-btn--activo' : ''}`}
                                             onClick={() => cambiar('situacionPareja', op)}>{op}</button>
                                     ))}
                                 </div>

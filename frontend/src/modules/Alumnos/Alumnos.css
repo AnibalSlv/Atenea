@@ -3,6 +3,7 @@
     max-width: 1400px;
     margin: 0 auto;
     animation: aparecerSuave 0.35s ease-out;
+    text-align: left;
 }
 
 /* ─── Encabezado del Módulo ─── */
@@ -13,6 +14,14 @@
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
+    text-align: left;
+}
+
+.alumnos-header > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .alumnos-header__titulo {
@@ -20,12 +29,243 @@
     font-weight: 800;
     color: var(--color-texto-principal);
     margin: 0 0 0.25rem;
+    text-align: left;
 }
 
 .alumnos-header__sub {
     font-size: 0.85rem;
     color: var(--color-texto-secundario);
     margin: 0;
+    text-align: left;
+}
+
+/* ─── Navegación Superior: Botón Volver ─── */
+.alumnos-top-nav {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.alumnos-btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    color: var(--color-texto-principal);
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.alumnos-btn-volver:hover {
+    color: var(--color-sidebar);
+    border-color: var(--color-sidebar);
+    transform: translateX(-2px);
+}
+
+.alumnos-header--expediente {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.1rem 1.4rem 1.1rem 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.25rem;
+}
+
+.alumnos-header__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 0.2rem;
+}
+
+.alumnos-header__info .alumnos-header__titulo {
+    text-align: left;
+    margin: 0 0 0.25rem 0;
+    padding: 0;
+}
+
+.alumnos-header__acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ─── Indicador Pasivo de Estado: Modo Consulta (NO es un botón) ─── */
+.indicador-estado-consulta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    background-color: var(--color-fondo);
+    border: 1px solid var(--color-borde);
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radio-pildora);
+    user-select: none;
+    letter-spacing: 0.02em;
+}
+
+.indicador-punto-verde {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-verde, #10b981);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* ─── Buscador Integrado en la Planilla ─── */
+.expediente-busqueda-container {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.expediente-busqueda-inputbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.expediente-busqueda-icon {
+    position: absolute;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-texto-secundario);
+    pointer-events: none;
+}
+
+.expediente-busqueda-input {
+    padding-left: 42px !important;
+    padding-right: 36px !important;
+    background-color: var(--color-blanco) !important;
+    border: 1.5px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    font-size: 0.9rem;
+    height: 44px;
+}
+
+.expediente-busqueda-input:focus {
+    border-color: var(--color-sidebar);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.12);
+}
+
+.expediente-busqueda-clear {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--color-texto-secundario);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 50%;
+    transition: background 0.15s ease;
+}
+
+.expediente-busqueda-clear:hover {
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+}
+
+.expediente-chips-salto {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0.25rem 0.2rem;
+    font-size: 0.8rem;
+}
+
+.chips-salto-titulo {
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    margin-right: 4px;
+}
+
+.chip-salto-item {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-sidebar);
+    color: var(--color-sidebar);
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chip-salto-item:hover {
+    background-color: var(--color-sidebar);
+    color: #ffffff;
+}
+
+.chips-sin-resultados {
+    color: var(--color-rojo, #e53e3e);
+    font-weight: 600;
+}
+
+/* ─── Planilla Física: Cabecera y Estilo de Documento ─── */
+.planilla-card-fisica {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 2.2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-borde);
+    position: relative;
+}
+
+.planilla-header-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px dashed var(--color-borde);
+}
+
+.planilla-header-escuela {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.planilla-escuela-nombre {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-texto-secundario);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.planilla-doc-sub {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+}
+
+.planilla-correlativo-info {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    background-color: var(--color-fondo);
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radio-pequeno);
+    border: 1px solid var(--color-borde);
 }
 
 .alumnos-header__badge {
@@ -76,6 +316,18 @@
     box-shadow: 0 4px 12px rgba(65, 84, 179, 0.25);
 }
 
+.alumnos-tab-btn--guardar {
+    background-color: var(--color-verde) !important;
+    border-color: var(--color-verde) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.alumnos-tab-btn--guardar:hover {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+}
+
 /* ─── Contenedor de la Ficha / Formulario ─── */
 .alumnos-card {
     background-color: var(--color-blanco);
@@ -86,11 +338,15 @@
 }
 
 .seccion-bloque {
-    margin-bottom: 2rem;
+    margin-bottom: 2.2rem;
+    padding-bottom: 1.8rem;
+    border-bottom: 1px solid var(--color-fondo);
 }
 
-.seccion-bloque:last-child {
+.seccion-bloque:last-of-type {
     margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .seccion-titulo-barra {
@@ -206,26 +462,107 @@
     text-align: center;
 }
 
-.pill-sino-btn:hover {
-    border-color: #cbd5e1;
+/* ─── Estados de Error, Readonly y Mensajes ─── */
+.campo-input--readonly,
+.campo-input:read-only {
+    background-color: #f1f5f9 !important;
+    cursor: not-allowed !important;
+    color: var(--color-texto-secundario) !important;
+    border-color: var(--color-borde) !important;
+    user-select: none;
 }
 
-.pill-sino-btn--si-activo {
-    background-color: rgba(84, 141, 54, 0.15);
-    border-color: var(--color-verde);
+.campo-input--error {
+    border-color: var(--color-rojo, #e53e3e) !important;
+}
+
+.campo-error-msg {
+    font-size: 0.75rem;
+    color: var(--color-rojo, #e53e3e);
+    margin-top: 2px;
+}
+
+.condicion-card-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.condicion-item--error {
+    border-color: var(--color-rojo, #e53e3e) !important;
+    background-color: rgba(230, 57, 70, 0.04);
+}
+
+.alumnos-alerta-exito {
+    background-color: var(--color-verde-fondo);
+    border: 1px solid var(--color-verde);
     color: var(--color-verde);
+    padding: 12px 18px;
+    border-radius: var(--radio-pequeno);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    animation: aparecerSuave 0.25s ease-out;
 }
 
-.pill-sino-btn--no-activo {
-    background-color: rgba(230, 57, 70, 0.12);
-    border-color: var(--color-rojo);
-    color: var(--color-rojo);
-}
-
-.pill-sino-btn--activo {
-    background-color: var(--color-sidebar);
+.pill-sino-btn:hover:not(.pill-sino-btn--si-activo):not(.pill-sino-btn--no-activo):not(.pill-sino-btn--activo) {
     border-color: var(--color-sidebar);
-    color: white;
+}
+
+.pill-sino-btn--si-activo,
+.pill-sino-btn--activo,
+.pill-sino-btn--si-activo:hover,
+.pill-sino-btn--activo:hover {
+    background-color: var(--color-sidebar) !important;
+    color: #ffffff !important;
+    border-color: var(--color-sidebar) !important;
+}
+
+.pill-sino-btn--no-activo,
+.pill-sino-btn--no-activo:hover {
+    background-color: var(--color-rojo, #e53e3e) !important;
+    color: #ffffff !important;
+    border-color: var(--color-rojo, #e53e3e) !important;
+}
+
+.pills-grupo-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.pill-opcion-btn {
+    padding: 8px 18px;
+    border: 1.5px solid var(--color-borde);
+    border-radius: var(--radio-pildora);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--color-blanco);
+    color: var(--color-texto-secundario);
+    transition: all 0.15s ease;
+}
+
+.pill-opcion-btn:hover:not(.pill-opcion-btn--activo) {
+    border-color: var(--color-sidebar);
+    color: var(--color-sidebar);
+}
+
+.pill-opcion-btn--activo,
+.pill-opcion-btn--activo:hover {
+    background-color: var(--color-sidebar) !important;
+    color: #ffffff !important;
+    border-color: var(--color-sidebar) !important;
+}
+
+.subseccion-titulo {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+    margin: 1.5rem 0 0.75rem 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1.5px solid var(--color-borde);
 }
 
 /* ─── Grid de Checkboxes / Condiciones Sanitarias ─── */
