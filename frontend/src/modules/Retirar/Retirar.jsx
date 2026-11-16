@@ -86,6 +86,7 @@ function Retirar() {
     const [alerta, setAlerta] = useState(null);
     const [modalConfirmacion, setModalConfirmacion] = useState(false);
     const [modalPurga, setModalPurga] = useState(null);
+    const [modalRestaurar, setModalRestaurar] = useState(null);
     const [actaEstudiante, setActaEstudiante] = useState(null);
     const [guardando, setGuardando] = useState(false);
     const enviandoRef = useRef(false);
@@ -106,6 +107,16 @@ function Retirar() {
         }
         refrescar();
     }, []);
+
+    // Asegurar que al seleccionar un alumno la vista no se desplace hacia abajo
+    useEffect(() => {
+        if (alumnoSeleccionado) {
+            const mainContenido = document.querySelector('.main-layout__contenido');
+            if (mainContenido) {
+                mainContenido.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
+    }, [alumnoSeleccionado]);
 
     // ─── Filtro Dinámico de Estudiantes Activos ───
     const alumnosActivosFiltrados = alumnos.filter((alumno) => {
@@ -145,9 +156,19 @@ function Retirar() {
         setFiltroTurno('TODOS');
     };
 
-    // Calcular fecha exacta de eliminación
-    const calcularFechaEliminacion = (dias) => {
-        const fecha = new Date();
+    // Calcular fecha exacta de eliminación basada en la fecha efectiva
+    const calcularFechaEliminacion = (dias, fechaBaseStr) => {
+        let base = new Date();
+        if (fechaBaseStr) {
+            const partes = fechaBaseStr.split('-');
+            if (partes.length === 3) {
+                const anio = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10) - 1;
+                const dia = parseInt(partes[2], 10);
+                base = new Date(anio, mes, dia);
+            }
+        }
+        const fecha = new Date(base);
         fecha.setDate(fecha.getDate() + (Number(dias) || 30));
         return fecha.toLocaleDateString('es-VE', {
             day: '2-digit',
@@ -156,10 +177,11 @@ function Retirar() {
         });
     };
 
-    // Manejar cambio en Escuela Receptora con validación reactiva
+    // Manejar cambio en Escuela Receptora con validación reactiva (máximo 140 caracteres)
     const handleCambioInstitucion = (val) => {
-        setInstitucionDestino(val);
-        if (!val.trim()) {
+        const textoLimitado = val.slice(0, 140);
+        setInstitucionDestino(textoLimitado);
+        if (!textoLimitado.trim()) {
             setErrores((prev) => ({ ...prev, institucionDestino: 'Este campo es obligatorio. Ingrese el plantel receptor.' }));
         } else {
             setErrores((prev) => {
@@ -334,15 +356,16 @@ function Retirar() {
     };
 
     // Restaurar alumno a matrícula activa
-    const handleRestaurar = (id, nombre) => {
-        if (window.confirm(`¿Reincorporar a "${nombre}" a la matrícula activa?`)) {
-            restaurarAlumno(id);
-            refrescar();
-            setAlerta({
-                tipo: 'exito',
-                mensaje: `El estudiante "${nombre}" ha sido restaurado a la matrícula activa.`,
-            });
-        }
+    const handleConfirmarRestaurar = () => {
+        if (!modalRestaurar) return;
+        const nombre = `${modalRestaurar.nombres} ${modalRestaurar.apellidos}`;
+        restaurarAlumno(modalRestaurar.id);
+        refrescar();
+        setAlerta({
+            tipo: 'exito',
+            mensaje: `El estudiante "${nombre}" ha sido restaurado a la matrícula activa.`,
+        });
+        setModalRestaurar(null);
     };
 
     // Purga manual anticipada
@@ -587,17 +610,6 @@ function Retirar() {
                                                     </span>
                                                     <span className="badge-tag">Turno {al.turno}</span>
                                                 </div>
-
-                                                <button
-                                                    type="button"
-                                                    className="btn-seleccionar-card"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setAlumnoSeleccionado(al);
-                                                    }}
-                                                >
-                                                    Seleccionar para Retiro →
-                                                </button>
                                             </div>
                                         );
                                     })}
@@ -682,8 +694,8 @@ function Retirar() {
                                             className={`campo-input-limpio ${errores.institucionDestino ? 'campo-input-limpio--error' : ''}`}
                                             placeholder="Ej: U.E.B. Nueva Esparta / Colegio San Martín"
                                             value={institucionDestino}
+                                            maxLength={140}
                                             onChange={(e) => handleCambioInstitucion(e.target.value)}
-                                            autoFocus
                                         />
                                         {errores.institucionDestino ? (
                                             <span className="campo-mensaje-error">
@@ -838,7 +850,7 @@ function Retirar() {
                                         className={`retencion-pill-btn ${esPersonalizado ? 'retencion-pill-btn--activo' : ''}`}
                                         onClick={() => setEsPersonalizado(true)}
                                     >
-                                        ✏️ Personalizado...
+                                        Personalizado...
                                     </button>
                                 </div>
 
@@ -861,7 +873,7 @@ function Retirar() {
                                 )}
 
                                 <span className="nota-sutil">
-                                    📅 Los datos se eliminarán automáticamente el{' '}
+                                    Los datos se eliminarán automáticamente el{' '}
                                     <strong>{calcularFechaEliminacion(diasRetencionEfectivos)}</strong> (en{' '}
                                     <strong>{diasRetencionEfectivos} días</strong>).
                                 </span>
@@ -915,8 +927,7 @@ function Retirar() {
                     </div>
 
                     {retirados.length === 0 ? (
-                        <div className="card-limpia" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-                            <IconoCheck size={42} style={{ color: 'var(--color-verde)', margin: '0 auto 0.8rem' }} />
+                        <div className="card-limpia" style={{ textAlign: 'center', padding: '3.5rem 1rem' }}>
                             <h3 style={{ margin: '0 0 0.3rem 0', fontSize: '1.05rem', color: 'var(--color-texto-principal)' }}>
                                 No hay estudiantes retirados
                             </h3>
@@ -945,7 +956,7 @@ function Retirar() {
                                                     {ret.gradoAlRetirarse || al.gradoNivel} "{ret.seccionAlRetirarse || al.seccionLiteral}" • {esVaron ? 'Varón' : 'Niña'}
                                                 </p>
                                             </div>
-                                            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-rojo)', backgroundColor: 'var(--color-rojo-fondo)', padding: '2px 8px', borderRadius: '999px' }}>
+                                            <span className="badge-retirado-suave">
                                                 Retirado
                                             </span>
                                         </div>
@@ -954,7 +965,7 @@ function Retirar() {
                                         <div className="badge-carta-destino">
                                             <IconoArchivo size={16} />
                                             <div>
-                                                <span>Destino: <strong>{ret.institucionDestino}</strong></span>
+                                                <span title={`Destino: ${ret.institucionDestino}`}>Destino: <strong>{ret.institucionDestino}</strong></span>
                                                 <div style={{ fontSize: '0.72rem', opacity: 0.85 }}>
                                                     Carta: {ret.nombreArchivoCarta || 'Verificada'}
                                                 </div>
@@ -967,8 +978,8 @@ function Retirar() {
                                                 <span style={{ color: 'var(--color-texto-secundario)' }}>
                                                     Eliminación:
                                                 </span>
-                                                <span style={{ color: diasInfo.vencido ? 'var(--color-rojo)' : '#92400e' }}>
-                                                    ⏳ {diasInfo.texto}
+                                                <span style={{ color: diasInfo.vencido ? 'var(--color-rojo)' : 'var(--color-sidebar)', fontWeight: 700 }}>
+                                                    {diasInfo.texto}
                                                 </span>
                                             </div>
                                             <div className="retencion-progress-track">
@@ -987,23 +998,26 @@ function Retirar() {
                                                 onClick={() => setActaEstudiante(al)}
                                                 title="Ver constancia oficial"
                                             >
-                                                <IconoImprimir size={14} /> Constancia
+                                                <IconoImprimir size={14} />
+                                                <span>Constancia</span>
                                             </button>
                                             <button
                                                 type="button"
                                                 className="btn-card-accion"
-                                                onClick={() => handleRestaurar(al.id, `${al.nombres} ${al.apellidos}`)}
-                                                title="Revertir retiro"
+                                                onClick={() => setModalRestaurar(al)}
+                                                title="Reincorporar estudiante a matrícula activa"
                                             >
-                                                <IconoRestaurar size={14} /> Restaurar
+                                                <IconoRestaurar size={14} />
+                                                <span>Restaurar</span>
                                             </button>
                                             <button
                                                 type="button"
                                                 className="btn-card-accion btn-card-accion--peligro"
                                                 onClick={() => setModalPurga(al)}
-                                                title="Eliminar datos ahora"
+                                                title="Limpiar datos del estudiante"
                                             >
-                                                <IconoPapelera size={14} /> Purgar
+                                                <IconoPapelera size={14} />
+                                                <span>Limpiar datos</span>
                                             </button>
                                         </div>
                                     </div>
@@ -1045,22 +1059,22 @@ function Retirar() {
                             </div>
                             <div className="modal-resumen-item">
                                 <span>Escuela Receptora:</span>
-                                <strong style={{ color: 'var(--color-sidebar)' }}>{institucionDestino}</strong>
+                                <strong>{institucionDestino}</strong>
                             </div>
                             <div className="modal-resumen-item">
                                 <span>Carta de Aceptación:</span>
-                                <strong style={{ color: 'var(--color-verde)' }}>
-                                    ✓ {archivoCarta?.nombre || (cartaFisicaVerificada ? 'Física en Dirección' : 'Consignada')}
+                                <strong>
+                                    {archivoCarta?.nombre || (cartaFisicaVerificada ? 'Física en Dirección' : 'Consignada')}
                                 </strong>
                             </div>
                             <div className="modal-resumen-item">
                                 <span>Eliminación de datos:</span>
-                                <strong style={{ color: 'var(--color-rojo)' }}>En {diasRetencionEfectivos} días</strong>
+                                <strong>En {diasRetencionEfectivos} días</strong>
                             </div>
                         </div>
 
-                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#92400e', backgroundColor: '#fffbeb', padding: '0.65rem 0.85rem', borderRadius: '10px' }}>
-                            ⚠️ El cupo en <strong>{alumnoSeleccionado.gradoNivel} "{alumnoSeleccionado.seccionLiteral}"</strong> quedará libre para nuevas inscripciones.
+                        <p style={{ margin: 0, fontSize: '0.82rem', color: '#92400e', backgroundColor: '#fffbeb', border: '1px solid #fef3c7', padding: '0.75rem 0.9rem', borderRadius: '10px' }}>
+                            El cupo en <strong>{alumnoSeleccionado.gradoNivel} "{alumnoSeleccionado.seccionLiteral}"</strong> quedará libre para nuevas inscripciones.
                         </p>
 
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.7rem', marginTop: '0.4rem' }}>
@@ -1097,7 +1111,7 @@ function Retirar() {
                                 <IconoPapelera size={18} />
                             </div>
                             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>
-                                ¿Eliminar Datos Ahora?
+                                ¿Limpiar Datos Ahora?
                             </h3>
                         </div>
 
@@ -1120,7 +1134,52 @@ function Retirar() {
                                 style={{ backgroundColor: 'var(--color-rojo)' }}
                                 onClick={handlePurgaInmediata}
                             >
-                                Eliminar
+                                Limpiar datos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ─────────────────────────────────────────────────────────────
+                MODAL: REINCORPORAR / RESTAURAR ESTUDIANTE
+            ────────────────────────────────────────────────────────────── */}
+            {modalRestaurar && (
+                <div className="modal-backdrop-blur" onClick={() => setModalRestaurar(null)}>
+                    <div className="modal-card-limpio" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e0e7ff', color: 'var(--color-sidebar)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <IconoRestaurar size={20} />
+                            </div>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-texto-principal)' }}>
+                                    Reincorporar Estudiante
+                                </h3>
+                                <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--color-texto-secundario)' }}>
+                                    Confirmar reactivación de matrícula escolar
+                                </p>
+                            </div>
+                        </div>
+
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-texto-secundario)', lineHeight: 1.5 }}>
+                            ¿Deseas reactivar a <strong>{modalRestaurar.nombres} {modalRestaurar.apellidos}</strong> a la matrícula activa? El estudiante volverá a figurar en las listas y cupos escolares.
+                        </p>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.7rem', marginTop: '0.4rem' }}>
+                            <button
+                                type="button"
+                                className="btn-secundario-limpio"
+                                onClick={() => setModalRestaurar(null)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-primario-retiro"
+                                onClick={handleConfirmarRestaurar}
+                            >
+                                <IconoCheck size={16} />
+                                <span>Reincorporar</span>
                             </button>
                         </div>
                     </div>
