@@ -22,9 +22,11 @@ func main() {
 	BackendManager := backend.NewBackendManager(databaseTemp)
 
 	err := wails.Run(&options.App{
-		Title:  "Atenea",
-		Width:  1024,
-		Height: 768,
+		Title:     "Atenea",
+		Width:     1024,
+		Height:    768,
+		MinWidth:  1024,
+		MinHeight: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

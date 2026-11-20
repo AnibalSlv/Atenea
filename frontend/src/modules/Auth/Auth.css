@@ -1,0 +1,180 @@
+.auth-pantalla {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #eef2f8 0%, #e2e8f5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: aparecerSuave 0.5s ease-out;
+}
+
+.auth-card {
+    background-color: var(--color-blanco);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(50, 66, 148, 0.12);
+    width: 100%;
+    max-width: 440px;
+    padding: 2.8rem 2.4rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ─── Encabezado Institucional ─── */
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-logo-badge {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-sidebar) 0%, var(--color-sidebar-dark) 100%);
+    color: white;
+    font-size: 1.8rem;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 8px 20px rgba(65, 84, 179, 0.3);
+}
+
+.auth-titulo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0 0 0.35rem;
+}
+
+.auth-subtitulo {
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    margin: 0;
+}
+
+/* ─── Formulario ─── */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+}
+
+.auth-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-texto-principal);
+}
+
+.auth-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.auth-input-icon {
+    position: absolute;
+    left: 1rem;
+    font-size: 1rem;
+    color: var(--color-texto-mutado);
+    pointer-events: none;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.8rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    font-size: 0.95rem;
+    color: var(--color-texto-principal);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+    border-color: var(--color-sidebar);
+    background-color: var(--color-blanco);
+    box-shadow: 0 0 0 3px rgba(65, 84, 179, 0.15);
+}
+
+.auth-input::placeholder {
+    color: var(--color-texto-mutado);
+    font-size: 0.9rem;
+}
+
+/* ─── Mensaje de Error ─── */
+.auth-error-box {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: -0.2rem;
+}
+
+/* ─── Botón Principal ─── */
+.auth-btn-submit {
+    background: linear-gradient(135deg, var(--color-sidebar) 0%, var(--color-sidebar-dark) 100%);
+    color: var(--color-blanco);
+    border: none;
+    padding: 0.95rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(65, 84, 179, 0.25);
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.auth-btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(65, 84, 179, 0.35);
+}
+
+.auth-btn-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ─── Enlace Inferior ─── */
+.auth-footer {
+    text-align: center;
+    margin-top: 1.8rem;
+    font-size: 0.88rem;
+    color: var(--color-texto-secundario);
+}
+
+.auth-link {
+    color: var(--color-sidebar);
+    font-weight: 700;
+    text-decoration: underline;
+    margin-left: 0.3rem;
+    cursor: pointer;
+}
+
+.auth-link:hover {
+    color: var(--color-sidebar-dark);
+}
+
