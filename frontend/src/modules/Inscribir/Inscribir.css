@@ -333,7 +333,8 @@
 .campo-grupo {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
+    height: 100%;
 }
 
 .campo-label {
@@ -342,6 +343,20 @@
     color: var(--color-texto-secundario);
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    line-height: 1.25;
+}
+
+.form-grid-2 .campo-label,
+.form-grid-3 .campo-label,
+.form-grid-4 .campo-label {
+    min-height: 2.2rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.form-grid-1 .campo-label,
+.campo-grupo--span .campo-label {
+    min-height: auto;
 }
 
 .campo-input,

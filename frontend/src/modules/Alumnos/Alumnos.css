@@ -403,12 +403,27 @@
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
+    height: 100%;
 }
 
 .campo-label {
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--color-texto-principal);
+    line-height: 1.25;
+}
+
+.form-grid-2 .campo-label,
+.form-grid-3 .campo-label,
+.form-grid-4 .campo-label {
+    min-height: 2.2rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.form-grid-1 .campo-label,
+.campo-grupo--span .campo-label {
+    min-height: auto;
 }
 
 .campo-input,
@@ -653,6 +668,19 @@
     justify-content: center;
     border: 2px solid var(--color-borde);
     flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.alumno-card-avatar--varon {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+.alumno-card-avatar--hembra {
+    background-color: #fce7f3;
+    color: #be185d;
+    border-color: #f9a8d4;
 }
 
 .alumno-card-info {
@@ -678,6 +706,21 @@
     font-weight: 600;
 }
 
+.alumno-card-representante {
+    font-size: 0.8rem;
+    color: var(--color-texto-secundario);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.alumno-card-rep-label {
+    font-weight: 700;
+    color: var(--color-texto-principal);
+    margin-right: 4px;
+}
+
 .alumno-card-tags {
     display: flex;
     gap: 6px;
@@ -692,6 +735,25 @@
     border-radius: var(--radio-pequeno);
     font-size: 0.75rem;
     font-weight: 700;
+}
+
+.tag-genero {
+    padding: 3px 8px;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.tag-genero--varon {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.tag-genero--hembra {
+    background-color: #fce7f3;
+    color: #be185d;
+    border: 1px solid #fbcfe8;
 }
 
 .tag-turno {

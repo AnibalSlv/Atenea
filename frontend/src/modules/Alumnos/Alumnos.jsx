@@ -6,10 +6,11 @@ import './Alumnos.css';
 
 // ─── Constantes y Reglas de Validación ───────────────────────────────────────
 const REG_SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+const REG_MEDICO      = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]+$/;
 const REG_LUGAR       = /^[a-zA-Z\u00C0-\u024FáéíóúÁÉÍÓÚüÜñÑ0-9\s\/\-\.,#]+$/;
 const REG_TELEFONO    = /^[0-9\-\+\s]{7,15}$/;
 const REG_EMAIL       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const REG_CEDULA      = /^([VEve]-?)?\d{5,12}$/;
+const REG_CEDULA      = /^([VEve]-?)?\d{3,30}$/;
 
 const SECCIONES_PLANILLA = [
     { id: 'estudiante',    numero: 1, titulo: 'Datos del Estudiante', keywords: 'estudiante alumno nombre apellido cedula escolar nacimiento fecha edad nacionalidad direccion grado turno seccion literal genero varon hembra lateralidad derecho izquierdo institucion origen fiebre medicamento paracetamol alergias' },
@@ -77,7 +78,7 @@ function validarTab(tabId, form) {
         if (!form.cedulaEscolar?.trim())
             e.cedulaEscolar = 'La cédula escolar es obligatoria.';
         else if (!REG_CEDULA.test(form.cedulaEscolar.trim()))
-            e.cedulaEscolar = 'Solo números (ej: 13100111 o V-13100111). Sin letras.';
+            e.cedulaEscolar = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
 
         if (!form.nombres?.trim())
             e.nombres = 'El nombre es obligatorio.';
@@ -123,52 +124,66 @@ function validarTab(tabId, form) {
 
         if (form.lugarNacimiento && !REG_LUGAR.test(form.lugarNacimiento.trim()))
             e.lugarNacimiento = 'Solo letras, números y /  -  ,  .';
+        if (form.direccionEstudiante && form.direccionEstudiante.trim().length > 100)
+            e.direccionEstudiante = 'Máximo 100 caracteres permitidos.';
     }
 
     if (tabId === 'especiales') {
-        if (form.medicoTratante && !REG_SOLO_LETRAS.test(form.medicoTratante.trim()))
-            e.medicoTratante = 'Solo letras en el nombre del médico.';
+        if (form.medicoTratante && !REG_MEDICO.test(form.medicoTratante.trim()))
+            e.medicoTratante = 'Solo letras y punto (ej: Dr. Marta).';
         if (form.telefonoMedico && !REG_TELEFONO.test(form.telefonoMedico.trim()))
-            e.telefonoMedico = 'Formato inválido. Ej: 0412-0000000.';
+            e.telefonoMedico = 'Formato inválido. Ej: 04121234567.';
     }
 
     if (tabId === 'padres') {
         if (!form.nombreMadre?.trim())
             e.nombreMadre = 'El nombre de la madre es obligatorio.';
         else if (!REG_SOLO_LETRAS.test(form.nombreMadre.trim()))
-            e.nombreMadre = 'Solo se permiten letras.';
+            e.nombreMadre = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombreMadre.trim().length < 3 || form.nombreMadre.trim().length > 50)
+            e.nombreMadre = 'Entre 3 y 50 caracteres.';
 
         if (!form.telefonoMadre?.trim())
             e.telefonoMadre = 'El teléfono de la madre es obligatorio.';
         else if (!REG_TELEFONO.test(form.telefonoMadre.trim()))
-            e.telefonoMadre = 'Formato inválido. Ej: 0414-0000000.';
+            e.telefonoMadre = 'Formato inválido. Ej: 04141234567.';
 
         if (form.ciMadre && !REG_CEDULA.test(form.ciMadre.trim()))
-            e.ciMadre = 'Solo números (ej: 15123456 o V-15123456). Sin letras.';
+            e.ciMadre = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
         if (form.correoMadre && !REG_EMAIL.test(form.correoMadre.trim()))
             e.correoMadre = 'Correo inválido.';
 
         if (!form.nombrePadre?.trim())
             e.nombrePadre = 'El nombre del padre es obligatorio.';
         else if (!REG_SOLO_LETRAS.test(form.nombrePadre.trim()))
-            e.nombrePadre = 'Solo se permiten letras.';
+            e.nombrePadre = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombrePadre.trim().length < 3 || form.nombrePadre.trim().length > 50)
+            e.nombrePadre = 'Entre 3 y 50 caracteres.';
 
         if (!form.telefonoPadre?.trim())
             e.telefonoPadre = 'El teléfono del padre es obligatorio.';
         else if (!REG_TELEFONO.test(form.telefonoPadre.trim()))
-            e.telefonoPadre = 'Formato inválido. Ej: 0414-0000000.';
+            e.telefonoPadre = 'Formato inválido. Ej: 04141234567.';
 
         if (form.ciPadre && !REG_CEDULA.test(form.ciPadre.trim()))
-            e.ciPadre = 'Solo números (ej: 12345678 o V-12345678). Sin letras.';
+            e.ciPadre = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
         if (form.correoPadre && !REG_EMAIL.test(form.correoPadre.trim()))
             e.correoPadre = 'Correo inválido.';
     }
+        if (form.direccionTrabajoMadre && form.direccionTrabajoMadre.trim().length > 100)
+            e.direccionTrabajoMadre = 'Máximo 100 caracteres permitidos.';
+        if (form.direccionTrabajoPadre && form.direccionTrabajoPadre.trim().length > 100)
+            e.direccionTrabajoPadre = 'Máximo 100 caracteres permitidos.';
+        if (form.direccionResidencia && form.direccionResidencia.trim().length > 100)
+            e.direccionResidencia = 'Máximo 100 caracteres permitidos.';
 
     if (tabId === 'representante') {
         if (!form.nombreRepresentante?.trim())
             e.nombreRepresentante = 'El nombre del representante es obligatorio.';
         else if (!REG_SOLO_LETRAS.test(form.nombreRepresentante.trim()))
-            e.nombreRepresentante = 'Solo se permiten letras.';
+            e.nombreRepresentante = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombreRepresentante.trim().length < 3 || form.nombreRepresentante.trim().length > 50)
+            e.nombreRepresentante = 'Entre 3 y 50 caracteres.';
 
         if (!form.telefonoRepresentante?.trim())
             e.telefonoRepresentante = 'El teléfono del representante es obligatorio.';
@@ -176,10 +191,12 @@ function validarTab(tabId, form) {
             e.telefonoRepresentante = 'Formato inválido.';
 
         if (form.ciRepresentante && !REG_CEDULA.test(form.ciRepresentante.trim()))
-            e.ciRepresentante = 'Solo números (ej: 12345678 o V-12345678). Sin letras.';
+            e.ciRepresentante = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
         if (form.correoRepresentante && !REG_EMAIL.test(form.correoRepresentante.trim()))
             e.correoRepresentante = 'Correo inválido.';
     }
+        if (form.direccionRepresentante && form.direccionRepresentante.trim().length > 100)
+            e.direccionRepresentante = 'Máximo 100 caracteres permitidos.';
 
     if (tabId === 'pareja') {
         if (!form.situacionPareja)
@@ -256,21 +273,78 @@ function normalizarPareja(str) {
         .trim();
 }
 
-function CampoTexto({ label, value, onChange, error, placeholder, tipo = 'text', span, requerido, disabled, readOnly, min, max, id }) {
+
+// ─── Filtros de Teclado y Sanitización para Inputs ───────────────────────────
+function filtrarValor(filtro, val) {
+    if (!filtro || typeof val !== 'string') return val;
+    if (filtro === 'soloLetras') {
+        return val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    }
+    if (filtro === 'soloLetrasYPunto') {
+        return val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]/g, '');
+    }
+    if (filtro === 'soloDigitos' || filtro === 'enteroPositivo' || filtro === 'cedulaNum') {
+        return val.replace(/\D/g, '');
+    }
+    return val;
+}
+
+function filtrarTecla(filtro, e, maxLength, currentVal) {
+    if (!filtro && !maxLength) return;
+    const k = e.key;
+    if (['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Enter','Escape'].includes(k)) return;
+    if (e.ctrlKey || e.metaKey) return;
+
+    if (maxLength && currentVal !== undefined && currentVal !== null) {
+        const strVal = String(currentVal);
+        const input = e.target;
+        const hasSelection = input && input.selectionStart !== input.selectionEnd;
+        if (strVal.length >= maxLength && !hasSelection) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    if (filtro === 'soloLetras') {
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]$/.test(k)) {
+            e.preventDefault();
+        }
+    } else if (filtro === 'soloLetrasYPunto') {
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]$/.test(k)) {
+            e.preventDefault();
+        }
+    } else if (filtro === 'soloDigitos' || filtro === 'enteroPositivo' || filtro === 'cedulaNum') {
+        // Solo dígitos 0-9: bloquea letras, signos negativos -, puntos, etc.
+        if (!/^[0-9]$/.test(k)) {
+            e.preventDefault();
+        }
+    }
+}
+
+function CampoTexto({ label, value, onChange, error, placeholder, tipo = 'text', span, requerido, disabled, readOnly, min, max, maxLength, id, filtro }) {
     return (
-        <div id={id} className="campo-grupo" style={span ? { gridColumn: '1 / -1' } : {}}>
+        <div id={id} className={`campo-grupo${span ? ' campo-grupo--span' : ''}`} style={span ? { gridColumn: '1 / -1' } : {}}>
             <label className="campo-label">{label}{requerido ? ' *' : ''}</label>
             <input
                 type={tipo}
                 className={`campo-input${error ? ' campo-input--error' : ''}${readOnly ? ' campo-input--readonly' : ''}`}
                 placeholder={placeholder}
                 value={value ?? ''}
-                onChange={(e) => !readOnly && onChange(e.target.value)}
+                onChange={(e) => {
+                    if (readOnly) return;
+                    let limpio = filtrarValor(filtro, e.target.value);
+                    if (maxLength && limpio.length > maxLength) {
+                        limpio = limpio.slice(0, maxLength);
+                    }
+                    onChange(limpio);
+                }}
+                onKeyDown={(e) => filtrarTecla(filtro, e, maxLength, value)}
                 disabled={disabled}
                 readOnly={readOnly}
                 tabIndex={readOnly ? -1 : undefined}
                 min={min}
                 max={max}
+                maxLength={maxLength}
             />
             {error && <span className="campo-error-msg">⚠ {error}</span>}
         </div>
@@ -338,7 +412,8 @@ function Alumnos() {
             busquedaTexto === '' ||
             (alumno.nombres && sinAcentos(alumno.nombres).includes(texto)) ||
             (alumno.apellidos && sinAcentos(alumno.apellidos).includes(texto)) ||
-            (alumno.cedulaEscolar && alumno.cedulaEscolar.toLowerCase().includes(texto));
+            (alumno.cedulaEscolar && alumno.cedulaEscolar.toLowerCase().includes(texto)) ||
+            (alumno.nombreRepresentante && sinAcentos(alumno.nombreRepresentante).includes(texto));
 
         return cumpleTurno && cumpleGrado && cumpleSeccion && cumpleTexto;
     });
@@ -463,6 +538,8 @@ function Alumnos() {
             readOnly={opts.readOnly}
             min={opts.min}
             max={opts.max}
+            maxLength={opts.maxLength}
+            filtro={opts.filtro}
         />
     );
 
@@ -576,28 +653,42 @@ function Alumnos() {
                     {/* Grilla de Resultados */}
                     {alumnosFiltrados.length > 0 ? (
                         <div className="alumnos-grid-cards">
-                            {alumnosFiltrados.map((alumno) => (
-                                <div
-                                    key={alumno.id}
-                                    className="alumno-card-item"
-                                    onClick={() => abrirExpediente(alumno)}
-                                >
-                                    <div className="alumno-card-avatar">
-                                        {alumno.nombres ? alumno.nombres.charAt(0) : ''}
-                                        {alumno.apellidos ? alumno.apellidos.charAt(0) : ''}
-                                    </div>
-                                    <div className="alumno-card-info">
-                                        <h3 className="alumno-card-nombre">
-                                            {alumno.apellidos}, {alumno.nombres}
-                                        </h3>
-                                        <span className="alumno-card-cedula">{alumno.cedulaEscolar}</span>
-                                        <div className="alumno-card-tags">
-                                            <span className="tag-grado">{alumno.gradoNivel} "{alumno.seccionLiteral}"</span>
-                                            <span className="tag-turno">{alumno.turno}</span>
+                            {alumnosFiltrados.map((alumno) => {
+                                const esHembra = (alumno.genero || '').toLowerCase().includes('hembra') ||
+                                    (alumno.genero || '').toLowerCase().includes('niña') ||
+                                    (alumno.genero || '').toLowerCase().includes('femenin');
+                                const generoTexto = esHembra ? 'Hembra' : (alumno.genero || 'Varón');
+                                const nombreRep = alumno.nombreRepresentante?.trim() || alumno.nombreMadre?.trim() || alumno.nombrePadre?.trim() || 'No asignado';
+
+                                return (
+                                    <div
+                                        key={alumno.id}
+                                        className="alumno-card-item"
+                                        onClick={() => abrirExpediente(alumno)}
+                                    >
+                                        <div className={`alumno-card-avatar ${esHembra ? 'alumno-card-avatar--hembra' : 'alumno-card-avatar--varon'}`}>
+                                            {alumno.nombres ? alumno.nombres.charAt(0).toUpperCase() : ''}
+                                            {alumno.apellidos ? alumno.apellidos.charAt(0).toUpperCase() : ''}
+                                        </div>
+                                        <div className="alumno-card-info">
+                                            <h3 className="alumno-card-nombre">
+                                                {alumno.apellidos}, {alumno.nombres}
+                                            </h3>
+                                            <span className="alumno-card-representante" title={`Representante: ${nombreRep}`}>
+                                                <span className="alumno-card-rep-label">Representante:</span>
+                                                {nombreRep}
+                                            </span>
+                                            <div className="alumno-card-tags">
+                                                <span className="tag-grado">{alumno.gradoNivel} "{alumno.seccionLiteral}"</span>
+                                                <span className={`tag-genero ${esHembra ? 'tag-genero--hembra' : 'tag-genero--varon'}`}>
+                                                    {generoTexto}
+                                                </span>
+                                                <span className="tag-turno">{alumno.turno}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="alumnos-vacio">
@@ -759,19 +850,19 @@ function Alumnos() {
                                 </div>
 
                                 <div className="form-grid-2">
-                                    {F('fechaIngreso', 'Fecha de Inscripción / Ingreso', '', { tipo: 'date' })}
-                                    {F('cedulaEscolar', 'Cédula Escolar', 'Ej: 13100111 o V-13100111', { req: true })}
+                                    {F('fechaIngreso', 'Fecha de Inscripción', '', { tipo: 'date' })}
+                                    {F('cedulaEscolar', 'Cédula Escolar', 'Ej: 13100111', { req: true, filtro: 'soloDigitos', maxLength: 30 })}
                                 </div>
 
                                 <div className="form-grid-2">
-                                    {F('apellidos', 'Apellidos', 'Apellidos completos', { req: true })}
-                                    {F('nombres', 'Nombres', 'Nombres completos', { req: true })}
+                                    {F('apellidos', 'Apellidos', 'Apellidos completos', { req: true, filtro: 'soloLetras', maxLength: 50 })}
+                                    {F('nombres', 'Nombres', 'Nombres completos', { req: true, filtro: 'soloLetras', maxLength: 50 })}
                                 </div>
 
                                 <div className="form-grid-3">
                                     {F('lugarNacimiento', 'Lugar de Nacimiento', 'Ciudad / Estado')}
                                     {F('fechaNacimiento', 'Fecha de Nacimiento', '', { tipo: 'date', req: true })}
-                                    {F('edad', 'Edad (Años - calculada automáticamente)', 'Auto', { tipo: 'number', req: true, readOnly: true, disabled: false })}
+                                    {F('edad', 'Edad (Años - Automática)', 'Auto', { tipo: 'number', req: true, readOnly: true, disabled: false })}
                                 </div>
 
                                 <div className="form-grid-2">
@@ -783,7 +874,7 @@ function Alumnos() {
                                         error={errores.nacionalidad}
                                         disabled={!modoEdicion}
                                     />
-                                    {F('direccionEstudiante', 'Dirección del Estudiante', 'Calle, sector, casa...')}
+                                    {F('direccionEstudiante', 'Dirección del Estudiante', 'Calle, sector, casa...', { maxLength: 100 })}
                                 </div>
 
                                 <div className="form-grid-3">
@@ -906,19 +997,22 @@ function Alumnos() {
                                 <div className="form-grid-2">
                                     <CampoTexto
                                         label="Médico Tratante"
-                                        placeholder="Nombre del especialista"
+                                        placeholder="Nombre del especialista (ej: Dr. Marta)"
                                         value={datos.medicoTratante}
                                         onChange={(v) => manejarCambio('medicoTratante', v)}
                                         error={errores.medicoTratante}
                                         disabled={!modoEdicion}
+                                        filtro="soloLetrasYPunto"
                                     />
                                     <CampoTexto
                                         label="Teléfono del Médico"
-                                        placeholder="0412-0000000"
+                                        placeholder="04121234567"
                                         value={datos.telefonoMedico}
                                         onChange={(v) => manejarCambio('telefonoMedico', v)}
                                         error={errores.telefonoMedico}
                                         disabled={!modoEdicion}
+                                        filtro="soloDigitos"
+                                        maxLength={datos.telefonoMedico?.startsWith('0') ? 11 : 10}
                                     />
                                 </div>
 
@@ -940,6 +1034,8 @@ function Alumnos() {
                                 <div className="form-grid-4">
                                     <CampoTexto
                                         label="Nombre de la Madre"
+                                        filtro="soloLetras"
+                                        maxLength={50}
                                         placeholder="Nombres y apellidos"
                                         value={datos.nombreMadre}
                                         onChange={(v) => manejarCambio('nombreMadre', v)}
@@ -949,24 +1045,28 @@ function Alumnos() {
                                     />
                                     <CampoTexto
                                         label="C.I. de la Madre"
-                                        placeholder="Ej: 15123456 o V-15123456"
+                                        placeholder="Ej: 15123456"
                                         value={datos.ciMadre}
                                         onChange={(v) => manejarCambio('ciMadre', v)}
                                         error={errores.ciMadre}
                                         disabled={!modoEdicion}
+                                        filtro="cedulaNum"
+                                        maxLength={30}
                                     />
                                     {F('instruccionMadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
                                     {F('ocupacionMadre', 'Ocupación', 'Oficio o profesión')}
                                     {F('lugarTrabajoMadre', 'Lugar de Trabajo', 'Empresa o institución')}
-                                    {F('direccionTrabajoMadre', 'Dirección del Trabajo', 'Dirección laboral')}
+                                    {F('direccionTrabajoMadre', 'Dirección del Trabajo', 'Dirección laboral', { maxLength: 100 })}
                                     <CampoTexto
                                         label="Teléfono de la Madre"
-                                        placeholder="0414-0000000"
+                                        placeholder="04141234567"
                                         value={datos.telefonoMadre}
                                         onChange={(v) => manejarCambio('telefonoMadre', v)}
                                         error={errores.telefonoMadre}
                                         requerido={modoEdicion}
                                         disabled={!modoEdicion}
+                                        filtro="soloDigitos"
+                                        maxLength={datos.telefonoMadre?.startsWith('0') ? 11 : 10}
                                     />
                                     <CampoTexto
                                         label="Correo de la Madre"
@@ -983,6 +1083,8 @@ function Alumnos() {
                                 <div className="form-grid-4">
                                     <CampoTexto
                                         label="Nombre del Padre"
+                                        filtro="soloLetras"
+                                        maxLength={50}
                                         placeholder="Nombres y apellidos"
                                         value={datos.nombrePadre}
                                         onChange={(v) => manejarCambio('nombrePadre', v)}
@@ -992,24 +1094,28 @@ function Alumnos() {
                                     />
                                     <CampoTexto
                                         label="C.I. del Padre"
-                                        placeholder="Ej: 12345678 o V-12345678"
+                                        placeholder="Ej: 12345678"
                                         value={datos.ciPadre}
                                         onChange={(v) => manejarCambio('ciPadre', v)}
                                         error={errores.ciPadre}
                                         disabled={!modoEdicion}
+                                        filtro="cedulaNum"
+                                        maxLength={30}
                                     />
                                     {F('instruccionPadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
                                     {F('ocupacionPadre', 'Ocupación', 'Oficio o profesión')}
                                     {F('lugarTrabajoPadre', 'Lugar de Trabajo', 'Empresa o institución')}
-                                    {F('direccionTrabajoPadre', 'Dirección del Trabajo', 'Dirección laboral')}
+                                    {F('direccionTrabajoPadre', 'Dirección del Trabajo', 'Dirección laboral', { maxLength: 100 })}
                                     <CampoTexto
                                         label="Teléfono del Padre"
-                                        placeholder="0414-0000000"
+                                        placeholder="04141234567"
                                         value={datos.telefonoPadre}
                                         onChange={(v) => manejarCambio('telefonoPadre', v)}
                                         error={errores.telefonoPadre}
                                         requerido={modoEdicion}
                                         disabled={!modoEdicion}
+                                        filtro="soloDigitos"
+                                        maxLength={datos.telefonoPadre?.startsWith('0') ? 11 : 10}
                                     />
                                     <CampoTexto
                                         label="Correo del Padre"
@@ -1024,10 +1130,10 @@ function Alumnos() {
 
                                 <h3 className="subseccion-titulo">Comunidad</h3>
                                 <div className="form-grid-3">
-                                    {F('liderCalle', 'Líder de Calle', 'Nombre del líder')}
-                                    {F('nombreComuna', 'Nombre de la Comunidad / Comuna', 'Nombre de la comunidad')}
-                                    {F('centroVotacion', 'Centro de Votación', 'Centro de votación')}
-                                    {F('direccionResidencia', 'Dirección de Residencia', 'Calle, sector, casa o apartamento', { span: true })}
+                                    {F('liderCalle', 'Líder de Calle', 'Nombre del líder', { filtro: 'soloLetras' })}
+                                    {F('nombreComuna', 'Comunidad / Comuna', 'Nombre de la comunidad')}
+                                    {F('centroVotacion', 'Centro de Votación', 'Centro de votación', { filtro: 'soloLetras' })}
+                                    {F('direccionResidencia', 'Dirección de Residencia', 'Calle, sector, casa o apartamento', { span: true, maxLength: 100 })}
                                 </div>
                             </section>
                         )}
@@ -1043,6 +1149,8 @@ function Alumnos() {
                                 <div className="form-grid-3">
                                     <CampoTexto
                                         label="Nombre y Apellido"
+                                        filtro="soloLetras"
+                                        maxLength={50}
                                         placeholder="Nombre completo"
                                         value={datos.nombreRepresentante}
                                         onChange={(v) => manejarCambio('nombreRepresentante', v)}
@@ -1052,21 +1160,25 @@ function Alumnos() {
                                     />
                                     <CampoTexto
                                         label="Cédula de Identidad"
-                                        placeholder="Ej: 12345678 o V-12345678"
+                                        placeholder="Ej: 12345678"
                                         value={datos.ciRepresentante}
                                         onChange={(v) => manejarCambio('ciRepresentante', v)}
                                         error={errores.ciRepresentante}
                                         disabled={!modoEdicion}
+                                        filtro="cedulaNum"
+                                        maxLength={30}
                                     />
                                     {F('ocupacionRepresentante', 'Ocupación', 'Oficio o profesión')}
                                     <CampoTexto
                                         label="Teléfono de Contacto"
-                                        placeholder="0416-0000000"
+                                        placeholder="04161234567"
                                         value={datos.telefonoRepresentante}
                                         onChange={(v) => manejarCambio('telefonoRepresentante', v)}
                                         error={errores.telefonoRepresentante}
                                         requerido={modoEdicion}
                                         disabled={!modoEdicion}
+                                        filtro="soloDigitos"
+                                        maxLength={datos.telefonoRepresentante?.startsWith('0') ? 11 : 10}
                                     />
                                     <CampoTexto
                                         label="Correo Electrónico"
@@ -1077,7 +1189,7 @@ function Alumnos() {
                                         error={errores.correoRepresentante}
                                         disabled={!modoEdicion}
                                     />
-                                    {F('direccionRepresentante', 'Dirección del Representante', 'Dirección completa', { span: true })}
+                                    {F('direccionRepresentante', 'Dirección del Representante', 'Dirección completa', { span: true, maxLength: 100 })}
                                 </div>
                             </section>
                         )}
@@ -1141,6 +1253,7 @@ function Alumnos() {
                                         error={errores.cuartosVivienda}
                                         min={1}
                                         disabled={!modoEdicion}
+                                        filtro="enteroPositivo"
                                     />
 
                                     <div className="campo-grupo">
@@ -1197,6 +1310,7 @@ function Alumnos() {
                                         error={errores.cantidadPersonasVivienda}
                                         min={1}
                                         disabled={!modoEdicion}
+                                        filtro="enteroPositivo"
                                     />
                                     <CampoTexto
                                         label="Familias en la Vivienda"
@@ -1207,6 +1321,7 @@ function Alumnos() {
                                         error={errores.familiasEnVivienda}
                                         min={1}
                                         disabled={!modoEdicion}
+                                        filtro="enteroPositivo"
                                     />
                                     <CampoTexto
                                         label="Número de Hermanos"
@@ -1217,6 +1332,7 @@ function Alumnos() {
                                         error={errores.numeroHermanos}
                                         min={0}
                                         disabled={!modoEdicion}
+                                        filtro="enteroPositivo"
                                     />
                                 </div>
                             </section>
