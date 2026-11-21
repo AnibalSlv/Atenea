@@ -49,12 +49,15 @@ function Dashboard() {
         setAlumnos(getAlumnos());
     }, []);
 
+    // ─── Filtrar alumnos activos (excluyendo retirados) ──────────
+    const alumnosActivos = alumnos.filter((a) => !a.estado || a.estado === 'Activo');
+
     // ─── Métricas Generales de Matrícula ─────────────────────────
-    const matriculaGlobal = contarVHT(alumnos);
+    const matriculaGlobal = contarVHT(alumnosActivos);
 
     // ─── Desglose por Turno y Nivel (Control de Turnos) ──────────
-    const alumnosManana = alumnos.filter((a) => a.turno === TURNOS.MANANA);
-    const alumnosTarde = alumnos.filter((a) => a.turno === TURNOS.TARDE);
+    const alumnosManana = alumnosActivos.filter((a) => a.turno === TURNOS.MANANA);
+    const alumnosTarde = alumnosActivos.filter((a) => a.turno === TURNOS.TARDE);
 
     const inicialManana = contarVHT(alumnosManana.filter((a) => NOMBRES_PREESCOLAR.includes(a.gradoNivel)));
     const primariaManana = contarVHT(alumnosManana.filter((a) => NOMBRES_PRIMARIA.includes(a.gradoNivel)));
@@ -62,7 +65,7 @@ function Dashboard() {
     const primariaTarde = contarVHT(alumnosTarde.filter((a) => NOMBRES_PRIMARIA.includes(a.gradoNivel)));
 
     // ─── Datos para Barras de Cupos ──────────────────────────────
-    const alumnosTurnoGrafico = alumnos.filter((a) => a.turno === turnoActivoCupos);
+    const alumnosTurnoGrafico = alumnosActivos.filter((a) => a.turno === turnoActivoCupos);
 
     const generarDatosNivel = (gradosNivel) => {
         return gradosNivel.map((grado) => {
