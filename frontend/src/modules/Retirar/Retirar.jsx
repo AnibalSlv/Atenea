@@ -18,7 +18,6 @@ import {
     IconoPapelera,
     IconoRestaurar,
     IconoArchivo,
-    IconoImprimir,
 } from '../../components/Iconos';
 import { useNotificaciones } from '../../context/NotificacionesContext';
 import './Retirar.css';
@@ -87,26 +86,32 @@ function Retirar() {
     const [modalConfirmacion, setModalConfirmacion] = useState(false);
     const [modalPurga, setModalPurga] = useState(null);
     const [modalRestaurar, setModalRestaurar] = useState(null);
-    const [actaEstudiante, setActaEstudiante] = useState(null);
     const [guardando, setGuardando] = useState(false);
     const enviandoRef = useRef(false);
 
-    // Recargar datos y auto-purga inicial
+    // Recargar datos y auto-purga de expedientes vencidos
     const refrescar = () => {
-        setAlumnos(getAlumnos());
-        setRetirados(getAlumnosRetirados());
-    };
-
-    useEffect(() => {
         const resPurga = purgarAlumnosVencidos();
-        if (resPurga.totalPurgados > 0) {
+        if (resPurga && resPurga.totalPurgados > 0) {
             setAlerta({
                 tipo: 'aviso',
                 mensaje: `Se eliminaron automáticamente ${resPurga.totalPurgados} expediente(s) con período de retención vencido.`,
             });
         }
+        setAlumnos(getAlumnos());
+        setRetirados(getAlumnosRetirados());
+    };
+
+    useEffect(() => {
         refrescar();
     }, []);
+
+    // Asegurar auto-purga cada vez que se ingrese a la pestaña de estudiantes retirados
+    useEffect(() => {
+        if (vistaActiva === 'retirados') {
+            refrescar();
+        }
+    }, [vistaActiva]);
 
     // Asegurar que al seleccionar un alumno la vista no se desplace hacia abajo
     useEffect(() => {
@@ -995,15 +1000,6 @@ function Retirar() {
                                             <button
                                                 type="button"
                                                 className="btn-card-accion"
-                                                onClick={() => setActaEstudiante(al)}
-                                                title="Ver constancia oficial"
-                                            >
-                                                <IconoImprimir size={14} />
-                                                <span>Constancia</span>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn-card-accion"
                                                 onClick={() => setModalRestaurar(al)}
                                                 title="Reincorporar estudiante a matrícula activa"
                                             >
@@ -1184,63 +1180,6 @@ function Retirar() {
                             >
                                 <IconoCheck size={16} />
                                 <span>Reincorporar</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ─────────────────────────────────────────────────────────────
-                MODAL 3: CONSTANCIA FORMAL IMPRIMIBLE
-            ────────────────────────────────────────────────────────────── */}
-            {actaEstudiante && (
-                <div className="modal-backdrop-blur" onClick={() => setActaEstudiante(null)}>
-                    <div className="modal-card-limpio" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '680px' }}>
-                        <div style={{ border: '1px solid #e2e8f0', padding: '1.6rem', borderRadius: '16px', backgroundColor: '#fff', color: '#0f172a', fontFamily: 'Segoe UI, sans-serif' }}>
-                            <div style={{ textAlign: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '10px', marginBottom: '14px' }}>
-                                <h4 style={{ margin: 0, fontSize: '0.85rem', textTransform: 'uppercase' }}>República Bolivariana de Venezuela</h4>
-                                <h5 style={{ margin: '2px 0 0 0', fontSize: '0.78rem' }}>U.E.M. "Gregorio Romero" — Maneiro, Edo. Nueva Esparta</h5>
-                            </div>
-
-                            <h3 style={{ textAlign: 'center', fontSize: '1.1rem', textDecoration: 'underline', margin: '12px 0' }}>
-                                CONSTANCIA DE RETIRO ESCOLAR
-                            </h3>
-
-                            <div style={{ fontSize: '0.85rem', lineHeight: 1.6, textAlign: 'justify' }}>
-                                Por medio de la presente se hace constar que el (la) estudiante{' '}
-                                <strong>{actaEstudiante.nombres} {actaEstudiante.apellidos}</strong>, cursante de{' '}
-                                <strong>{actaEstudiante.retiro?.gradoAlRetirarse || actaEstudiante.gradoNivel} "{actaEstudiante.retiro?.seccionAlRetirarse || actaEstudiante.seccionLiteral}"</strong> (Turno {actaEstudiante.retiro?.turnoAlRetirarse || actaEstudiante.turno}), ha sido formalmente desincorporado(a) de esta institución en fecha{' '}
-                                <strong>{actaEstudiante.retiro?.fechaEfectiva}</strong>, habiendo consignado la debida Carta de Aceptación del plantel receptor:{' '}
-                                <strong>{actaEstudiante.retiro?.institucionDestino}</strong>.
-                                <br />
-                                Representante legal: <strong>{actaEstudiante.nombreRepresentante}</strong> (C.I: {actaEstudiante.ciRepresentante || 'No registrada'}).
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '30px', textAlign: 'center' }}>
-                                <div style={{ borderTop: '1px solid #0f172a', paddingTop: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
-                                    Dirección Escolar
-                                </div>
-                                <div style={{ borderTop: '1px solid #0f172a', paddingTop: '6px', fontSize: '0.78rem', fontWeight: 700 }}>
-                                    Firma del Representante
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.7rem' }}>
-                            <button
-                                type="button"
-                                className="btn-secundario-limpio"
-                                onClick={() => setActaEstudiante(null)}
-                            >
-                                Cerrar
-                            </button>
-                            <button
-                                type="button"
-                                className="btn-primario-retiro"
-                                onClick={() => window.print()}
-                            >
-                                <IconoImprimir size={16} />
-                                <span>Imprimir</span>
                             </button>
                         </div>
                     </div>

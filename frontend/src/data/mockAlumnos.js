@@ -87,8 +87,9 @@ export const getAlumnosActivos = () => {
     return lista.filter((a) => !a.estado || a.estado === 'Activo');
 };
 
-// Obtener solo los alumnos en estado retirado
+// Obtener solo los alumnos en estado retirado (purgando automáticamente los vencidos)
 export const getAlumnosRetirados = () => {
+    purgarAlumnosVencidos();
     const lista = getAlumnos();
     return lista.filter((a) => a.estado === 'Retirado');
 };
@@ -167,7 +168,8 @@ export const retirarAlumno = (id, datosRetiro) => {
     });
 
     localStorage.setItem(CLAVE_STORAGE, JSON.stringify(nuevaLista));
-    return nuevaLista.find((a) => a.id === id);
+    purgarAlumnosVencidos();
+    return getAlumnos().find((a) => a.id === id);
 };
 
 // Restaurar un alumno retirado a estado activo
