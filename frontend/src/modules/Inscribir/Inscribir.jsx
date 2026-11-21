@@ -1,0 +1,1162 @@
+import { useState, useEffect } from 'react';
+import { TODOS_LOS_GRADOS, TURNOS, obtenerGradosPermitidosReinscripcion, validarPromocionReinscripcion } from '../../constants/estructuraEscolar';
+import { getAlumnos, agregarAlumno, actualizarGradoAlumnoRegular } from '../../data/mockAlumnos';
+import { IconoGuardar, IconoBuscar } from '../../components/Iconos';
+import './Inscribir.css';
+
+// ─── Constantes ───────────────────────────────────────────────────────────────
+const TABS = [
+    { id: 'estudiante',    label: '1. Datos del Estudiante' },
+    { id: 'especiales',   label: '2. Necesidades Especiales' },
+    { id: 'padres',       label: '3. Padres y Comunidad' },
+    { id: 'representante',label: '4. Representante' },
+    { id: 'pareja',       label: '5. Situación de la Pareja' },
+    { id: 'vivienda',     label: '6. Vivienda' },
+    { id: 'habitantes',   label: '7. Habitantes' },
+    { id: 'servicios',    label: '8. Servicios Básicos' },
+    { id: 'otros',        label: '9. Otros' },
+];
+
+const REG_SOLO_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+const REG_MEDICO      = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]+$/;
+const REG_LUGAR       = /^[a-zA-Z\u00C0-\u024FáéíóúÁÉÍÓÚüÜñÑ0-9\s\/\-\.,#]+$/;
+const REG_TELEFONO    = /^[0-9\-\+\s]{7,15}$/;
+const REG_EMAIL       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const REG_CEDULA      = /^([VEve]-?)?\d{3,30}$/;
+
+const CAMPO_A_TAB = {
+    fechaIngreso: 'estudiante', cedulaEscolar: 'estudiante',
+    apellidos: 'estudiante', nombres: 'estudiante',
+    lugarNacimiento: 'estudiante', fechaNacimiento: 'estudiante', edad: 'estudiante',
+    nacionalidad: 'estudiante', direccionEstudiante: 'estudiante',
+    genero: 'estudiante', lateralidad: 'estudiante',
+    medicoTratante: 'especiales', telefonoMedico: 'especiales',
+    nombreMadre: 'padres', ciMadre: 'padres', telefonoMadre: 'padres', correoMadre: 'padres',
+    nombrePadre: 'padres', ciPadre: 'padres', telefonoPadre: 'padres', correoPadre: 'padres',
+    nombreRepresentante: 'representante', ciRepresentante: 'representante',
+    telefonoRepresentante: 'representante', correoRepresentante: 'representante',
+    situacionPareja: 'pareja',
+    tipoVivienda: 'vivienda', cuartosVivienda: 'vivienda',
+    cantidadPersonasVivienda: 'habitantes', familiasEnVivienda: 'habitantes', numeroHermanos: 'habitantes',
+    servicioAgua: 'servicios', servicioDesague: 'servicios',
+    servicioElectricidad: 'servicios', servicioTelefonia: 'servicios', servicioInternet: 'servicios',
+    aguaPotableContinua: 'otros', banosBuenEstado: 'otros', tienePoceta: 'otros',
+    tieneDucha: 'otros', tieneLavamanos: 'otros', servicioAseoFrecuente: 'otros',
+    recibeGasFrecuente: 'otros', participaComunidad: 'otros', colaboraEscuela: 'otros',
+};
+
+// ─── Componentes auxiliares FUERA del componente principal ────────────────────
+// (definirlos dentro causaría re-montaje en cada render y pérdida de foco)
+
+
+// ─── Filtros de Teclado y Sanitización para Inputs ───────────────────────────
+function filtrarValor(filtro, val) {
+    if (!filtro || typeof val !== 'string') return val;
+    if (filtro === 'soloLetras') {
+        return val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    }
+    if (filtro === 'soloLetrasYPunto') {
+        return val.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]/g, '');
+    }
+    if (filtro === 'soloDigitos' || filtro === 'enteroPositivo' || filtro === 'cedulaNum') {
+        return val.replace(/\D/g, '');
+    }
+    return val;
+}
+
+function filtrarTecla(filtro, e, maxLength, currentVal) {
+    if (!filtro && !maxLength) return;
+    const k = e.key;
+    if (['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Enter','Escape'].includes(k)) return;
+    if (e.ctrlKey || e.metaKey) return;
+
+    if (maxLength && currentVal !== undefined && currentVal !== null) {
+        const strVal = String(currentVal);
+        const input = e.target;
+        const hasSelection = input && input.selectionStart !== input.selectionEnd;
+        if (strVal.length >= maxLength && !hasSelection) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    if (filtro === 'soloLetras') {
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]$/.test(k)) {
+            e.preventDefault();
+        }
+    } else if (filtro === 'soloLetrasYPunto') {
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\.]$/.test(k)) {
+            e.preventDefault();
+        }
+    } else if (filtro === 'soloDigitos' || filtro === 'enteroPositivo' || filtro === 'cedulaNum') {
+        // Solo dígitos 0-9: bloquea letras, signos negativos -, puntos, etc.
+        if (!/^[0-9]$/.test(k)) {
+            e.preventDefault();
+        }
+    }
+}
+
+function CampoTexto({ label, value, onChange, error, placeholder, tipo = 'text', span, requerido, disabled, readOnly, min, max, maxLength, filtro }) {
+    return (
+        <div className={`campo-grupo${span ? ' campo-grupo--span' : ''}`} style={span ? { gridColumn: '1 / -1' } : {}}>
+            <label className="campo-label">{label}{requerido ? ' *' : ''}</label>
+            <input
+                type={tipo}
+                className={`campo-input${error ? ' campo-input--error' : ''}${readOnly ? ' campo-input--readonly' : ''}`}
+                placeholder={placeholder}
+                value={value ?? ''}
+                onChange={(e) => {
+                    if (readOnly) return;
+                    let limpio = filtrarValor(filtro, e.target.value);
+                    if (maxLength && limpio.length > maxLength) {
+                        limpio = limpio.slice(0, maxLength);
+                    }
+                    onChange(limpio);
+                }}
+                onKeyDown={(e) => filtrarTecla(filtro, e, maxLength, value)}
+                disabled={disabled}
+                readOnly={readOnly}
+                tabIndex={readOnly ? -1 : undefined}
+                min={min}
+                max={max}
+                maxLength={maxLength}
+            />
+            {error && <span className="campo-error-msg">⚠ {error}</span>}
+        </div>
+    );
+}
+
+function BotonesSiNo({ value, onChange }) {
+    return (
+        <div className="pills-sino-container" style={{ width: '120px' }}>
+            <button type="button"
+                className={`pill-sino-btn ${value === true ? 'pill-sino-btn--si-activo' : ''}`}
+                onClick={() => onChange(true)}>SÍ</button>
+            <button type="button"
+                className={`pill-sino-btn ${value === false ? 'pill-sino-btn--no-activo' : ''}`}
+                onClick={() => onChange(false)}>NO</button>
+        </div>
+    );
+}
+
+// Elimina acentos y pasa a minúsculas para búsquedas sin tilde
+function sinAcentos(str) {
+    if (!str) return '';
+    return String(str)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+}
+
+// Normaliza opciones de pareja para tolerar variaciones como Casado vs Casado/a
+function normalizarPareja(str) {
+    if (!str) return '';
+    return String(str)
+        .toLowerCase()
+        .replace(/\/a$/i, '')
+        .replace(/[oa]$/i, '')
+        .trim();
+}
+
+// Calcula la edad en años cumplidos en base a la fecha de nacimiento (YYYY-MM-DD)
+function calcularEdad(fechaStr) {
+    if (!fechaStr) return '';
+    const nac = new Date(fechaStr + 'T00:00:00');
+    if (isNaN(nac.getTime())) return '';
+    const hoy = new Date();
+    if (nac > hoy) return '';
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const mesDif = hoy.getMonth() - nac.getMonth();
+    if (mesDif < 0 || (mesDif === 0 && hoy.getDate() < nac.getDate())) {
+        edad--;
+    }
+    return edad >= 0 ? String(edad) : '';
+}
+
+// ─── Lógica de validación por pestaña ────────────────────────────────────────
+function validarTab(tabId, form) {
+    const e = {};
+    if (!form) return e;
+
+    if (tabId === 'estudiante') {
+        if (!form.cedulaEscolar?.trim())
+            e.cedulaEscolar = 'La cédula escolar es obligatoria.';
+        else if (!REG_CEDULA.test(form.cedulaEscolar.trim()))
+            e.cedulaEscolar = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
+
+        if (!form.nombres?.trim())
+            e.nombres = 'El nombre es obligatorio.';
+        else if (!REG_SOLO_LETRAS.test(form.nombres.trim()))
+            e.nombres = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombres.trim().length < 3 || form.nombres.trim().length > 50)
+            e.nombres = 'Entre 3 y 50 caracteres.';
+
+        if (!form.apellidos?.trim())
+            e.apellidos = 'El apellido es obligatorio.';
+        else if (!REG_SOLO_LETRAS.test(form.apellidos.trim()))
+            e.apellidos = 'Solo letras, sin números ni símbolos.';
+        else if (form.apellidos.trim().length < 3 || form.apellidos.trim().length > 50)
+            e.apellidos = 'Entre 3 y 50 caracteres.';
+
+        if (!form.genero)
+            e.genero = 'Seleccione el género del alumno.';
+
+        if (!form.fechaNacimiento) {
+            e.fechaNacimiento = 'La fecha de nacimiento es obligatoria.';
+        } else {
+            const nac = new Date(form.fechaNacimiento + 'T00:00:00');
+            const hoy = new Date();
+            if (isNaN(nac.getTime())) {
+                e.fechaNacimiento = 'Fecha de nacimiento inválida.';
+            } else if (nac > hoy) {
+                e.fechaNacimiento = 'La fecha de nacimiento no puede ser una fecha futura.';
+            }
+        }
+
+        const edadCalculada = calcularEdad(form.fechaNacimiento);
+        const edadNum = parseInt(edadCalculada, 10);
+        if (!form.fechaNacimiento || edadCalculada === '') {
+            e.edad = 'Ingrese una fecha de nacimiento válida para calcular la edad.';
+        } else if (isNaN(edadNum) || edadNum < 3 || edadNum > 18) {
+            e.edad = `La edad calculada (${edadNum} años) no es válida para la institución (debe tener entre 3 y 18 años).`;
+        } else if (form.edad !== undefined && form.edad !== '' && String(form.edad) !== String(edadCalculada)) {
+            e.edad = `La edad (${form.edad}) no coincide con la fecha de nacimiento (debe ser ${edadCalculada} años).`;
+        }
+
+        if (form.nacionalidad && !REG_SOLO_LETRAS.test(form.nacionalidad.trim()))
+            e.nacionalidad = 'Solo letras (ej: Venezolana).';
+
+        if (form.lugarNacimiento && !REG_LUGAR.test(form.lugarNacimiento.trim()))
+            e.lugarNacimiento = 'Solo letras, números y /  -  ,  .';
+        if (form.direccionEstudiante && form.direccionEstudiante.trim().length > 100)
+            e.direccionEstudiante = 'Máximo 100 caracteres permitidos.';
+    }
+
+    if (tabId === 'especiales') {
+        if (form.medicoTratante && !REG_MEDICO.test(form.medicoTratante.trim()))
+            e.medicoTratante = 'Solo letras y punto (ej: Dr. Marta).';
+        if (form.telefonoMedico && !REG_TELEFONO.test(form.telefonoMedico.trim()))
+            e.telefonoMedico = 'Formato inválido. Ej: 04121234567.';
+    }
+
+    if (tabId === 'padres') {
+        if (!form.nombreMadre?.trim())
+            e.nombreMadre = 'El nombre de la madre es obligatorio.';
+        else if (!REG_SOLO_LETRAS.test(form.nombreMadre.trim()))
+            e.nombreMadre = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombreMadre.trim().length < 3 || form.nombreMadre.trim().length > 50)
+            e.nombreMadre = 'Entre 3 y 50 caracteres.';
+
+        if (!form.telefonoMadre?.trim())
+            e.telefonoMadre = 'El teléfono de la madre es obligatorio.';
+        else if (!REG_TELEFONO.test(form.telefonoMadre.trim()))
+            e.telefonoMadre = 'Formato inválido. Ej: 04141234567.';
+
+        if (form.ciMadre && !REG_CEDULA.test(form.ciMadre.trim()))
+            e.ciMadre = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
+        if (form.correoMadre && !REG_EMAIL.test(form.correoMadre.trim()))
+            e.correoMadre = 'Correo inválido.';
+
+        if (!form.nombrePadre?.trim())
+            e.nombrePadre = 'El nombre del padre es obligatorio.';
+        else if (!REG_SOLO_LETRAS.test(form.nombrePadre.trim()))
+            e.nombrePadre = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombrePadre.trim().length < 3 || form.nombrePadre.trim().length > 50)
+            e.nombrePadre = 'Entre 3 y 50 caracteres.';
+
+        if (!form.telefonoPadre?.trim())
+            e.telefonoPadre = 'El teléfono del padre es obligatorio.';
+        else if (!REG_TELEFONO.test(form.telefonoPadre.trim()))
+            e.telefonoPadre = 'Formato inválido. Ej: 04141234567.';
+
+        if (form.ciPadre && !REG_CEDULA.test(form.ciPadre.trim()))
+            e.ciPadre = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
+        if (form.correoPadre && !REG_EMAIL.test(form.correoPadre.trim()))
+            e.correoPadre = 'Correo inválido.';
+    }
+        if (form.direccionTrabajoMadre && form.direccionTrabajoMadre.trim().length > 100)
+            e.direccionTrabajoMadre = 'Máximo 100 caracteres permitidos.';
+        if (form.direccionTrabajoPadre && form.direccionTrabajoPadre.trim().length > 100)
+            e.direccionTrabajoPadre = 'Máximo 100 caracteres permitidos.';
+        if (form.direccionResidencia && form.direccionResidencia.trim().length > 100)
+            e.direccionResidencia = 'Máximo 100 caracteres permitidos.';
+
+    if (tabId === 'representante') {
+        if (!form.nombreRepresentante?.trim())
+            e.nombreRepresentante = 'El nombre del representante es obligatorio.';
+        else if (!REG_SOLO_LETRAS.test(form.nombreRepresentante.trim()))
+            e.nombreRepresentante = 'Solo letras, sin números ni símbolos.';
+        else if (form.nombreRepresentante.trim().length < 3 || form.nombreRepresentante.trim().length > 50)
+            e.nombreRepresentante = 'Entre 3 y 50 caracteres.';
+
+        if (!form.telefonoRepresentante?.trim())
+            e.telefonoRepresentante = 'El teléfono del representante es obligatorio.';
+        else if (!REG_TELEFONO.test(form.telefonoRepresentante.trim()))
+            e.telefonoRepresentante = 'Formato inválido.';
+
+        if (form.ciRepresentante && !REG_CEDULA.test(form.ciRepresentante.trim()))
+            e.ciRepresentante = 'Solo números (entre 3 y 30 dígitos). Sin letras.';
+        if (form.correoRepresentante && !REG_EMAIL.test(form.correoRepresentante.trim()))
+            e.correoRepresentante = 'Correo inválido.';
+    }
+        if (form.direccionRepresentante && form.direccionRepresentante.trim().length > 100)
+            e.direccionRepresentante = 'Máximo 100 caracteres permitidos.';
+
+    if (tabId === 'pareja') {
+        if (!form.situacionPareja)
+            e.situacionPareja = 'Debe seleccionar la situación de la pareja.';
+    }
+
+    if (tabId === 'vivienda') {
+        if (!form.tipoVivienda)
+            e.tipoVivienda = 'Debe seleccionar el tipo de vivienda.';
+        if (form.cuartosVivienda && (isNaN(Number(form.cuartosVivienda)) || Number(form.cuartosVivienda) < 1))
+            e.cuartosVivienda = 'Ingrese un número mayor a 0.';
+    }
+
+    if (tabId === 'habitantes') {
+        if (form.cantidadPersonasVivienda && (isNaN(Number(form.cantidadPersonasVivienda)) || Number(form.cantidadPersonasVivienda) < 1))
+            e.cantidadPersonasVivienda = 'Ingrese un número mayor a 0.';
+        if (form.familiasEnVivienda && (isNaN(Number(form.familiasEnVivienda)) || Number(form.familiasEnVivienda) < 1))
+            e.familiasEnVivienda = 'Ingrese un número mayor a 0.';
+        if (form.numeroHermanos && (isNaN(Number(form.numeroHermanos)) || Number(form.numeroHermanos) < 0))
+            e.numeroHermanos = 'Ingrese 0 o más.';
+    }
+
+    if (tabId === 'servicios') {
+        const servicios = [
+            { id: 'servicioAgua', label: 'Red de Agua Potable' },
+            { id: 'servicioDesague', label: 'Red de Desagüe' },
+            { id: 'servicioElectricidad', label: 'Energía Eléctrica' },
+            { id: 'servicioTelefonia', label: 'Telefonía Móvil' },
+            { id: 'servicioInternet', label: 'Servicio de Internet' },
+        ];
+        servicios.forEach((s) => {
+            if (form[s.id] === null || form[s.id] === undefined) {
+                e[s.id] = `Debe marcar una opción (SÍ o NO) en ${s.label}.`;
+            }
+        });
+    }
+
+    if (tabId === 'otros') {
+        if (!form.aguaPotableContinua) {
+            e.aguaPotableContinua = 'Debe seleccionar una opción en Agua Potable Continua.';
+        }
+        const condiciones = [
+            { id: 'banosBuenEstado', label: 'Baños en buen estado' },
+            { id: 'tienePoceta', label: 'Tiene poceta' },
+            { id: 'tieneDucha', label: 'Tiene ducha' },
+            { id: 'tieneLavamanos', label: 'Tiene lavamanos' },
+            { id: 'servicioAseoFrecuente', label: 'Servicio de aseo frecuente' },
+            { id: 'recibeGasFrecuente', label: 'Recibe gas frecuente' },
+            { id: 'participaComunidad', label: 'Participa en la comunidad' },
+            { id: 'colaboraEscuela', label: 'Colabora con la escuela' },
+        ];
+        condiciones.forEach((c) => {
+            if (form[c.id] === null || form[c.id] === undefined) {
+                e[c.id] = `Debe marcar una opción (SÍ o NO) en ${c.label}.`;
+            }
+        });
+    }
+
+    return e;
+}
+
+function validarTodo(form) {
+    return TABS.reduce((acc, t) => ({ ...acc, ...validarTab(t.id, form) }), {});
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+function Inscribir() {
+    const [gradoSeleccionado, setGradoSeleccionado] = useState('1er Grado');
+    const [esRegular, setEsRegular]                 = useState(null);
+    const [busquedaRegular, setBusquedaRegular]     = useState('');
+    const [alumnoEncontrado, setAlumnoEncontrado]   = useState(null);
+    const [nuevaSeccion, setNuevaSeccion]            = useState('A');
+    const [turnoNuevo, setTurnoNuevo]               = useState(TURNOS.MANANA);
+    const [seccionNueva, setSeccionNueva]            = useState('');
+    const [tabActiva, setTabActiva]                 = useState('estudiante');
+    const [errores, setErrores]                     = useState({});
+    const [mensajeExito, setMensajeExito]           = useState('');
+
+    const [datosForm, setDatosForm] = useState({
+        // Sección 1
+        fechaIngreso: '', cedulaEscolar: '',
+        apellidos: '', nombres: '',
+        lugarNacimiento: '', fechaNacimiento: '', edad: '',
+        nacionalidad: '', direccionEstudiante: '',
+        literal: '',
+        genero: '', lateralidad: '',
+        institucionOrigen: '', medicamentoFiebre: '', alergias: '',
+        // Sección 2
+        diagnosticoEspecial: '', medicoTratante: '', telefonoMedico: '', equipoApoyo: '',
+        // Sección 3 – Madre
+        nombreMadre: '', ciMadre: '', instruccionMadre: '', ocupacionMadre: '',
+        lugarTrabajoMadre: '', direccionTrabajoMadre: '', telefonoMadre: '', correoMadre: '',
+        // Sección 3 – Padre
+        nombrePadre: '', ciPadre: '', instruccionPadre: '', ocupacionPadre: '',
+        lugarTrabajoPadre: '', direccionTrabajoPadre: '', telefonoPadre: '', correoPadre: '',
+        // Sección 3 – Comunidad
+        liderCalle: '', nombreComuna: '', direccionResidencia: '', centroVotacion: '',
+        // Sección 4
+        nombreRepresentante: '', ciRepresentante: '', ocupacionRepresentante: '',
+        telefonoRepresentante: '', correoRepresentante: '', direccionRepresentante: '',
+        // Sección 5
+        situacionPareja: '',
+        // Sección 6
+        tipoVivienda: '', cuartosVivienda: '', materialParedes: '', materialTecho: '',
+        // Sección 7
+        cantidadPersonasVivienda: '', familiasEnVivienda: '', numeroHermanos: '',
+        // Sección 8
+        servicioAgua: null, servicioDesague: null, servicioElectricidad: null,
+        servicioTelefonia: null, servicioInternet: null,
+        // Sección 9
+        banosBuenEstado: null, tienePoceta: null, tieneDucha: null, tieneLavamanos: null,
+        servicioAseoFrecuente: null, aguaPotableContinua: '',
+        recibeGasFrecuente: null, participaComunidad: null, colaboraEscuela: null,
+    });
+
+    const cambiar = (campo, valor) => {
+        if (campo === 'edad') return; // La edad no es modificable manualmente
+        setDatosForm((prev) => {
+            const nuevo = { ...prev, [campo]: valor };
+            if (campo === 'fechaNacimiento') {
+                nuevo.edad = calcularEdad(valor);
+            }
+            return nuevo;
+        });
+        if (errores[campo]) setErrores((prev) => { const e = { ...prev }; delete e[campo]; return e; });
+        if (campo === 'fechaNacimiento' && errores.edad) {
+            setErrores((prev) => { const e = { ...prev }; delete e.edad; return e; });
+        }
+    };
+
+    const listaExistente   = getAlumnos();
+    const resultadosBusqueda = busquedaRegular
+        ? listaExistente.filter((a) =>
+            sinAcentos(a.nombres).includes(sinAcentos(busquedaRegular)) ||
+            sinAcentos(a.apellidos).includes(sinAcentos(busquedaRegular)) ||
+            a.cedulaEscolar.toLowerCase().includes(busquedaRegular.toLowerCase())
+          )
+        : [];
+
+    const tabIndex = TABS.findIndex((t) => t.id === tabActiva);
+
+    const gradosPermitidosReinscripcion = alumnoEncontrado
+        ? obtenerGradosPermitidosReinscripcion(alumnoEncontrado.gradoNivel)
+        : [];
+    const errorPromocionReinscripcion = alumnoEncontrado
+        ? validarPromocionReinscripcion(alumnoEncontrado.gradoNivel, gradoSeleccionado)
+        : null;
+
+    const seleccionarAlumnoRegular = (a) => {
+        setAlumnoEncontrado(a);
+        const permitidos = obtenerGradosPermitidosReinscripcion(a.gradoNivel);
+        // Si el grado elegido en el paso 1 no es válido para este alumno,
+        // ajustarlo automáticamente a su grado regular siguiente (+1) o repetir (+0)
+        if (!permitidos.includes(gradoSeleccionado)) {
+            const gradoSiguiente = permitidos[1] || permitidos[0];
+            setGradoSeleccionado(gradoSiguiente);
+        }
+        setNuevaSeccion(a.seccionLiteral || 'A');
+        setErrores((prev) => {
+            const copia = { ...prev };
+            delete copia.gradoReinscripcion;
+            return copia;
+        });
+    };
+
+    const handleSiguiente = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const edadExacta = calcularEdad(datosForm.fechaNacimiento);
+        const formActual = tabActiva === 'estudiante' ? { ...datosForm, edad: edadExacta } : datosForm;
+        if (tabActiva === 'estudiante' && datosForm.edad !== edadExacta) {
+            setDatosForm((prev) => ({ ...prev, edad: edadExacta }));
+        }
+
+        const errTab = validarTab(tabActiva, formActual);
+        if (Object.keys(errTab).length > 0) {
+            setErrores((prev) => ({ ...prev, ...errTab }));
+            return;
+        }
+        setErrores({});
+        setTabActiva(TABS[tabIndex + 1].id);
+    };
+
+    const handleAtras = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        setErrores({});
+        setTabActiva(TABS[tabIndex - 1].id);
+    };
+
+    const handleReinscribir = (e) => {
+        e.preventDefault();
+        if (!alumnoEncontrado) return;
+        const errPromocion = validarPromocionReinscripcion(alumnoEncontrado.gradoNivel, gradoSeleccionado);
+        if (errPromocion) {
+            setErrores((prev) => ({ ...prev, gradoReinscripcion: errPromocion }));
+            return;
+        }
+        actualizarGradoAlumnoRegular(alumnoEncontrado.id, gradoSeleccionado, nuevaSeccion);
+        setMensajeExito(`${alumnoEncontrado.nombres} ${alumnoEncontrado.apellidos} re-inscrito en ${gradoSeleccionado} "${nuevaSeccion}".`);
+        reset();
+    };
+
+    const handleGuardar = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const edadExacta = calcularEdad(datosForm.fechaNacimiento);
+        const formActualizado = { ...datosForm, edad: edadExacta };
+
+        const errTotal = validarTodo(formActualizado);
+        if (Object.keys(errTotal).length > 0) {
+            setErrores(errTotal);
+            const primerCampo = Object.keys(errTotal)[0];
+            if (CAMPO_A_TAB[primerCampo]) setTabActiva(CAMPO_A_TAB[primerCampo]);
+            return;
+        }
+        const creado = agregarAlumno({
+            ...formActualizado,
+            gradoNivel: gradoSeleccionado,
+            turno: turnoNuevo,
+            seccionLiteral: seccionNueva || datosForm.literal || 'A',
+        });
+        setMensajeExito('Alumno Registrado con éxito');
+        reset();
+    };
+
+    const reset = () => {
+        setEsRegular(null);
+        setAlumnoEncontrado(null);
+        setBusquedaRegular('');
+        setSeccionNueva('');
+        setTabActiva('estudiante');
+        setErrores({});
+        setTimeout(() => setMensajeExito(''), 4500);
+    };
+
+    // ── Helpers para hacer el JSX más limpio ──────────────────────────────────
+    const F = (campo, label, placeholder, opts = {}) => (
+        <CampoTexto
+            key={campo}
+            label={label}
+            placeholder={placeholder}
+            value={datosForm[campo]}
+            onChange={(v) => cambiar(campo, v)}
+            error={errores[campo]}
+            tipo={opts.tipo}
+            span={opts.span}
+            requerido={opts.req}
+            disabled={opts.disabled}
+            readOnly={opts.readOnly}
+            min={opts.min}
+            max={opts.max}
+            maxLength={opts.maxLength}
+            filtro={opts.filtro}
+        />
+    );
+
+    const esParejaActiva = (opc) => {
+        if (!datosForm?.situacionPareja) return false;
+        return normalizarPareja(datosForm.situacionPareja) === normalizarPareja(opc);
+    };
+
+    const condItems8 = [
+        { id: 'servicioAgua',         label: 'Red de Agua Potable' },
+        { id: 'servicioDesague',      label: 'Red de Desagüe' },
+        { id: 'servicioElectricidad', label: 'Energía Eléctrica' },
+        { id: 'servicioTelefonia',    label: 'Telefonía Móvil' },
+        { id: 'servicioInternet',     label: 'Servicio de Internet' },
+    ];
+    const condItems9 = [
+        { id: 'banosBuenEstado',       label: 'Baños en buen estado' },
+        { id: 'tienePoceta',           label: 'Tiene poceta' },
+        { id: 'tieneDucha',            label: 'Tiene ducha' },
+        { id: 'tieneLavamanos',        label: 'Tiene lavamanos' },
+        { id: 'servicioAseoFrecuente', label: 'Servicio de aseo frecuente' },
+        { id: 'recibeGasFrecuente',    label: 'Recibe gas frecuente' },
+        { id: 'participaComunidad',    label: 'Participa en la comunidad' },
+        { id: 'colaboraEscuela',       label: 'Colabora con la escuela' },
+    ];
+
+    // ─────────────────────────────────────────────────────────────────────────
+    return (
+        <div className="inscribir-modulo">
+            <header className="inscribir-header">
+                <h1 className="inscribir-header__titulo">Proceso de Inscripción Escolar</h1>
+                <p className="inscribir-header__sub">U.E.M. Gregorio Romero — Registro e Inscripción de Alumnos</p>
+            </header>
+
+            {mensajeExito && <div className="inscribir-alerta-exito">{mensajeExito}</div>}
+
+            {/* PASO 1: Tipo de Alumno y Grado Objetivo (si es Nuevo Ingreso) */}
+            <div className="inscribir-card-paso1">
+                <div className="inscribir-paso1-grid">
+                    <div className="campo-grupo">
+                        <label className="campo-label">1. ¿El alumno es regular de la institución?</label>
+                        <div className="pills-sino-container">
+                            <button type="button"
+                                className={`pill-sino-btn ${esRegular === true ? 'pill-sino-btn--si-activo' : ''}`}
+                                onClick={() => { setEsRegular(true); setAlumnoEncontrado(null); }}>
+                                SÍ (Re-inscripción)
+                            </button>
+                            <button type="button"
+                                className={`pill-sino-btn ${esRegular === false ? 'pill-sino-btn--no-activo' : ''}`}
+                                onClick={() => setEsRegular(false)}>
+                                NO (Nuevo Ingreso)
+                            </button>
+                        </div>
+                    </div>
+
+                    {esRegular === false && (
+                        <div className="campo-grupo" style={{ animation: 'aparecerSuave 0.25s ease-out' }}>
+                            <label className="campo-label">2. Seleccionar Grado / Nivel Objetivo</label>
+                            <select className="campo-select" value={gradoSeleccionado}
+                                onChange={(e) => setGradoSeleccionado(e.target.value)}>
+                                {TODOS_LOS_GRADOS.map((g) => (
+                                    <option key={g.id} value={g.nombre}>{g.nivel}: {g.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* CAMINO A: Alumno Regular */}
+            {esRegular === true && (
+                <div className="inscribir-card-regular">
+                    <h2 className="inscribir-seccion-titulo">Buscar Alumno en el Sistema</h2>
+                    <div className="busqueda-regular-box">
+                        <span className="busqueda-icon"><IconoBuscar size={18} /></span>
+                        <input type="text" className="campo-input"
+                            placeholder="Nombre, apellido o cédula escolar..."
+                            value={busquedaRegular}
+                            onChange={(e) => setBusquedaRegular(e.target.value)} />
+                    </div>
+
+                    {busquedaRegular && !alumnoEncontrado && (
+                        <div className="resultados-regular-lista">
+                            {resultadosBusqueda.length > 0 ? resultadosBusqueda.map((a) => (
+                                <div key={a.id} className="resultado-regular-item" onClick={() => seleccionarAlumnoRegular(a)}>
+                                    <div>
+                                        <strong>{a.apellidos}, {a.nombres}</strong>
+                                        <p>{a.cedulaEscolar} — {a.gradoNivel} &quot;{a.seccionLiteral}&quot;</p>
+                                    </div>
+                                    <button type="button" className="btn-seleccionar-regular">Seleccionar</button>
+                                </div>
+                            )) : (
+                                <div className="busqueda-vacia"><p>No se encontraron alumnos.</p></div>
+                            )}
+                        </div>
+                    )}
+
+                    {alumnoEncontrado && (
+                        <form onSubmit={handleReinscribir} className="form-confirmar-regular">
+                            <div className="resumen-alumno-regular">
+                                <h3>Alumno Seleccionado:</h3>
+                                <p><strong>Nombre:</strong> {alumnoEncontrado.nombres} {alumnoEncontrado.apellidos}</p>
+                                <p><strong>Cédula:</strong> {alumnoEncontrado.cedulaEscolar}</p>
+                                <p><strong>Grado Anterior:</strong> {alumnoEncontrado.gradoNivel} &quot;{alumnoEncontrado.seccionLiteral}&quot;</p>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--color-texto-secundario)', marginTop: '6px' }}>
+                                    <em>Grados permitidos para este alumno: <strong>{gradosPermitidosReinscripcion.join(', ')}</strong></em>
+                                </p>
+                            </div>
+                            <div className="form-grid-2" style={{ marginTop: '16px' }}>
+                                <div className="campo-grupo">
+                                    <label className="campo-label">Grado Objetivo (Nuevo Grado) *</label>
+                                    <select
+                                        className={`campo-select${errorPromocionReinscripcion ? ' campo-input--error' : ''}`}
+                                        value={gradoSeleccionado}
+                                        onChange={(e) => {
+                                            setGradoSeleccionado(e.target.value);
+                                            setErrores((prev) => {
+                                                const copia = { ...prev };
+                                                delete copia.gradoReinscripcion;
+                                                return copia;
+                                            });
+                                        }}
+                                    >
+                                        {TODOS_LOS_GRADOS.map((g) => {
+                                            const esValido = gradosPermitidosReinscripcion.includes(g.nombre);
+                                            return (
+                                                <option
+                                                    key={g.id}
+                                                    value={g.nombre}
+                                                    disabled={!esValido}
+                                                >
+                                                    {g.nivel}: {g.nombre} {esValido ? '' : '— (No permitido por grado anterior)'}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                                <div className="campo-grupo">
+                                    <label className="campo-label">Asignar Sección</label>
+                                    <select className="campo-select" value={nuevaSeccion}
+                                        onChange={(e) => setNuevaSeccion(e.target.value)}>
+                                        <option value="A">Sección A</option>
+                                        <option value="B">Sección B</option>
+                                        <option value="C">Sección C</option>
+                                        <option value="D">Sección D</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {errorPromocionReinscripcion && (
+                                <div className="campo-error-msg" style={{ margin: '8px 0 16px 0', fontSize: '0.85rem', fontWeight: 700 }}>
+                                    ⚠ {errorPromocionReinscripcion}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                className="btn-guardar-inscripcion"
+                                disabled={Boolean(errorPromocionReinscripcion)}
+                                style={errorPromocionReinscripcion ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                            >
+                                <IconoGuardar size={18} /><span>Guardar Re-inscripción</span>
+                            </button>
+                        </form>
+                    )}
+                </div>
+            )}
+
+            {/* CAMINO B: Nuevo Ingreso */}
+            {esRegular === false && (
+                <form onSubmit={handleGuardar} className="inscribir-card-nuevo">
+
+                    {/* Cabecera mínima: Turno */}
+                    <div className="encabezado-nuevo-ingreso">
+                        <div className="datos-clave-header">
+                            <div className="campo-grupo" style={{ maxWidth: '280px' }}>
+                                <label className="campo-label">Horario / Turno *</label>
+                                <select className="campo-select" value={turnoNuevo}
+                                    onChange={(e) => setTurnoNuevo(e.target.value)}>
+                                    <option value={TURNOS.MANANA}>{TURNOS.MANANA}</option>
+                                    <option value={TURNOS.TARDE}>{TURNOS.TARDE}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Barra de progreso */}
+                    <div className="inscribir-wizard-barra">
+                        <span className="inscribir-wizard-paso">Paso {tabIndex + 1} de {TABS.length}</span>
+                        <div className="inscribir-wizard-track">
+                            {TABS.map((t, i) => (
+                                <div key={t.id}
+                                    className={`inscribir-wizard-seg ${i < tabIndex ? 'completado' : ''} ${i === tabIndex ? 'activo' : ''}`} />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Contenido */}
+                    <div className="alumnos-card">
+
+                        {/* ── 1. Datos del Estudiante ───────────────────────── */}
+                        {tabActiva === 'estudiante' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">1</span>
+                                    <h2 className="seccion-titulo-texto">Datos del Estudiante</h2>
+                                </div>
+
+                                {/* Fila 1: Fecha inscripción + Cédula Escolar */}
+                                <div className="form-grid-2">
+                                    {F('fechaIngreso', 'Fecha de Inscripción', '', { tipo: 'date' })}
+                                    {F('cedulaEscolar', 'Cédula Escolar', 'Ej: 13100111', { req: true, filtro: 'soloDigitos', maxLength: 30 })}
+                                </div>
+
+                                {/* Fila 2: Apellidos + Nombres */}
+                                <div className="form-grid-2">
+                                    {F('apellidos', 'Apellidos', 'Apellidos completos', { req: true, filtro: 'soloLetras', maxLength: 50 })}
+                                    {F('nombres', 'Nombres', 'Nombres completos', { req: true, filtro: 'soloLetras', maxLength: 50 })}
+                                </div>
+
+                                {/* Fila 3: Lugar Nacimiento + Fecha Nacimiento + Edad */}
+                                <div className="form-grid-3">
+                                    {F('lugarNacimiento', 'Lugar de Nacimiento', 'Ciudad / Estado')}
+                                    {F('fechaNacimiento', 'Fecha de Nacimiento', '', { tipo: 'date', req: true })}
+                                    {F('edad', 'Edad (Años - Automática)', 'Auto', { tipo: 'number', req: true, readOnly: true })}
+                                </div>
+
+                                {/* Fila 4: Nacionalidad + Dirección */}
+                                <div className="form-grid-2">
+                                    <CampoTexto
+                                        label="Nacionalidad"
+                                        placeholder="Venezolana"
+                                        value={datosForm.nacionalidad}
+                                        onChange={(v) => cambiar('nacionalidad', v)}
+                                        error={errores.nacionalidad}
+                                    />
+                                    {F('direccionEstudiante', 'Dirección', 'Calle, sector, casa...', { maxLength: 100 })}
+                                </div>
+
+                                {/* Fila 5: Grado/Nivel + Sección + Literal */}
+                                <div className="form-grid-3">
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Grado o Nivel</label>
+                                        <select className="campo-select" value={gradoSeleccionado}
+                                            onChange={(e) => setGradoSeleccionado(e.target.value)}>
+                                            {TODOS_LOS_GRADOS.map((g) => (
+                                                <option key={g.id} value={g.nombre}>{g.nivel}: {g.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Sección (A, B, C o D)</label>
+                                        <select className="campo-select" value={seccionNueva}
+                                            onChange={(e) => setSeccionNueva(e.target.value)}>
+                                            <option value="">Seleccione...</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                            <option value="D">D</option>
+                                        </select>
+                                    </div>
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Literal (A, B, C, D)</label>
+                                        <select className="campo-select" value={datosForm.literal}
+                                            onChange={(e) => cambiar('literal', e.target.value)}>
+                                            <option value="">Seleccione...</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                            <option value="D">D</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Fila 6: Género + Lateralidad */}
+                                <div className="form-grid-2">
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Género *</label>
+                                        <div className="pills-sino-container">
+                                            <button type="button"
+                                                className={`pill-sino-btn ${datosForm.genero === 'Varón' ? 'pill-sino-btn--si-activo' : ''}`}
+                                                onClick={() => cambiar('genero', 'Varón')}>Varón</button>
+                                            <button type="button"
+                                                className={`pill-sino-btn ${datosForm.genero === 'Hembra' ? 'pill-sino-btn--si-activo' : ''}`}
+                                                onClick={() => cambiar('genero', 'Hembra')}>Hembra</button>
+                                        </div>
+                                        {errores.genero && <span className="campo-error-msg">⚠ {errores.genero}</span>}
+                                    </div>
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Lateralidad</label>
+                                        <div className="pills-sino-container">
+                                            <button type="button"
+                                                className={`pill-sino-btn ${datosForm.lateralidad === 'Derecho' ? 'pill-sino-btn--activo' : ''}`}
+                                                onClick={() => cambiar('lateralidad', 'Derecho')}>Derecho</button>
+                                            <button type="button"
+                                                className={`pill-sino-btn ${datosForm.lateralidad === 'Izquierdo' ? 'pill-sino-btn--activo' : ''}`}
+                                                onClick={() => cambiar('lateralidad', 'Izquierdo')}>Izquierdo</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Fila 7–9: Institución, Fiebre, Alergias */}
+                                <div className="form-grid-1">
+                                    {F('institucionOrigen', 'Institución de donde Proviene', 'Nombre del plantel anterior', { span: true })}
+                                </div>
+                                <div className="form-grid-2">
+                                    {F('medicamentoFiebre', 'En caso de fiebre suministrar:', 'Acetaminofén, Paracetamol...')}
+                                    {F('alergias', 'Alérgico a:', 'Alimentos, medicamentos...')}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 2. Diagnóstico / Necesidades Especiales ──────── */}
+                        {tabActiva === 'especiales' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">2</span>
+                                    <h2 className="seccion-titulo-texto">Diagnóstico o Necesidades Especiales</h2>
+                                </div>
+                                <div className="form-grid-1">
+                                    {F('diagnosticoEspecial', 'Diagnóstico Médico (si aplica)', 'Condición médica o pedagógica especial', { span: true })}
+                                </div>
+                                <div className="form-grid-2">
+                                    <CampoTexto label="Médico Tratante" placeholder="Nombre del especialista (ej: Dr. Marta)"
+                                        value={datosForm.medicoTratante} onChange={(v) => cambiar('medicoTratante', v)} error={errores.medicoTratante} filtro="soloLetrasYPunto" />
+                                    <CampoTexto label="Teléfono del Médico" placeholder="04121234567"
+                                        value={datosForm.telefonoMedico} onChange={(v) => cambiar('telefonoMedico', v)} error={errores.telefonoMedico} filtro="soloDigitos"
+                                        maxLength={datosForm.telefonoMedico?.startsWith('0') ? 11 : 10} />
+                                </div>
+                                <div className="form-grid-1">
+                                    {F('equipoApoyo', 'Equipo de Apoyo al que Asiste', 'Ej: Aula Integrada, CDI, Psicopedagogía', { span: true })}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 3. Padres y Comunidad ────────────────────────── */}
+                        {tabActiva === 'padres' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">3</span>
+                                    <h2 className="seccion-titulo-texto">Datos de los Padres y Comunidad</h2>
+                                </div>
+
+                                <h3 className="subseccion-titulo">Madre</h3>
+                                <div className="form-grid-4">
+                                    <CampoTexto label="Nombre de la Madre" filtro="soloLetras" maxLength={50} placeholder="Nombres y apellidos"
+                                        value={datosForm.nombreMadre} onChange={(v) => cambiar('nombreMadre', v)} error={errores.nombreMadre} requerido />
+                                    <CampoTexto label="C.I. de la Madre" placeholder="Ej: 15123456"
+                                        value={datosForm.ciMadre} onChange={(v) => cambiar('ciMadre', v)} error={errores.ciMadre} filtro="cedulaNum"
+                                        maxLength={30} />
+                                    {F('instruccionMadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
+                                    {F('ocupacionMadre', 'Ocupación', 'Oficio o profesión')}
+                                    {F('lugarTrabajoMadre', 'Lugar de Trabajo', 'Empresa o institución')}
+                                    {F('direccionTrabajoMadre', 'Dirección del Trabajo', 'Dirección laboral', { maxLength: 100 })}
+                                    <CampoTexto label="Teléfono de la Madre" placeholder="04141234567"
+                                        value={datosForm.telefonoMadre} onChange={(v) => cambiar('telefonoMadre', v)} error={errores.telefonoMadre} requerido filtro="soloDigitos"
+                                        maxLength={datosForm.telefonoMadre?.startsWith('0') ? 11 : 10} />
+                                    <CampoTexto label="Correo de la Madre" placeholder="correo@ejemplo.com" tipo="email"
+                                        value={datosForm.correoMadre} onChange={(v) => cambiar('correoMadre', v)} error={errores.correoMadre} />
+                                </div>
+
+                                <h3 className="subseccion-titulo" style={{ marginTop: '20px' }}>Padre</h3>
+                                <div className="form-grid-4">
+                                    <CampoTexto label="Nombre del Padre" filtro="soloLetras" maxLength={50} placeholder="Nombres y apellidos"
+                                        value={datosForm.nombrePadre} onChange={(v) => cambiar('nombrePadre', v)} error={errores.nombrePadre} requerido />
+                                    <CampoTexto label="C.I. del Padre" placeholder="Ej: 12345678"
+                                        value={datosForm.ciPadre} onChange={(v) => cambiar('ciPadre', v)} error={errores.ciPadre} filtro="cedulaNum"
+                                        maxLength={30} />
+                                    {F('instruccionPadre', 'Nivel de Instrucción', 'Bachiller, TSU, Univ.')}
+                                    {F('ocupacionPadre', 'Ocupación', 'Oficio o profesión')}
+                                    {F('lugarTrabajoPadre', 'Lugar de Trabajo', 'Empresa o institución')}
+                                    {F('direccionTrabajoPadre', 'Dirección del Trabajo', 'Dirección laboral', { maxLength: 100 })}
+                                    <CampoTexto label="Teléfono del Padre" placeholder="04141234567"
+                                        value={datosForm.telefonoPadre} onChange={(v) => cambiar('telefonoPadre', v)} error={errores.telefonoPadre} requerido filtro="soloDigitos"
+                                        maxLength={datosForm.telefonoPadre?.startsWith('0') ? 11 : 10} />
+                                    <CampoTexto label="Correo del Padre" placeholder="correo@ejemplo.com" tipo="email"
+                                        value={datosForm.correoPadre} onChange={(v) => cambiar('correoPadre', v)} error={errores.correoPadre} />
+                                </div>
+
+                                <h3 className="subseccion-titulo" style={{ marginTop: '20px' }}>Comunidad</h3>
+                                <div className="form-grid-3">
+                                    {F('liderCalle', 'Líder de Calle', 'Nombre del líder', { filtro: 'soloLetras' })}
+                                    {F('nombreComuna', 'Comunidad / Comuna', 'Nombre de la comunidad')}
+                                    {F('centroVotacion', 'Centro de Votación', 'Centro de votación')}
+                                    {F('direccionResidencia', 'Dirección de Residencia', 'Calle, sector, casa o apartamento', { span: true, maxLength: 100 })}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 4. Representante Legal ────────────────────────── */}
+                        {tabActiva === 'representante' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">4</span>
+                                    <h2 className="seccion-titulo-texto">Nombre del Representante</h2>
+                                </div>
+                                <div className="form-grid-3">
+                                    <CampoTexto label="Nombre y Apellido" filtro="soloLetras" maxLength={50} placeholder="Nombre completo"
+                                        value={datosForm.nombreRepresentante} onChange={(v) => cambiar('nombreRepresentante', v)} error={errores.nombreRepresentante} requerido />
+                                    <CampoTexto label="Cédula de Identidad" placeholder="Ej: 12345678"
+                                        value={datosForm.ciRepresentante} onChange={(v) => cambiar('ciRepresentante', v)} error={errores.ciRepresentante} filtro="cedulaNum"
+                                        maxLength={30} />
+                                    {F('ocupacionRepresentante', 'Ocupación', 'Oficio o profesión')}
+                                    <CampoTexto label="Teléfono de Contacto" placeholder="04161234567"
+                                        value={datosForm.telefonoRepresentante} onChange={(v) => cambiar('telefonoRepresentante', v)} error={errores.telefonoRepresentante} requerido filtro="soloDigitos"
+                                        maxLength={datosForm.telefonoRepresentante?.startsWith('0') ? 11 : 10} />
+                                    <CampoTexto label="Correo Electrónico" placeholder="correo@ejemplo.com" tipo="email"
+                                        value={datosForm.correoRepresentante} onChange={(v) => cambiar('correoRepresentante', v)} error={errores.correoRepresentante} />
+                                    {F('direccionRepresentante', 'Dirección del Representante', 'Dirección completa', { span: true, maxLength: 100 })}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 5. Situación de la Pareja ─────────────────────── */}
+                        {tabActiva === 'pareja' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">5</span>
+                                    <h2 className="seccion-titulo-texto">Situación de la Pareja</h2>
+                                </div>
+                                <div className="pills-grupo-opciones">
+                                    {['Soltero/a', 'Casado/a', 'Concubino/a', 'Divorciado/a', 'Viudo/a'].map((op) => (
+                                        <button key={op} type="button"
+                                            className={`pill-opcion-btn ${esParejaActiva(op) ? 'pill-opcion-btn--activo' : ''}`}
+                                            onClick={() => cambiar('situacionPareja', op)}>{op}</button>
+                                    ))}
+                                </div>
+                                {errores.situacionPareja && <span className="campo-error-msg">⚠ {errores.situacionPareja}</span>}
+                            </section>
+                        )}
+
+                        {/* ── 6. Vivienda ───────────────────────────────────── */}
+                        {tabActiva === 'vivienda' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">6</span>
+                                    <h2 className="seccion-titulo-texto">Vivienda</h2>
+                                </div>
+                                <div className="form-grid-4">
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Condición de la Casa *</label>
+                                        <select className={`campo-select${errores.tipoVivienda ? ' campo-input--error' : ''}`}
+                                            value={datosForm.tipoVivienda}
+                                            onChange={(e) => cambiar('tipoVivienda', e.target.value)}>
+                                            <option value="" disabled>Seleccione...</option>
+                                            <option value="Propia">Propia</option>
+                                            <option value="Alquilada">Alquilada</option>
+                                            <option value="Otros">Otros</option>
+                                        </select>
+                                        {errores.tipoVivienda && <span className="campo-error-msg">⚠ {errores.tipoVivienda}</span>}
+                                    </div>
+                                    <CampoTexto label="Número de Cuartos" placeholder="Ej: 3" tipo="number"
+                                        value={datosForm.cuartosVivienda} onChange={(v) => cambiar('cuartosVivienda', v)} error={errores.cuartosVivienda} min={1} filtro="enteroPositivo" />
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Material de las Paredes</label>
+                                        <select className="campo-select" value={datosForm.materialParedes}
+                                            onChange={(e) => cambiar('materialParedes', e.target.value)}>
+                                            <option value="" disabled>Seleccione...</option>
+                                            <option value="Concreto">Concreto</option>
+                                            <option value="Madera">Madera</option>
+                                            <option value="Adobe">Adobe</option>
+                                            <option value="Otros">Otros</option>
+                                        </select>
+                                    </div>
+                                    <div className="campo-grupo">
+                                        <label className="campo-label">Material del Techo</label>
+                                        <select className="campo-select" value={datosForm.materialTecho}
+                                            onChange={(e) => cambiar('materialTecho', e.target.value)}>
+                                            <option value="" disabled>Seleccione...</option>
+                                            <option value="Madera">Madera</option>
+                                            <option value="Adobe">Adobe</option>
+                                            <option value="Zinc">Zinc</option>
+                                            <option value="Concreto">Concreto</option>
+                                            <option value="Otros">Otros</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 7. Habitantes ─────────────────────────────────── */}
+                        {tabActiva === 'habitantes' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">7</span>
+                                    <h2 className="seccion-titulo-texto">Habitantes</h2>
+                                </div>
+                                <div className="form-grid-3">
+                                    <CampoTexto label="Personas en la Vivienda" placeholder="Cantidad total" tipo="number"
+                                        value={datosForm.cantidadPersonasVivienda} onChange={(v) => cambiar('cantidadPersonasVivienda', v)} error={errores.cantidadPersonasVivienda} min={1} filtro="enteroPositivo" />
+                                    <CampoTexto label="Familias en la Vivienda" placeholder="Número de familias" tipo="number"
+                                        value={datosForm.familiasEnVivienda} onChange={(v) => cambiar('familiasEnVivienda', v)} error={errores.familiasEnVivienda} min={1} filtro="enteroPositivo" />
+                                    <CampoTexto label="Número de Hermanos" placeholder="Cantidad de hermanos" tipo="number"
+                                        value={datosForm.numeroHermanos} onChange={(v) => cambiar('numeroHermanos', v)} error={errores.numeroHermanos} min={0} filtro="enteroPositivo" />
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 8. Servicios Básicos ──────────────────────────── */}
+                        {tabActiva === 'servicios' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">8</span>
+                                    <h2 className="seccion-titulo-texto">Servicios Básicos</h2>
+                                </div>
+                                <div className="grid-condiciones-sanitarias">
+                                    {condItems8.map((s) => (
+                                        <div key={s.id} className="condicion-card-box">
+                                            <div className={`condicion-item ${errores[s.id] ? 'condicion-item--error' : ''}`}>
+                                                <span className="condicion-texto">{s.label} *</span>
+                                                <BotonesSiNo value={datosForm[s.id]} onChange={(v) => cambiar(s.id, v)} />
+                                            </div>
+                                            {errores[s.id] && <span className="campo-error-msg">⚠ {errores[s.id]}</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ── 9. Otros / Condiciones del Hogar ─────────────── */}
+                        {tabActiva === 'otros' && (
+                            <section className="seccion-bloque">
+                                <div className="seccion-titulo-barra">
+                                    <span className="seccion-numero-badge">9</span>
+                                    <h2 className="seccion-titulo-texto">Otros (Condiciones del Hogar)</h2>
+                                </div>
+
+                                <div className="condicion-card-box" style={{ marginBottom: '16px' }}>
+                                    <div className={`condicion-item ${errores.aguaPotableContinua ? 'condicion-item--error' : ''}`}>
+                                        <span className="condicion-texto">Agua Potable Continua *</span>
+                                        <div className="pills-sino-container" style={{ width: '210px' }}>
+                                            {['Sí', 'No', 'A veces'].map((op) => (
+                                                <button key={op} type="button"
+                                                    className={`pill-sino-btn ${datosForm.aguaPotableContinua === op ? 'pill-sino-btn--si-activo' : ''}`}
+                                                    onClick={() => cambiar('aguaPotableContinua', op)}>{op}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    {errores.aguaPotableContinua && <span className="campo-error-msg">⚠ {errores.aguaPotableContinua}</span>}
+                                </div>
+
+                                <div className="grid-condiciones-sanitarias">
+                                    {condItems9.map((s) => (
+                                        <div key={s.id} className="condicion-card-box">
+                                            <div className={`condicion-item ${errores[s.id] ? 'condicion-item--error' : ''}`}>
+                                                <span className="condicion-texto">{s.label} *</span>
+                                                <BotonesSiNo value={datosForm[s.id]} onChange={(v) => cambiar(s.id, v)} />
+                                            </div>
+                                            {errores[s.id] && <span className="campo-error-msg">⚠ {errores[s.id]}</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                    </div>
+
+                    {/* Navegación Siguiente / Atrás */}
+                    <div className="inscribir-wizard-nav">
+                        <button
+                            type="button"
+                            key="btn-atras"
+                            className="wizard-btn wizard-btn--atras"
+                            disabled={tabIndex === 0}
+                            onClick={handleAtras}
+                        >
+                            ← Atrás
+                        </button>
+                        <span className="wizard-paso-texto">
+                            Sección {tabIndex + 1} de {TABS.length}
+                        </span>
+                        {tabIndex < TABS.length - 1 ? (
+                            <button
+                                type="button"
+                                key="btn-siguiente"
+                                className="wizard-btn wizard-btn--siguiente"
+                                onClick={handleSiguiente}
+                            >
+                                Siguiente →
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                key="btn-guardar"
+                                className="btn-guardar-inscripcion"
+                                onClick={handleGuardar}
+                            >
+                                <IconoGuardar size={16} /><span>Guardar Inscripción</span>
+                            </button>
+                        )}
+                    </div>
+
+                </form>
+            )}
+        </div>
+    );
+}
+
+export default Inscribir;
