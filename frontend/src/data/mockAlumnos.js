@@ -122,8 +122,18 @@ export const retirarAlumno = (id, datosRetiro) => {
     const listaActual = getAlumnos();
     const diasRetencion = Number(datosRetiro.diasRetencion) || 30;
 
-    // Calcular fecha exacta de eliminación programada (fecha actual + N días)
-    const fechaProgramada = new Date();
+    // Calcular fecha exacta de eliminación programada (fecha efectiva + N días)
+    let fechaBase = new Date();
+    if (datosRetiro.fechaEfectiva) {
+        const partes = datosRetiro.fechaEfectiva.split('-');
+        if (partes.length === 3) {
+            const anio = parseInt(partes[0], 10);
+            const mes = parseInt(partes[1], 10) - 1;
+            const dia = parseInt(partes[2], 10);
+            fechaBase = new Date(anio, mes, dia);
+        }
+    }
+    const fechaProgramada = new Date(fechaBase);
     fechaProgramada.setDate(fechaProgramada.getDate() + diasRetencion);
 
     const nuevaLista = listaActual.map((alumno) => {

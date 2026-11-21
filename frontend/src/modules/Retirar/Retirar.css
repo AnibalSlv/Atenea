@@ -611,9 +611,9 @@
 }
 
 .badge-obligatorio {
-    background-color: #fef2f2;
-    color: #ef4444;
-    border: 1px solid #fecaca;
+    background-color: #eef2ff;
+    color: var(--color-sidebar-dark);
+    border: 1px solid #c7d2fe;
     font-size: 0.72rem;
     font-weight: 800;
     padding: 3px 9px;
@@ -623,8 +623,8 @@
 }
 
 .asterisco-rojo {
-    color: #ef4444;
-    font-weight: 800;
+    color: inherit;
+    font-weight: 700;
     margin-left: 3px;
 }
 

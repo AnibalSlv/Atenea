@@ -511,7 +511,7 @@ function Retirar() {
                                                     className={`genero-pill-btn ${filtroGenero === 'Hembra' ? 'genero-pill-btn--hembra-activo' : ''}`}
                                                     onClick={() => setFiltroGenero('Hembra')}
                                                 >
-                                                    Niñas
+                                                    Hembras
                                                 </button>
                                             </div>
                                         </div>
@@ -606,7 +606,7 @@ function Retirar() {
                                                             esVaron ? 'badge-tag--varon' : 'badge-tag--hembra'
                                                         }`}
                                                     >
-                                                        {esVaron ? 'Varón' : 'Niña'}
+                                                        {esVaron ? 'Varón' : 'Hembra'}
                                                     </span>
                                                     <span className="badge-tag">Turno {al.turno}</span>
                                                 </div>
@@ -651,7 +651,7 @@ function Retirar() {
                                                     : 'badge-tag--hembra'
                                             }`}
                                         >
-                                            {(alumnoSeleccionado.genero || 'Varón') === 'Varón' ? 'Varón' : 'Niña'}
+                                            {(alumnoSeleccionado.genero || 'Varón') === 'Varón' ? 'Varón' : 'Hembra'}
                                         </span>
                                         <span className="badge-tag">Turno {alumnoSeleccionado.turno}</span>
                                         <span className="badge-tag">
@@ -874,7 +874,7 @@ function Retirar() {
 
                                 <span className="nota-sutil">
                                     Los datos se eliminarán automáticamente el{' '}
-                                    <strong>{calcularFechaEliminacion(diasRetencionEfectivos)}</strong> (en{' '}
+                                    <strong>{calcularFechaEliminacion(diasRetencionEfectivos, fechaEfectiva)}</strong> (en{' '}
                                     <strong>{diasRetencionEfectivos} días</strong>).
                                 </span>
                             </div>
@@ -953,7 +953,7 @@ function Retirar() {
                                                     {al.nombres} {al.apellidos}
                                                 </h3>
                                                 <p>
-                                                    {ret.gradoAlRetirarse || al.gradoNivel} "{ret.seccionAlRetirarse || al.seccionLiteral}" • {esVaron ? 'Varón' : 'Niña'}
+                                                    {ret.gradoAlRetirarse || al.gradoNivel} "{ret.seccionAlRetirarse || al.seccionLiteral}" • {esVaron ? 'Varón' : 'Hembra'}
                                                 </p>
                                             </div>
                                             <span className="badge-retirado-suave">
@@ -1068,8 +1068,12 @@ function Retirar() {
                                 </strong>
                             </div>
                             <div className="modal-resumen-item">
+                                <span>Fecha Efectiva:</span>
+                                <strong>{fechaEfectiva}</strong>
+                            </div>
+                            <div className="modal-resumen-item">
                                 <span>Eliminación de datos:</span>
-                                <strong>En {diasRetencionEfectivos} días</strong>
+                                <strong>En {diasRetencionEfectivos} días ({calcularFechaEliminacion(diasRetencionEfectivos, fechaEfectiva)})</strong>
                             </div>
                         </div>
 
