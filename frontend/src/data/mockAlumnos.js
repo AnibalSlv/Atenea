@@ -1,6 +1,8 @@
 import { ALUMNOS_INICIALES } from './alumnosIniciales';
 
 const CLAVE_STORAGE = 'atenea_alumnos_db_v4';
+const CLAVE_CONFIG_RETIRO = 'atenea_config_retiro';
+const CLAVE_HISTORIAL_PURGA = 'atenea_historial_purga';
 
 // Limpiar versiones anteriores para eliminar registros residuales
 try {
