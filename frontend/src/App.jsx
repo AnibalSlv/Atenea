@@ -11,6 +11,7 @@ import Perfil from './modules/Perfil/Perfil';
 import Alumnos from './modules/Alumnos/Alumnos';
 import Inscribir from './modules/Inscribir/Inscribir';
 import Retirar from './modules/Retirar';
+import Asistencia from './modules/Asistencia/Asistencia';
 import './App.css';
 
 /**
@@ -53,17 +54,9 @@ function App() {
                             <Route path="alumnos" element={<Alumnos />} />
                             <Route path="inscribir" element={<Inscribir />} />
                             <Route path="retirar" element={<Retirar />} />
+                            <Route path="asistencia" element={<Asistencia />} />
 
                             {/* Placeholders modulares restantes */}
-                            <Route
-                                path="asistencia"
-                                element={
-                                    <PlaceholderModulo
-                                        nombre="Control de Asistencia"
-                                        icono="📋"
-                                    />
-                                }
-                            />
                             <Route
                                 path="graficos"
                                 element={
