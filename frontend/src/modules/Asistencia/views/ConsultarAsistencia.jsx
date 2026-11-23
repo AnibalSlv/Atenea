@@ -8,6 +8,7 @@ import {
 import { ESTADO, SECCIONES_ESCOLARES } from '../constants/asistenciaConfig';
 import {
     hoyISO,
+    ultimoDiaHabil,
     aFecha,
     restarDias,
     formatearFechaLarga,
@@ -55,10 +56,11 @@ function ConsultarAsistencia({ alumnos, registros }) {
 }
 
 function ConsultaPorAlumno({ alumnos, registros }) {
+    const maxFecha = ultimoDiaHabil();
     const [busqueda, setBusqueda] = useState('');
     const [seleccionado, setSeleccionado] = useState(null);
-    const [desde, setDesde] = useState(restarDias(hoyISO(), 30));
-    const [hasta, setHasta] = useState(hoyISO());
+    const [desde, setDesde] = useState(restarDias(maxFecha, 30));
+    const [hasta, setHasta] = useState(maxFecha);
 
     const sugerencias = useMemo(() => {
         const texto = busqueda.trim().toLowerCase();
@@ -168,8 +170,12 @@ function ConsultaPorAlumno({ alumnos, registros }) {
                             className="asis-input"
                             value={hasta}
                             min={desde}
-                            max={hoyISO()}
-                            onChange={(e) => e.target.value && setHasta(e.target.value)}
+                            max={maxFecha}
+                            onChange={(e) =>
+                                e.target.value &&
+                                e.target.value <= maxFecha &&
+                                setHasta(e.target.value)
+                            }
                         />
                     </label>
                 </div>
@@ -258,7 +264,8 @@ function ConsultaPorFecha({ alumnos, registros }) {
                 .reverse(),
         [registros]
     );
-    const [fecha, setFecha] = useState(fechasDisponibles[0] || hoyISO());
+    const maxFecha = ultimoDiaHabil();
+    const [fecha, setFecha] = useState(fechasDisponibles[0] || maxFecha);
     const [turno, setTurno] = useState('Todos');
     const [grado, setGrado] = useState('Todos');
     const [seccion, setSeccion] = useState('Todas');
@@ -313,8 +320,12 @@ function ConsultaPorFecha({ alumnos, registros }) {
                             type="date"
                             className="asis-input"
                             value={fecha}
-                            max={hoyISO()}
-                            onChange={(e) => e.target.value && setFecha(e.target.value)}
+                            max={maxFecha}
+                            onChange={(e) =>
+                                e.target.value &&
+                                e.target.value <= maxFecha &&
+                                setFecha(e.target.value)
+                            }
                         />
                     </label>
                     <label className="asis-campo">

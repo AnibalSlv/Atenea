@@ -6,13 +6,14 @@ import {
     IconoCalendario,
     IconoCheck,
     IconoGuardar,
-    IconoInfo,
+    IconoCandado,
 } from '../../../components/Iconos';
 import { ESTADO, SECCIONES_ESCOLARES } from '../constants/asistenciaConfig';
 import {
-    hoyISO,
     ultimoDiaHabil,
-    esFinDeSemana,
+    inicioSemanaEditable,
+    finSemanaEditable,
+    validarFechaEditable,
     formatearFechaLarga,
     formatearFechaCorta,
 } from '../utils/fechasAsistencia';
@@ -27,6 +28,8 @@ import {
 /**
  * ====================================================================
  * SUB-MÓDULO 1: REGISTRO DIARIO DEL ALUMNO (PRESENTE / AUSENTE)
+ * Restricción: Solo permite marcar o modificar días hábiles dentro de
+ * la semana en curso y nunca fechas futuras.
  * ====================================================================
  */
 function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
@@ -39,11 +42,19 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
     const [cargando, setCargando] = useState(false);
     const guardandoRef = useRef(false);
 
+    const minSemana = inicioSemanaEditable();
+    const maxSemana = finSemanaEditable();
+    const validacionFecha = validarFechaEditable(fecha);
+    const bloqueadoPorFecha = !validacionFecha.editable;
+
     const registroDelDia = registros[fecha];
     const yaGuardado = !!registroDelDia?.alumnosGuardado;
-    const finDeSemana = esFinDeSemana(fecha);
 
     useEffect(() => {
+        if (validacionFecha.motivo === 'futura') {
+            setMarcas({});
+            return;
+        }
         setMarcas(registros[fecha]?.alumnos ? { ...registros[fecha].alumnos } : {});
         // Solo reiniciar al cambiar de fecha
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,7 +91,21 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
     const sinMarcar = matricula.t - presentes.t - ausentes.t;
     const porcentaje = matricula.t ? Math.round((presentes.t / matricula.t) * 100) : 0;
 
+    const manejarCambioFecha = (nuevaFecha) => {
+        if (!nuevaFecha) return;
+        const estadoFecha = validarFechaEditable(nuevaFecha);
+        if (estadoFecha.motivo === 'futura') {
+            onAviso({
+                tipo: 'error',
+                texto: 'No se puede seleccionar ni marcar asistencia en fechas futuras.',
+            });
+            return;
+        }
+        setFecha(nuevaFecha);
+    };
+
     const marcar = (id, estado) => {
+        if (bloqueadoPorFecha) return;
         setMarcas((prev) => ({
             ...prev,
             [id]: prev[id] === estado ? undefined : estado,
@@ -88,6 +113,7 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
     };
 
     const marcarTodos = (estado) => {
+        if (bloqueadoPorFecha) return;
         setMarcas((prev) => {
             const nuevo = { ...prev };
             filtrados.forEach((a) => {
@@ -98,7 +124,7 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
     };
 
     const guardar = () => {
-        if (guardandoRef.current || finDeSemana) return;
+        if (guardandoRef.current || bloqueadoPorFecha) return;
         if (sinMarcar > 0) {
             onAviso({
                 tipo: 'error',
@@ -132,14 +158,17 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
                 <div className="asis-filtros__fila">
                     <label className="asis-campo">
                         <span className="asis-campo__etiqueta">
-                            <IconoCalendario size={14} /> Fecha
+                            <IconoCalendario size={14} /> Fecha (semana actual:{' '}
+                            {minSemana.split('-').reverse().slice(0, 2).join('/')} al{' '}
+                            {maxSemana.split('-').reverse().slice(0, 2).join('/')})
                         </span>
                         <input
                             type="date"
                             className="asis-input"
                             value={fecha}
-                            max={hoyISO()}
-                            onChange={(e) => e.target.value && setFecha(e.target.value)}
+                            min={minSemana}
+                            max={maxSemana}
+                            onChange={(e) => manejarCambioFecha(e.target.value)}
                         />
                     </label>
 
@@ -192,13 +221,19 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
             {/* Estado del día */}
             <div className="asis-estado-dia">
                 <span className="asis-estado-dia__fecha">{formatearFechaLarga(fecha)}</span>
-                {finDeSemana ? (
-                    <span className="asis-chip asis-chip--neutro">
-                        <IconoInfo size={13} /> Fin de semana — sin actividad escolar
+                {bloqueadoPorFecha ? (
+                    <span
+                        className={`asis-chip ${
+                            validacionFecha.motivo === 'futura'
+                                ? 'asis-chip--rojo'
+                                : 'asis-chip--neutro'
+                        }`}
+                    >
+                        <IconoCandado size={13} /> {validacionFecha.texto}
                     </span>
                 ) : yaGuardado ? (
                     <span className="asis-chip asis-chip--verde">
-                        <IconoCheck size={13} /> Registro guardado
+                        <IconoCheck size={13} /> Registro guardado (editable esta semana)
                     </span>
                 ) : (
                     <span className="asis-chip asis-chip--amarillo">
@@ -219,7 +254,7 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
                                 type="button"
                                 className="asis-btn asis-btn--suave-verde"
                                 onClick={() => marcarTodos(ESTADO.PRESENTE)}
-                                disabled={finDeSemana || cargando || !filtrados.length}
+                                disabled={bloqueadoPorFecha || cargando || !filtrados.length}
                             >
                                 <IconoCheck size={14} /> Todos presentes
                             </button>
@@ -227,7 +262,7 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
                                 type="button"
                                 className="asis-btn asis-btn--suave-rojo"
                                 onClick={() => marcarTodos(ESTADO.AUSENTE)}
-                                disabled={finDeSemana || cargando || !filtrados.length}
+                                disabled={bloqueadoPorFecha || cargando || !filtrados.length}
                             >
                                 Todos ausentes
                             </button>
@@ -244,12 +279,15 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
                                     titulo={nombreCompleto(a)}
                                     genero={a.genero}
                                     detalles={[
-                                        { texto: `${a.gradoNivel} "${a.seccionLiteral}"`, tipo: 'grado' },
+                                        {
+                                            texto: `${a.gradoNivel} "${a.seccionLiteral}"`,
+                                            tipo: 'grado',
+                                        },
                                         { texto: `Turno ${a.turno}`, tipo: 'neutro' },
                                     ]}
                                     estado={marcas[a.id]}
                                     onMarcar={(estado) => marcar(a.id, estado)}
-                                    deshabilitado={finDeSemana || cargando}
+                                    deshabilitado={bloqueadoPorFecha || cargando}
                                 />
                             ))}
                         </ul>
@@ -282,10 +320,12 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
                         type="button"
                         className="asis-btn asis-btn--primario asis-btn--bloque"
                         onClick={guardar}
-                        disabled={cargando || finDeSemana || filtrados.length === 0}
+                        disabled={cargando || bloqueadoPorFecha || filtrados.length === 0}
                     >
                         <IconoGuardar size={16} />
-                        {cargando
+                        { bloqueadoPorFecha
+                            ? 'Solo lectura (fuera de semana)'
+                            : cargando
                             ? 'Guardando...'
                             : yaGuardado
                             ? 'Actualizar asistencia'

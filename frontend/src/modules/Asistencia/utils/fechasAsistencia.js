@@ -28,7 +28,7 @@ export const restarDias = (iso, dias) => {
 
 /**
  * Devuelve la fecha actual si es día hábil; si cae en sábado o domingo,
- * retrocede al último viernes hábil.
+ * retrocede al último viernes hábil (nunca devuelve una fecha futura).
  */
 export const ultimoDiaHabil = () => {
     let cursor = hoyISO();
@@ -36,6 +36,65 @@ export const ultimoDiaHabil = () => {
         cursor = restarDias(cursor, 1);
     }
     return cursor;
+};
+
+/**
+ * Devuelve el lunes (YYYY-MM-DD) de la semana escolar activa.
+ * Solo se permite marcar o alterar asistencias desde este lunes
+ * hasta el día hábil actual (nunca semanas pasadas ni días futuros).
+ */
+export const inicioSemanaEditable = () => {
+    const ref = ultimoDiaHabil();
+    const diaSemana = aFecha(ref).getDay(); // 1 = Lunes ... 5 = Viernes
+    return restarDias(ref, diaSemana - 1);
+};
+
+export const finSemanaEditable = () => ultimoDiaHabil();
+
+export const esFechaFutura = (iso) => iso > hoyISO();
+
+export const esSemanaAnterior = (iso) => iso < inicioSemanaEditable();
+
+/**
+ * Evalúa si una fecha puede ser marcada o editada según las reglas:
+ * 1. Prohibido marcar fechas futuras (posteriores a hoy).
+ * 2. Prohibido alterar registros de semanas anteriores (solo la misma semana).
+ * 3. Prohibido marcar en fines de semana.
+ */
+export const validarFechaEditable = (iso) => {
+    if (!iso) {
+        return {
+            editable: false,
+            motivo: 'invalida',
+            texto: 'Selecciona una fecha válida',
+        };
+    }
+    if (esFechaFutura(iso)) {
+        return {
+            editable: false,
+            motivo: 'futura',
+            texto: 'Fecha futura — no se permite marcar días posteriores',
+        };
+    }
+    if (esSemanaAnterior(iso)) {
+        return {
+            editable: false,
+            motivo: 'semana_cerrada',
+            texto: 'Semana anterior cerrada — solo se puede modificar la semana actual',
+        };
+    }
+    if (esFinDeSemana(iso)) {
+        return {
+            editable: false,
+            motivo: 'fin_de_semana',
+            texto: 'Fin de semana — sin actividad escolar',
+        };
+    }
+    return {
+        editable: true,
+        motivo: null,
+        texto: '',
+    };
 };
 
 export const formatearFechaLarga = (iso) =>
