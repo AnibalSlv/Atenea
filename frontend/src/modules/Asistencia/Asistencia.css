@@ -417,10 +417,12 @@ select.asis-input {
 .asis-lista {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 4px 0 0;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+    max-height: 520px;
+    overflow-y: auto;
 }
 
 /* Fila de persona */
@@ -1047,10 +1049,12 @@ select.asis-input {
 .asis-alertas-lista {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 4px 0 0;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+    max-height: 520px;
+    overflow-y: auto;
 }
 
 .asis-alerta-item {

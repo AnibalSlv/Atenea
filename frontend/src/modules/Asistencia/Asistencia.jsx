@@ -74,6 +74,19 @@ function Asistencia() {
         localStorage.setItem(CLAVE_LIMITE, String(limiteFaltas));
     }, [limiteFaltas]);
 
+    // Restablecer el scroll del contenedor principal al cambiar de pestaña interna o al salir del módulo hacia otra pantalla del Sidebar
+    useEffect(() => {
+        const contenedor = document.querySelector('.main-layout__contenido');
+        if (contenedor) contenedor.scrollTop = 0;
+    }, [pestana]);
+
+    useEffect(() => {
+        return () => {
+            const contenedor = document.querySelector('.main-layout__contenido');
+            if (contenedor) contenedor.scrollTop = 0;
+        };
+    }, []);
+
     const faltasPorAlumno = useMemo(() => {
         const desde = restarDias(hoy, DIAS_PERIODO_ALERTAS);
         const conteo = {};

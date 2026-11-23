@@ -140,15 +140,15 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
             marcasLimpias[a.id] = marcas[a.id];
         });
 
-        setTimeout(() => {
-            onGuardar(fecha, 'alumnos', marcasLimpias);
-            onAviso({
-                tipo: 'exito',
-                texto: `Asistencia de ${filtrados.length} alumno(s) guardada para el ${formatearFechaCorta(fecha)}.`,
-            });
-            setCargando(false);
-            guardandoRef.current = false;
-        }, 500);
+        onGuardar(fecha, 'alumnos', marcasLimpias);
+        onAviso({
+            tipo: 'exito',
+            texto: `Asistencia de ${filtrados.length} alumno(s) guardada para el ${formatearFechaCorta(fecha)}.`,
+        });
+        const contenedor = document.querySelector('.main-layout__contenido');
+        if (contenedor) contenedor.scrollTop = 0;
+        setCargando(false);
+        guardandoRef.current = false;
     };
 
     return (

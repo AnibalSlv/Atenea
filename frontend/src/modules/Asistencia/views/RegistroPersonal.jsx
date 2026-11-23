@@ -126,15 +126,15 @@ function RegistroPersonal({ personal, registros, onGuardar, onAviso }) {
             marcasLimpias[p.id] = marcas[p.id];
         });
 
-        setTimeout(() => {
-            onGuardar(fecha, 'personal', marcasLimpias);
-            onAviso({
-                tipo: 'exito',
-                texto: `Asistencia del personal guardada para el ${formatearFechaCorta(fecha)}.`,
-            });
-            setCargando(false);
-            guardandoRef.current = false;
-        }, 500);
+        onGuardar(fecha, 'personal', marcasLimpias);
+        onAviso({
+            tipo: 'exito',
+            texto: `Asistencia del personal guardada para el ${formatearFechaCorta(fecha)}.`,
+        });
+        const contenedor = document.querySelector('.main-layout__contenido');
+        if (contenedor) contenedor.scrollTop = 0;
+        setCargando(false);
+        guardandoRef.current = false;
     };
 
     return (
