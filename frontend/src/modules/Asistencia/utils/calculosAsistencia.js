@@ -75,15 +75,26 @@ export const cargarLimite = () => {
 
 export const nombreCompleto = (a) => `${a.apellidos}, ${a.nombres}`;
 
-export const iniciales = (texto) =>
-    texto
-        .replace(',', '')
-        .split(' ')
+/**
+ * Obtiene la inicial del primer nombre y la inicial del primer apellido.
+ * - Si el texto viene en formato "Apellidos, Nombres" (ej. "Pérez Gómez, Carlos Luis") → "CP"
+ * - Si el texto viene en formato "Nombre Apellido" (ej. "Yolanda Marcano") → "YM"
+ */
+export const iniciales = (texto = '') => {
+    if (texto.includes(',')) {
+        const [parteApellidos, parteNombres] = texto.split(',').map((s) => s.trim());
+        const inicialNombre = parteNombres?.split(/\s+/).filter(Boolean)[0]?.[0] || '';
+        const inicialApellido = parteApellidos?.split(/\s+/).filter(Boolean)[0]?.[0] || '';
+        return `${inicialNombre}${inicialApellido}`.toUpperCase();
+    }
+    return texto
+        .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
         .map((p) => p[0])
         .join('')
         .toUpperCase();
+};
 
 export const esVaron = (genero) => genero === GENEROS.VARON;
 
