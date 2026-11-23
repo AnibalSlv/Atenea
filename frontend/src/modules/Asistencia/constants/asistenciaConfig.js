@@ -24,6 +24,8 @@ export const ESTADO = {
     AUSENTE: 'A',
 };
 
+export const SECCIONES_ESCOLARES = ['A', 'B', 'C', 'D'];
+
 export const PESTANAS = [
     { id: 'alumnos', texto: 'Alumnos', Icono: IconoAlumnos },
     { id: 'personal', texto: 'Personal', Icono: IconoUsuario },

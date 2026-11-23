@@ -8,7 +8,7 @@ import {
     IconoGuardar,
     IconoInfo,
 } from '../../../components/Iconos';
-import { ESTADO } from '../constants/asistenciaConfig';
+import { ESTADO, SECCIONES_ESCOLARES } from '../constants/asistenciaConfig';
 import {
     hoyISO,
     ultimoDiaHabil,
@@ -50,7 +50,13 @@ function RegistroAlumnos({ alumnos, registros, onGuardar, onAviso }) {
     }, [fecha]);
 
     const secciones = useMemo(
-        () => [...new Set(alumnos.map((a) => a.seccionLiteral).filter(Boolean))].sort(),
+        () =>
+            [
+                ...new Set([
+                    ...SECCIONES_ESCOLARES,
+                    ...alumnos.map((a) => a.seccionLiteral).filter(Boolean),
+                ]),
+            ].sort(),
         [alumnos]
     );
 

@@ -5,7 +5,7 @@ import {
     IconoCalendario,
     IconoArchivo,
 } from '../../../components/Iconos';
-import { ESTADO } from '../constants/asistenciaConfig';
+import { ESTADO, SECCIONES_ESCOLARES } from '../constants/asistenciaConfig';
 import {
     hoyISO,
     aFecha,
@@ -261,6 +261,7 @@ function ConsultaPorFecha({ alumnos, registros }) {
     const [fecha, setFecha] = useState(fechasDisponibles[0] || hoyISO());
     const [turno, setTurno] = useState('Todos');
     const [grado, setGrado] = useState('Todos');
+    const [seccion, setSeccion] = useState('Todas');
     const [estadoFiltro, setEstadoFiltro] = useState('Todos');
 
     const registro = registros[fecha];
@@ -268,6 +269,7 @@ function ConsultaPorFecha({ alumnos, registros }) {
     const filas = alumnos
         .filter((a) => turno === 'Todos' || a.turno === turno)
         .filter((a) => grado === 'Todos' || a.gradoNivel === grado)
+        .filter((a) => seccion === 'Todas' || a.seccionLiteral === seccion)
         .map((a) => ({ alumno: a, estado: registro?.alumnos?.[a.id] }))
         .filter((f) => f.estado)
         .filter(
@@ -336,6 +338,14 @@ function ConsultaPorFecha({ alumnos, registros }) {
                             opciones={['Todos', TURNOS.MANANA, TURNOS.TARDE]}
                             valor={turno}
                             onCambio={setTurno}
+                        />
+                    </div>
+                    <div className="asis-campo">
+                        <span className="asis-campo__etiqueta">Sección</span>
+                        <SelectorPildoras
+                            opciones={['Todas', ...SECCIONES_ESCOLARES]}
+                            valor={seccion}
+                            onCambio={setSeccion}
                         />
                     </div>
                     <div className="asis-campo">
