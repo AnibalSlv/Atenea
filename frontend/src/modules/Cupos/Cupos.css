@@ -1,0 +1,1280 @@
+/**
+ * ====================================================================
+ * SISTEMA ADMINISTRATIVO ATENEA — MÓDULO DE GESTIÓN DE CUPOS (DIRECTORA)
+ * U.E.M. Gregorio Romero
+ * ====================================================================
+ */
+
+.cupos-modulo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+    padding: 0.25rem 1.8rem 2.5rem;
+    max-width: 1540px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    animation: cuposAparecerSuave 0.25s ease-out;
+}
+
+@keyframes cuposAparecerSuave {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   ENCABEZADO PRINCIPAL Y SELECTOR DE TURNO
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.5rem 1.8rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--color-borde);
+}
+
+.cupos-header__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.3rem;
+}
+
+.cupos-header__badge-rol {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--color-varon-fondo);
+    color: var(--color-sidebar-dark);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radio-pildora);
+    text-transform: uppercase;
+}
+
+.cupos-header__titulo {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.cupos-header__subtitulo {
+    font-size: 0.88rem;
+    color: var(--color-texto-secundario);
+    margin: 0;
+    line-height: 1.35;
+}
+
+.cupos-header__controles {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cupos-turno-pills {
+    display: flex;
+    background-color: var(--color-fondo);
+    padding: 4px;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+}
+
+.cupos-turno-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.15rem;
+    border: none;
+    background: transparent;
+    border-radius: var(--radio-pildora);
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cupos-turno-pill:hover {
+    color: var(--color-texto-principal);
+}
+
+.cupos-turno-pill--activo {
+    background-color: var(--color-sidebar);
+    color: var(--color-blanco);
+    box-shadow: var(--sombra-card);
+}
+
+.cupos-btn-restablecer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radio-pequeno);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto-principal);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cupos-btn-restablecer:hover {
+    background-color: var(--color-fondo);
+    color: var(--color-sidebar-dark);
+}
+
+/* ─── Banner de Feedback de Acciones ─── */
+.cupos-feedback-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.9rem 1.25rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.88rem;
+    font-weight: 700;
+    animation: cuposAparecerSuave 0.2s ease-out;
+}
+
+.cupos-feedback-banner--exito {
+    background-color: var(--color-verde-fondo);
+    color: var(--color-verde);
+    border: 1px solid var(--color-verde);
+}
+
+.cupos-feedback-banner--alerta {
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+    border: 1px solid var(--color-rojo);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETAS DE MÉTRICAS GENERALES (KPIs)
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.2rem;
+}
+
+@media (max-width: 1180px) {
+    .cupos-kpis-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .cupos-kpis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cupos-kpi-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.35rem 1.5rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--color-borde);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    text-align: left;
+}
+
+.cupos-kpi-card--alerta-roja {
+    border-color: var(--color-rojo);
+    background-color: var(--color-rojo-fondo);
+}
+
+.cupos-kpi-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.cupos-kpi-card__label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--color-texto-secundario);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.cupos-kpi-card__icono {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radio-pequeno);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cupos-kpi-card__icono--primario {
+    background-color: var(--color-varon-fondo);
+    color: var(--color-sidebar);
+}
+
+.cupos-kpi-card__icono--ocupados {
+    background-color: var(--color-fondo);
+    color: var(--color-sidebar-dark);
+}
+
+.cupos-kpi-card__icono--verde {
+    background-color: var(--color-verde-fondo);
+    color: var(--color-verde);
+}
+
+.cupos-kpi-card__icono--rojo {
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+}
+
+.cupos-kpi-card__valor {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.cupos-kpi-card__valor--verde {
+    color: var(--color-verde);
+}
+
+.cupos-kpi-card__valor--rojo {
+    color: var(--color-rojo);
+}
+
+.cupos-kpi-card__detalle {
+    font-size: 0.78rem;
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+}
+
+.cupos-kpi-card__vht-pills {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.cupos-mini-vht {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.18rem 0.6rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.73rem;
+    font-weight: 800;
+}
+
+.cupos-mini-vht--varon {
+    background-color: var(--color-varon-fondo);
+    color: var(--color-varon);
+}
+
+.cupos-mini-vht--hembra {
+    background-color: var(--color-hembra-fondo);
+    color: var(--color-hembra);
+}
+
+.cupos-mini-vht--total {
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   BANNER DE ALERTA DE CUPO LLENO / BLOQUEO DE INSCRIPCIÓN
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-alerta-global {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background-color: var(--color-rojo-fondo);
+    border: 1.5px solid var(--color-rojo);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.2rem 1.5rem;
+    box-shadow: var(--sombra-card);
+    text-align: left;
+}
+
+.cupos-alerta-global__icono {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-rojo);
+    color: var(--color-blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cupos-alerta-global__contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
+.cupos-alerta-global__titulo {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-rojo);
+    margin: 0;
+}
+
+.cupos-alerta-global__desc {
+    font-size: 0.84rem;
+    color: var(--color-texto-principal);
+    margin: 0;
+    font-weight: 600;
+}
+
+.cupos-alerta-global__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.cupos-alerta-global__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-rojo);
+    color: var(--color-rojo);
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   BARRA DE FILTROS Y BUSCADOR
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-filtros-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1rem 1.4rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--color-borde);
+}
+
+.cupos-filtros-grupo {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.cupos-filtros-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.cupos-pills-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.cupos-filter-pill {
+    padding: 0.38rem 0.9rem;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto-secundario);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cupos-filter-pill:hover {
+    color: var(--color-texto-principal);
+    background-color: var(--color-fondo);
+}
+
+.cupos-filter-pill--activo {
+    background-color: var(--color-sidebar);
+    border-color: var(--color-sidebar);
+    color: var(--color-blanco);
+}
+
+.cupos-buscador-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 250px;
+    flex: 1;
+    max-width: 340px;
+}
+
+.cupos-buscador-icono {
+    position: absolute;
+    left: 0.95rem;
+    color: var(--color-texto-mutado);
+    pointer-events: none;
+}
+
+.cupos-buscador-input {
+    width: 100%;
+    padding: 0.52rem 1rem 0.52rem 2.4rem;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto-principal);
+    font-size: 0.83rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.cupos-buscador-input:focus {
+    border-color: var(--color-sidebar);
+    background-color: var(--color-blanco);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   SECCIONES POR NIVEL Y GRILLA DE TARJETAS DE CURSO
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-niveles-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.cupos-nivel-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cupos-nivel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cupos-nivel-header__izq {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cupos-nivel-pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+    background-color: var(--color-varon-fondo);
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--radio-pildora);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.cupos-nivel-titulo {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    margin: 0;
+}
+
+.cupos-nivel-contador {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-texto-secundario);
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radio-pildora);
+}
+
+.cupos-cursos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+@media (max-width: 1200px) {
+    .cupos-cursos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .cupos-cursos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   TARJETA INDIVIDUAL DE CURSO
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-curso-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 1.4rem 1.45rem;
+    box-shadow: var(--sombra-card);
+    border: 1.5px solid var(--color-borde);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cupos-curso-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-flotante);
+}
+
+.cupos-curso-card--lleno,
+.cupos-curso-card--bloqueado {
+    border-color: var(--color-rojo);
+}
+
+.cupos-curso-card--alerta {
+    border-color: var(--color-amarillo);
+}
+
+.cupos-curso-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.cupos-curso-card__titulos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.cupos-curso-card__nivel-tag {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cupos-curso-card__nombre {
+    font-size: 1.22rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    margin: 0;
+}
+
+/* Badges de Estado Semántico */
+.cupos-estado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.7rem;
+    border-radius: var(--radio-pildora);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.cupos-estado-badge--disponible {
+    background-color: var(--color-verde-fondo);
+    color: var(--color-verde);
+}
+
+.cupos-estado-badge--alerta {
+    background-color: var(--color-amarillo-fondo);
+    color: var(--color-texto-principal);
+    border: 1px solid var(--color-amarillo);
+}
+
+.cupos-estado-badge--lleno,
+.cupos-estado-badge--bloqueado {
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+    border: 1px solid var(--color-rojo);
+}
+
+/* Tres Cajas de Métricas del Curso: Capacidad, Ocupados, Disponibles */
+.cupos-metricas-curso-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+
+.cupos-metrica-box {
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    padding: 0.6rem 0.45rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.2rem;
+}
+
+.cupos-metrica-box--ocupados {
+    background-color: var(--color-fondo);
+}
+
+.cupos-metrica-box--disponibles {
+    background-color: var(--color-verde-fondo);
+    border-color: var(--color-verde);
+}
+
+.cupos-metrica-box--alerta {
+    background-color: var(--color-amarillo-fondo);
+    border-color: var(--color-amarillo);
+}
+
+.cupos-metrica-box--agotado {
+    background-color: var(--color-rojo-fondo);
+    border-color: var(--color-rojo);
+}
+
+.cupos-metrica-box__lbl {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--color-texto-secundario);
+    letter-spacing: 0.4px;
+}
+
+.cupos-metrica-box__val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    line-height: 1.1;
+}
+
+.cupos-metrica-box--disponibles .cupos-metrica-box__val {
+    color: var(--color-verde);
+}
+
+.cupos-metrica-box--agotado .cupos-metrica-box__val {
+    color: var(--color-rojo);
+}
+
+/* Barra de Progreso */
+.cupos-progreso-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 0.38rem;
+}
+
+.cupos-progreso-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+}
+
+.cupos-progreso-texto {
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+}
+
+.cupos-progreso-pct {
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+}
+
+.cupos-progreso-pct--lleno,
+.cupos-progreso-pct--bloqueado {
+    color: var(--color-rojo);
+}
+
+.cupos-progreso-track {
+    height: 8px;
+    background-color: var(--color-fondo);
+    border-radius: var(--radio-pildora);
+    overflow: hidden;
+}
+
+.cupos-progreso-fill {
+    height: 100%;
+    border-radius: var(--radio-pildora);
+    transition: width 0.35s ease;
+    background-color: var(--color-verde);
+}
+
+.cupos-progreso-fill--alerta {
+    background-color: var(--color-amarillo);
+}
+
+.cupos-progreso-fill--lleno,
+.cupos-progreso-fill--bloqueado {
+    background-color: var(--color-rojo);
+}
+
+/* Desglose Varones (V), Hembras (H) y Total (V+H) */
+.cupos-vht-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+}
+
+.cupos-vht-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.cupos-vht-lbl {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--color-texto-mutado);
+    letter-spacing: 0.35px;
+}
+
+.cupos-vht-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.cupos-vht-val--varon {
+    color: var(--color-varon);
+}
+
+.cupos-vht-val--hembra {
+    color: var(--color-hembra);
+}
+
+.cupos-vht-val--total {
+    color: var(--color-texto-principal);
+}
+
+/* Caja de Estado de Bloqueo de Inscripción en Tarjeta */
+.cupos-alerta-bloqueo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.76rem;
+}
+
+.cupos-alerta-bloqueo__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    line-height: 1.25;
+}
+
+.cupos-alerta-bloqueo--activa {
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+    border: 1px solid var(--color-rojo);
+}
+
+.cupos-alerta-bloqueo--preventiva {
+    background-color: var(--color-amarillo-fondo);
+    color: var(--color-texto-principal);
+    border: 1px solid var(--color-amarillo);
+}
+
+.cupos-alerta-bloqueo--abierta {
+    background-color: var(--color-verde-fondo);
+    color: var(--color-verde);
+}
+
+/* Botones de Acción de la Tarjeta */
+.cupos-curso-card__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.25rem;
+}
+
+.cupos-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radio-pequeno);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.cupos-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.cupos-btn--primario {
+    background-color: var(--color-sidebar);
+    color: var(--color-blanco);
+}
+
+.cupos-btn--primario:hover:not(:disabled) {
+    background-color: var(--color-sidebar-dark);
+}
+
+.cupos-btn--guardar {
+    background-color: var(--color-verde);
+    color: var(--color-blanco);
+}
+
+.cupos-btn--guardar:hover:not(:disabled) {
+    opacity: 0.92;
+}
+
+.cupos-btn--bloquear {
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+    border-color: var(--color-rojo);
+}
+
+.cupos-btn--bloquear:hover:not(:disabled) {
+    background-color: var(--color-rojo);
+    color: var(--color-blanco);
+}
+
+.cupos-btn--desbloquear {
+    background-color: var(--color-verde-fondo);
+    color: var(--color-verde);
+    border-color: var(--color-verde);
+}
+
+.cupos-btn--desbloquear:hover:not(:disabled) {
+    background-color: var(--color-verde);
+    color: var(--color-blanco);
+}
+
+.cupos-btn--fantasma {
+    background-color: var(--color-superficie);
+    color: var(--color-texto-principal);
+    border-color: var(--color-borde);
+}
+
+.cupos-btn--fantasma:hover:not(:disabled) {
+    background-color: var(--color-fondo);
+}
+
+/* Estado Vacío de Filtros */
+.cupos-vacio-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-tarjeta);
+    padding: 3rem 2rem;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--color-borde);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.65rem;
+    color: var(--color-texto-secundario);
+}
+
+.cupos-vacio-card h3 {
+    margin: 0.25rem 0 0;
+    color: var(--color-texto-principal);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.cupos-vacio-card p {
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   MODALES (EDICIÓN DE CAPACIDAD Y VER INSCRITOS)
+   ══════════════════════════════════════════════════════════════════════ */
+.cupos-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(30, 41, 59, 0.52);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    z-index: 1000;
+    animation: cuposAparecerSuave 0.18s ease-out;
+}
+
+.cupos-modal-card {
+    background-color: var(--color-blanco);
+    border-radius: var(--radio-modal);
+    box-shadow: var(--sombra-flotante);
+    border: 1px solid var(--color-borde);
+    width: 100%;
+    max-width: 520px;
+    padding: 1.65rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    text-align: left;
+}
+
+.cupos-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cupos-modal-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--color-sidebar);
+    background-color: var(--color-varon-fondo);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radio-pildora);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+}
+
+.cupos-modal-titulo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--color-sidebar-dark);
+    margin: 0;
+}
+
+.cupos-modal-cerrar {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto-secundario);
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cupos-modal-cerrar:hover {
+    background-color: var(--color-fondo);
+    color: var(--color-texto-principal);
+}
+
+.cupos-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.cupos-modal-inscritos-box {
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-pequeno);
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cupos-modal-inscritos-box__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.cupos-modal-inscritos-box__lbl {
+    font-size: 0.74rem;
+    color: var(--color-texto-secundario);
+    font-weight: 700;
+}
+
+.cupos-modal-inscritos-box__num {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+}
+
+.cupos-modal-inscritos-box__vht {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.cupos-modal-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.cupos-modal-label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+}
+
+.cupos-modal-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.cupos-stepper-btn {
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radio-pequeno);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-sidebar-dark);
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cupos-stepper-btn:hover:not(:disabled) {
+    background-color: var(--color-varon-fondo);
+}
+
+.cupos-modal-input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radio-pequeno);
+    border: 1.5px solid var(--color-borde);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-texto-principal);
+    background-color: var(--color-blanco);
+    outline: none;
+}
+
+.cupos-modal-input:focus {
+    border-color: var(--color-sidebar);
+}
+
+.cupos-modal-input--error {
+    border-color: var(--color-rojo);
+    background-color: var(--color-rojo-fondo);
+    color: var(--color-rojo);
+}
+
+.cupos-modal-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.15rem;
+}
+
+.cupos-preset-chip {
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radio-pildora);
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+    color: var(--color-texto-secundario);
+    font-size: 0.73rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cupos-preset-chip:hover {
+    background-color: var(--color-varon-fondo);
+    color: var(--color-sidebar-dark);
+    border-color: var(--color-sidebar);
+}
+
+.cupos-modal-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-rojo-fondo);
+    border: 1px solid var(--color-rojo);
+    color: var(--color-rojo);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.cupos-modal-preview {
+    border-radius: var(--radio-pequeno);
+    padding: 0.8rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    font-size: 0.8rem;
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-superficie);
+}
+
+.cupos-modal-preview--disponible {
+    background-color: var(--color-verde-fondo);
+    border-color: var(--color-verde);
+}
+
+.cupos-modal-preview--alerta {
+    background-color: var(--color-amarillo-fondo);
+    border-color: var(--color-amarillo);
+}
+
+.cupos-modal-preview--lleno,
+.cupos-modal-preview--bloqueado {
+    background-color: var(--color-rojo-fondo);
+    border-color: var(--color-rojo);
+}
+
+.cupos-modal-preview__fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-texto-principal);
+}
+
+.cupos-modal-switch-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    cursor: pointer;
+}
+
+.cupos-modal-switch-row input[type='checkbox'] {
+    margin-top: 0.2rem;
+    width: 17px;
+    height: 17px;
+    accent-color: var(--color-sidebar);
+}
+
+.cupos-modal-switch-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.78rem;
+}
+
+.cupos-modal-switch-texto strong {
+    color: var(--color-texto-principal);
+}
+
+.cupos-modal-switch-texto span {
+    color: var(--color-texto-secundario);
+}
+
+.cupos-modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 0.25rem;
+}
+
+/* Lista de Alumnos en el Modal de Inscritos */
+.cupos-modal-inscritos-resumen {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    font-size: 0.84rem;
+    color: var(--color-texto-principal);
+}
+
+.cupos-lista-alumnos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 290px;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+}
+
+.cupos-alumno-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radio-pequeno);
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+}
+
+.cupos-alumno-fila__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    font-size: 0.82rem;
+}
+
+.cupos-alumno-fila__info strong {
+    color: var(--color-texto-principal);
+}
+
+.cupos-alumno-fila__info span {
+    color: var(--color-texto-secundario);
+    font-size: 0.75rem;
+}
+
+.cupos-lista-alumnos-vacia {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    color: var(--color-texto-secundario);
+    font-size: 0.86rem;
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-pequeno);
+    border: 1px dashed var(--color-borde);
+}

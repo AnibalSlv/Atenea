@@ -11,6 +11,7 @@ import Perfil from './modules/Perfil/Perfil';
 import Alumnos from './modules/Alumnos/Alumnos';
 import Inscribir from './modules/Inscribir/Inscribir';
 import Retirar from './modules/Retirar';
+import Cupos from './modules/Cupos';
 import './App.css';
 
 /**
@@ -76,10 +77,9 @@ function App() {
                             <Route
                                 path="cupos"
                                 element={
-                                    <PlaceholderModulo
-                                        nombre="Gestión de Cupos (Directora)"
-                                        icono="🔒"
-                                    />
+                                    <RutaProtegida rolRequerido="directora">
+                                        <Cupos />
+                                    </RutaProtegida>
                                 }
                             />
                         </Route>
