@@ -63,7 +63,7 @@ export function FilaPersona({
     extra,
 }) {
     return (
-        <li className="asis-fila">
+        <li className={`asis-fila ${estado === ESTADO.AUSENTE ? 'asis-fila--ausente' : ''}`}>
             <Avatar texto={titulo} genero={genero} />
             <div className="asis-fila__info">
                 <strong>{titulo}</strong>

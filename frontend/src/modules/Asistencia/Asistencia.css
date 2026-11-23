@@ -257,6 +257,10 @@ select.asis-input {
     cursor: pointer;
 }
 
+input[type="date"].asis-input {
+    width: 148px;
+}
+
 .asis-buscador {
     display: flex;
     align-items: center;
@@ -434,11 +438,15 @@ select.asis-input {
     background-color: var(--color-blanco);
     border: 1px solid var(--color-borde);
     border-radius: var(--radio-pequeno);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .asis-fila:hover {
     box-shadow: var(--sombra-card);
+}
+
+.asis-fila--ausente {
+    background-color: var(--color-rojo-fondo);
 }
 
 .asis-fila__info {

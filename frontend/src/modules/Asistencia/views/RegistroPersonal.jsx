@@ -143,9 +143,7 @@ function RegistroPersonal({ personal, registros, onGuardar, onAviso }) {
                 <div className="asis-filtros__fila">
                     <label className="asis-campo">
                         <span className="asis-campo__etiqueta">
-                            <IconoCalendario size={14} /> Fecha (semana actual:{' '}
-                            {minSemana.split('-').reverse().slice(0, 2).join('/')} al{' '}
-                            {maxSemana.split('-').reverse().slice(0, 2).join('/')})
+                            <IconoCalendario size={14} /> Fecha
                         </span>
                         <input
                             type="date"
